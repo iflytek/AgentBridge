@@ -1,0 +1,173 @@
+# AI Agent Workflow Transformer - GitIgnore Configuration
+
+# =============================================================================
+# Build Outputs & Binaries
+# =============================================================================
+# Compiled binaries
+*.exe
+*.exe~
+
+*.dll
+*.so
+*.dylib
+ai-agent-converter*
+bin/
+build/
+dist/
+
+# Go specific build files
+*.test
+*.out
+*.o
+*.a
+*.lib
+*.prof
+coverage.txt
+coverage.out
+
+# =============================================================================
+# Development Environment
+# =============================================================================
+# IDE and editor files
+.cursor/
+.claude/
+.kiro/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Go workspace
+go.work
+
+# =============================================================================
+# Testing & Examples (Private/Internal)
+# =============================================================================
+# Example workflows (contains proprietary DSL samples)
+examples/
+examples_*/
+samples/
+test_data/
+test/
+batch_test_output/
+
+# Test outputs and temporary files
+test_output/
+test_outputs/
+test_results/
+*.test.yml
+*.debug.yml
+*_intermediate.yml
+*_output.yml
+*_debug.yml
+*_temp.yml
+
+# Legacy test files
+test_end_to_end_conversion.go
+test_conversion.exe
+
+# =============================================================================
+# Documentation & Reports
+# =============================================================================
+# Generated documentation
+docs/generated/
+*.html
+*.pdf
+
+# Progress and internal docs (keep public docs)
+CONVERSION_PROGRESS.md
+conversion_progress_*.md
+
+# =============================================================================
+# Logs & Runtime Files
+# =============================================================================
+# Application logs
+*.log
+*.tmp
+*.temp
+logs/
+debug.log
+error.log
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# =============================================================================
+# Platform Specific Files
+# =============================================================================
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+.AppleDouble
+.LSOverride
+
+# Windows
+desktop.ini
+Thumbs.db
+ehthumbs.db
+*.lnk
+
+# Linux
+.directory
+.Trash-*
+
+# =============================================================================
+# Configuration & Secrets
+# =============================================================================
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Config overrides
+config.local.*
+*.local.yml
+*.local.yaml
+
+# API keys and secrets
+secrets/
+keys/
+*.key
+*.pem
+
+# =============================================================================
+# Performance & Profiling
+# =============================================================================
+# CPU profiles
+cpu.prof
+mem.prof
+*.pprof
+
+# Benchmarks
+*.bench
+benchmark_results/
+
+# =============================================================================
+# Dependencies (Conditional)
+# =============================================================================
+# Vendor directory (uncomment if using vendor)
+# vendor/
+
+# =============================================================================
+# Custom Project Files
+# =============================================================================
+# Platform-specific configurations
+platform_configs/
+custom_mappings/
+
+# User-specific workflows
+user_examples/
+personal_workflows/
+
+# Analysis and conversion reports
+conversion_reports/
+analysis_results/
+performance_tests/
+CLAUDE.md
+
