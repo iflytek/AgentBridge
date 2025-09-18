@@ -1,0 +1,328 @@
+app:
+  description: '1'
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  mode: workflow
+  name: a
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/openai_api_compatible:0.0.16@d41b09aca46cdd3876f70b4c91d464c4588fc0bdc844ced6ee426283ead6ce8e
+kind: app
+version: 0.3.1
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 50
+        batch_count_limit: 10
+        file_size_limit: 100
+        image_file_size_limit: 20
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInLoop: false
+        sourceType: start
+        targetType: if-else
+      id: 1758004290203-source-1758004765530-target
+      source: '1758004290203'
+      sourceHandle: source
+      target: '1758004765530'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: llm
+      id: 1758004765530-true-1758004955189-target
+      source: '1758004765530'
+      sourceHandle: 'true'
+      target: '1758004955189'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: llm
+      id: 1758004765530-b28378e0-e0c1-4e55-b87e-53dedb759aeb-1758004961777-target
+      source: '1758004765530'
+      sourceHandle: b28378e0-e0c1-4e55-b87e-53dedb759aeb
+      target: '1758004961777'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: llm
+      id: 1758004765530-false-1758004961777-target
+      source: '1758004765530'
+      sourceHandle: 'false'
+      target: '1758004961777'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: end
+      id: 1758004955189-source-1758005101437-target
+      source: '1758004955189'
+      sourceHandle: source
+      target: '1758005101437'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: end
+      id: 1758004961777-source-1758005101437-target
+      source: '1758004961777'
+      sourceHandle: source
+      target: '1758005101437'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: ''
+        selected: false
+        title: 开始
+        type: start
+        variables:
+        - label: gender
+          max_length: 48
+          options: []
+          required: true
+          type: text-input
+          variable: gender
+        - label: birth_year
+          max_length: 48
+          options: []
+          required: true
+          type: number
+          variable: birth_year
+        - label: birth_month
+          max_length: 48
+          options: []
+          required: true
+          type: number
+          variable: birth_month
+        - label: birth_day
+          max_length: 48
+          options: []
+          required: true
+          type: number
+          variable: birth_day
+      height: 167
+      id: '1758004290203'
+      position:
+        x: 140
+        y: 281
+      positionAbsolute:
+        x: 140
+        y: 281
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: is
+            id: db6026f2-4928-4108-9d5f-17cf39f37694
+            value: 男
+            varType: string
+            variable_selector:
+            - '1758004290203'
+            - gender
+          - comparison_operator: is
+            id: 61984e1b-c044-41a5-aba8-98be0bb7e172
+            value: man
+            varType: string
+            variable_selector:
+            - '1758004290203'
+            - gender
+          id: 'true'
+          logical_operator: or
+        - case_id: b28378e0-e0c1-4e55-b87e-53dedb759aeb
+          conditions:
+          - comparison_operator: contains
+            id: b9203e16-28d7-445c-acf2-7c9a1d24785b
+            value: 女
+            varType: string
+            variable_selector:
+            - '1758004290203'
+            - gender
+          - comparison_operator: contains
+            id: 85f01eca-f138-4ab5-ac6e-532f16d5e53f
+            value: woman
+            varType: string
+            variable_selector:
+            - '1758004290203'
+            - gender
+          id: b28378e0-e0c1-4e55-b87e-53dedb759aeb
+          logical_operator: or
+        desc: ''
+        selected: false
+        title: 条件分支
+        type: if-else
+      height: 225
+      id: '1758004765530'
+      position:
+        x: 530
+        y: 219
+      positionAbsolute:
+        x: 530
+        y: 219
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: xdeepseekv32
+          provider: langgenius/openai_api_compatible/openai_api_compatible
+        prompt_template:
+        - id: cede9795-1935-4bad-937e-f9d41c311ada
+          role: system
+          text: 根据{{#1758004290203.birth_month#}}{{#1758004290203.birth_day#}}真实的生成相同生日的女·科学家
+        selected: false
+        title: LLM
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 89
+      id: '1758004955189'
+      position:
+        x: 910
+        y: 211
+      positionAbsolute:
+        x: 910
+        y: 211
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: xdeepseekv32
+          provider: langgenius/openai_api_compatible/openai_api_compatible
+        prompt_template:
+        - id: 3a02e3f5-d576-446e-a18f-1a546ee39a71
+          role: system
+          text: 根据{{#1758004290203.birth_month#}}{{#1758004290203.birth_day#}}真实的生成相同生日的男科学家
+        selected: false
+        title: LLM 2
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 89
+      id: '1758004961777'
+      position:
+        x: 901
+        y: 345
+      positionAbsolute:
+        x: 901
+        y: 345
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - '1758004955189'
+          - text
+          value_type: string
+          variable: text
+        - value_selector:
+          - '1758004961777'
+          - text
+          value_type: string
+          variable: text_1
+        selected: false
+        title: 结束
+        type: end
+      height: 115
+      id: '1758005101437'
+      position:
+        x: 1297
+        y: 294
+      positionAbsolute:
+        x: 1297
+        y: 294
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    viewport:
+      x: -620
+      y: 32
+      zoom: 1

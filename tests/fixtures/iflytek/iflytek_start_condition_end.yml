@@ -1,0 +1,716 @@
+flowMeta:
+  name: 自定义17520250916142659
+  description: ''
+  avatarIcon: https://oss-beijing-m8.openstorage.cn/SparkBotProd/icon/common/emojiitem_00_10@2x.png
+  avatarColor: '#FFEAD5'
+  advancedConfig: '{"prologue":{"enabled":true,"inputExample":["","",""]},"needGuide":false}'
+  dslVersion: v1
+flowData:
+  nodes:
+  - id: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+    dragging: false
+    selected: false
+    width: 658
+    height: 416
+    position:
+      x: -671.8827202781542
+      y: 321.88350656737316
+    positionAbsolute:
+      x: -671.8827202781542
+      y: 321.88350656737316
+    type: 开始节点
+    data:
+      allowInputReference: false
+      allowOutputReference: true
+      label: 开始
+      status: ''
+      nodeMeta:
+        aliasName: 开始节点
+        nodeType: 基础节点
+      inputs: [
+        ]
+      outputs:
+      - id: 0918514b-72a8-4646-8dd9-ff4a8fc26d44
+        name: AGENT_USER_INPUT
+        nameErrMsg: ''
+        schema:
+          type: string
+          default: 用户本轮对话输入内容
+        required: true
+        deleteDisabled: true
+      - id: 64fffdd4-5808-494b-8015-6caddba21b6f
+        name: gender
+        nameErrMsg: ''
+        schema:
+          type: string
+          properties: [
+            ]
+          default: 性别
+        required: false
+        customParameterType: xfyun-file
+      - id: 43c26ee5-1ec8-4ad0-ad63-280df1705a27
+        name: birth_year
+        nameErrMsg: ''
+        schema:
+          type: integer
+          properties: [
+            ]
+          default: 出生年
+        required: false
+        customParameterType: xfyun-file
+      - id: 0300465b-5429-4205-aef9-1a48d0a1450c
+        name: birth_month
+        nameErrMsg: ''
+        schema:
+          type: integer
+          properties: [
+            ]
+          default: 出生月
+        required: false
+        customParameterType: xfyun-file
+      - id: f33efbf7-354f-496c-8b6b-b1c53a4be569
+        name: birth_day
+        nameErrMsg: ''
+        schema:
+          type: integer
+          properties: [
+            ]
+          default: 出生日
+        required: false
+        customParameterType: xfyun-file
+      nodeParam:
+        setAnswerContentErrMsg: 输出中变量名校验不通过,自动生成JSON失败
+      icon: https://oss-beijing-m8.openstorage.cn/pro-bucket/sparkBot/common/workflow/icon/start-node-icon.png
+      description: 工作流的开启节点，用于定义流程调用所需的业务变量信息。
+      updatable: false
+  - id: node-end::cda617af-551e-462e-b3b8-3bb9a041bf88
+    dragging: false
+    selected: false
+    width: 408
+    height: 664
+    position:
+      x: 3055.4591236004585
+      y: 227.13117894808192
+    positionAbsolute:
+      x: 3055.4591236004585
+      y: 227.13117894808192
+    type: 结束节点
+    data:
+      allowInputReference: true
+      allowOutputReference: false
+      label: 结束
+      references:
+      - children:
+        - references:
+          - originId: spark-llm::b7eabedc-afb5-4e5a-834f-3b04a4e36b30
+            id: dcda1c1a-58c2-4bb4-b72d-8e677b79aad5
+            label: output
+            type: string
+            value: output
+            fileType: ''
+          label: ''
+          value: ''
+        label: 大模型_1
+        parentNode: true
+        value: spark-llm::b7eabedc-afb5-4e5a-834f-3b04a4e36b30
+      - children:
+        - references:
+          - originId: spark-llm::5ba3e4a4-5d65-4240-9195-40933993ce62
+            id: dcda1c1a-58c2-4bb4-b72d-8e677b79aad5
+            label: output
+            type: string
+            value: output
+            fileType: ''
+          label: ''
+          value: ''
+        label: 大模型_3
+        parentNode: true
+        value: spark-llm::5ba3e4a4-5d65-4240-9195-40933993ce62
+      - children:
+        - references:
+          - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            id: 0918514b-72a8-4646-8dd9-ff4a8fc26d44
+            label: AGENT_USER_INPUT
+            type: string
+            value: AGENT_USER_INPUT
+            fileType: ''
+          - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            children: [
+              ]
+            id: 64fffdd4-5808-494b-8015-6caddba21b6f
+            label: gender
+            type: string
+            value: gender
+            fileType: ''
+          - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            children: [
+              ]
+            id: 43c26ee5-1ec8-4ad0-ad63-280df1705a27
+            label: birth_year
+            type: integer
+            value: birth_year
+            fileType: ''
+          - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            children: [
+              ]
+            id: 0300465b-5429-4205-aef9-1a48d0a1450c
+            label: birth_month
+            type: integer
+            value: birth_month
+            fileType: ''
+          - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            children: [
+              ]
+            id: f33efbf7-354f-496c-8b6b-b1c53a4be569
+            label: birth_day
+            type: integer
+            value: birth_day
+            fileType: ''
+          label: ''
+          value: ''
+        label: 开始
+        parentNode: true
+        value: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+      status: ''
+      nodeMeta:
+        aliasName: 结束节点
+        nodeType: 基础节点
+      inputs:
+      - id: 82de2b42-a059-4c98-bffb-b6b4800fcac9
+        name: output
+        nameErrMsg: ''
+        schema:
+          type: string
+          value:
+            type: ref
+            content:
+              name: output
+              id: dcda1c1a-58c2-4bb4-b72d-8e677b79aad5
+              nodeId: spark-llm::b7eabedc-afb5-4e5a-834f-3b04a4e36b30
+            contentErrMsg: ''
+        fileType: ''
+      - id: 2b95c84a-a56f-470d-8ed2-ae1588535cf7
+        name: output_3
+        nameErrMsg: ''
+        schema:
+          type: string
+          value:
+            type: ref
+            content:
+              name: output
+              id: dcda1c1a-58c2-4bb4-b72d-8e677b79aad5
+              nodeId: spark-llm::5ba3e4a4-5d65-4240-9195-40933993ce62
+            contentErrMsg: ''
+        fileType: ''
+      outputs: [
+        ]
+      nodeParam:
+        template: '{{output}},{{output_1}},{{output_2}},{{output_3}}'
+        streamOutput: true
+        templateErrMsg: ''
+        outputMode: 1
+      icon: https://oss-beijing-m8.openstorage.cn/pro-bucket/sparkBot/common/workflow/icon/end-node-icon.png
+      description: 工作流的结束节点，用于输出工作流运行后的最终结果。
+      updatable: false
+  - id: if-else::b83f0779-ec91-420f-9ce2-0fb6b466d768
+    dragging: false
+    selected: false
+    width: 684
+    height: 609
+    position:
+      x: 515.2489845788416
+      y: 106.11474356089093
+    positionAbsolute:
+      x: 515.2489845788416
+      y: 106.11474356089093
+    type: 分支器
+    data:
+      allowInputReference: true
+      allowOutputReference: false
+      label: 分支器_1
+      labelEdit: false
+      references:
+      - children:
+        - references:
+          - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            id: 0918514b-72a8-4646-8dd9-ff4a8fc26d44
+            label: AGENT_USER_INPUT
+            type: string
+            value: AGENT_USER_INPUT
+            fileType: ''
+          - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            children: [
+              ]
+            id: 64fffdd4-5808-494b-8015-6caddba21b6f
+            label: gender
+            type: string
+            value: gender
+            fileType: ''
+          - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            children: [
+              ]
+            id: 43c26ee5-1ec8-4ad0-ad63-280df1705a27
+            label: birth_year
+            type: integer
+            value: birth_year
+            fileType: ''
+          - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            children: [
+              ]
+            id: 0300465b-5429-4205-aef9-1a48d0a1450c
+            label: birth_month
+            type: integer
+            value: birth_month
+            fileType: ''
+          - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            children: [
+              ]
+            id: f33efbf7-354f-496c-8b6b-b1c53a4be569
+            label: birth_day
+            type: integer
+            value: birth_day
+            fileType: ''
+          label: ''
+          value: ''
+        label: 开始
+        parentNode: true
+        value: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+      status: ''
+      nodeMeta:
+        aliasName: 分支器
+        nodeType: 分支器
+      inputs:
+      - id: 56c24674-cf6f-4800-8d8c-5f9e4a324ffa
+        name: input
+        nameErrMsg: ''
+        schema:
+          type: string
+          value:
+            type: ref
+            content:
+              name: gender
+              id: 64fffdd4-5808-494b-8015-6caddba21b6f
+              nodeId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            contentErrMsg: ''
+      - id: db6c3fea-b21d-4f02-9a45-5de4edd004d4
+        name: input1
+        nameErrMsg: ''
+        schema:
+          type: string
+          value:
+            type: literal
+            content: 男
+            contentErrMsg: ''
+      - id: 8e0c95e2-f2d5-41d6-b87e-c616035d3f41
+        name: input997044b38e20425899dcecb010af51a8
+        nameErrMsg: ''
+        schema:
+          type: string
+          value:
+            type: ref
+            content:
+              name: gender
+              id: 64fffdd4-5808-494b-8015-6caddba21b6f
+              nodeId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            contentErrMsg: ''
+      - id: 3463d853-dc60-493d-af07-4f59ee55c112
+        name: inputcb59070f31e74155ad5e163cdd625fb8
+        nameErrMsg: ''
+        schema:
+          type: string
+          value:
+            type: literal
+            content: man
+            contentErrMsg: ''
+      - id: e3e68fd6-7ace-4f15-af59-61a180950a14
+        name: input9477cd873898403b9aa79d570f766c72
+        nameErrMsg: ''
+        schema:
+          type: string
+          value:
+            type: ref
+            content:
+              name: gender
+              id: 64fffdd4-5808-494b-8015-6caddba21b6f
+              nodeId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            contentErrMsg: ''
+      - id: b3057bf5-0a13-4482-9ab0-4cd5d43a4db2
+        name: input8de85984e0ed4b2bbcdb7356020631cb
+        nameErrMsg: ''
+        schema:
+          type: string
+          value:
+            type: literal
+            content: 女
+            contentErrMsg: ''
+      - id: f0af12b0-f24a-4a3e-a392-b82f8177d203
+        name: input0e7ccb4227b14665b2aebd383ad6373f
+        nameErrMsg: ''
+        schema:
+          type: string
+          value:
+            type: ref
+            content:
+              name: gender
+              id: 64fffdd4-5808-494b-8015-6caddba21b6f
+              nodeId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            contentErrMsg: ''
+      - id: 569df2af-10da-4a5a-8eb8-39ab32299120
+        name: input56e1f269724f4a87bb62f9ebb9f2fdce
+        nameErrMsg: ''
+        schema:
+          type: string
+          value:
+            type: literal
+            content: woman
+            contentErrMsg: ''
+      outputs: [
+        ]
+      nodeParam:
+        uid: '20740872236'
+        cases:
+        - level: 1
+          logicalOperator: or
+          id: branch_one_of::a6b781f0-0684-435b-aefe-2319b75c3bc8
+          conditions:
+          - leftVarIndex: 56c24674-cf6f-4800-8d8c-5f9e4a324ffa
+            rightVarIndex: db6c3fea-b21d-4f02-9a45-5de4edd004d4
+            compareOperatorErrMsg: ''
+            id: ''
+            compareOperator: is
+          - leftVarIndex: 8e0c95e2-f2d5-41d6-b87e-c616035d3f41
+            rightVarIndex: 3463d853-dc60-493d-af07-4f59ee55c112
+            compareOperatorErrMsg: ''
+            id: d5b1a363-9ba2-4a3a-84b8-8223c8d840e7
+            compareOperator: is
+        - level: 2
+          logicalOperator: or
+          id: branch_one_of::1f1663f6-a7b7-4fec-b800-d8cecd17500a
+          conditions:
+          - leftVarIndex: e3e68fd6-7ace-4f15-af59-61a180950a14
+            rightVarIndex: b3057bf5-0a13-4482-9ab0-4cd5d43a4db2
+            compareOperatorErrMsg: ''
+            id: fb76b114-6792-40f5-ae44-5f02b393623f
+            compareOperator: is
+          - leftVarIndex: f0af12b0-f24a-4a3e-a392-b82f8177d203
+            rightVarIndex: 569df2af-10da-4a5a-8eb8-39ab32299120
+            compareOperatorErrMsg: ''
+            id: 450291ce-7b22-4ec6-8051-851507c68eec
+            compareOperator: is
+        - level: 999
+          logicalOperator: and
+          id: branch_one_of::856c482f-b1a3-4f1e-81ae-d25de381641d
+          conditions: [
+            ]
+        appId: 12a0a7e2
+      icon: https://oss-beijing-m8.openstorage.cn/pro-bucket/sparkBot/common/workflow/icon/if-else-node-icon.png
+      description: 根据设立的条件，判断选择分支走向
+      updatable: false
+  - id: spark-llm::b7eabedc-afb5-4e5a-834f-3b04a4e36b30
+    dragging: false
+    selected: false
+    width: 587
+    height: 881
+    position:
+      x: 1752.7909352933177
+      y: -130.3816123304867
+    positionAbsolute:
+      x: 1752.7909352933177
+      y: -130.3816123304867
+    type: 大模型
+    data:
+      allowInputReference: true
+      allowOutputReference: true
+      label: 大模型_1
+      labelEdit: false
+      references:
+      - children:
+        - references:
+          - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            id: 0918514b-72a8-4646-8dd9-ff4a8fc26d44
+            label: AGENT_USER_INPUT
+            type: string
+            value: AGENT_USER_INPUT
+            fileType: ''
+          - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            children: [
+              ]
+            id: 64fffdd4-5808-494b-8015-6caddba21b6f
+            label: gender
+            type: string
+            value: gender
+            fileType: ''
+          - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            children: [
+              ]
+            id: 43c26ee5-1ec8-4ad0-ad63-280df1705a27
+            label: birth_year
+            type: integer
+            value: birth_year
+            fileType: ''
+          - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            children: [
+              ]
+            id: 0300465b-5429-4205-aef9-1a48d0a1450c
+            label: birth_month
+            type: integer
+            value: birth_month
+            fileType: ''
+          - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            children: [
+              ]
+            id: f33efbf7-354f-496c-8b6b-b1c53a4be569
+            label: birth_day
+            type: integer
+            value: birth_day
+            fileType: ''
+          label: ''
+          value: ''
+        label: 开始
+        parentNode: true
+        value: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+      status: ''
+      nodeMeta:
+        aliasName: 大模型
+        nodeType: 基础节点
+      inputs:
+      - id: 8f48cfb7-5269-4eca-a00b-04e22de5cd3a
+        name: birth_month
+        nameErrMsg: ''
+        schema:
+          type: integer
+          value:
+            type: ref
+            content:
+              name: birth_month
+              id: 0300465b-5429-4205-aef9-1a48d0a1450c
+              nodeId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            contentErrMsg: ''
+        fileType: ''
+      - id: a1db677a-df3e-4638-8d35-29f7119975b5
+        name: birth_day
+        nameErrMsg: ''
+        schema:
+          type: integer
+          value:
+            type: ref
+            content:
+              name: birth_day
+              id: f33efbf7-354f-496c-8b6b-b1c53a4be569
+              nodeId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            contentErrMsg: ''
+        fileType: ''
+      outputs:
+      - id: dcda1c1a-58c2-4bb4-b72d-8e677b79aad5
+        name: output
+        nameErrMsg: ''
+        schema:
+          type: string
+          default: ''
+      nodeParam:
+        topK: 4
+        template: 根据用户的{{birth_month}},{{birth_day}}生成真实的生日相同的女科学家
+        enableChatHistoryV2:
+          isEnabled: false
+          rounds: 1
+        auditing: default
+        llmId: 110
+        url: wss://spark-api.xf-yun.com/v4.0/chat
+        uid: '20740872236'
+        patchId: '0'
+        templateErrMsg: ''
+        domain: 4.0Ultra
+        appId: 12a0a7e2
+        maxTokens: 2048
+        temperature: 0.5
+        model: spark
+        serviceId: bm4
+        respFormat: 0
+        llmIdErrMsg: ''
+      icon: https://oss-beijing-m8.openstorage.cn/pro-bucket/sparkBot/common/workflow/icon/largeModelIcon.png
+      description: 根据输入的提示词，调用选定的大模型，对提示词作出回答
+      updatable: false
+  - id: spark-llm::5ba3e4a4-5d65-4240-9195-40933993ce62
+    dragging: false
+    selected: true
+    width: 587
+    height: 881
+    position:
+      x: 1798.8130749852235
+      y: 814.592104122945
+    positionAbsolute:
+      x: 1798.8130749852235
+      y: 814.592104122945
+    type: 大模型
+    data:
+      allowInputReference: true
+      allowOutputReference: true
+      label: 大模型_3
+      labelEdit: false
+      references:
+      - children:
+        - references:
+          - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            id: 0918514b-72a8-4646-8dd9-ff4a8fc26d44
+            label: AGENT_USER_INPUT
+            type: string
+            value: AGENT_USER_INPUT
+            fileType: ''
+          - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            children: [
+              ]
+            id: 64fffdd4-5808-494b-8015-6caddba21b6f
+            label: gender
+            type: string
+            value: gender
+            fileType: ''
+          - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            children: [
+              ]
+            id: 43c26ee5-1ec8-4ad0-ad63-280df1705a27
+            label: birth_year
+            type: integer
+            value: birth_year
+            fileType: ''
+          - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            children: [
+              ]
+            id: 0300465b-5429-4205-aef9-1a48d0a1450c
+            label: birth_month
+            type: integer
+            value: birth_month
+            fileType: ''
+          - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            children: [
+              ]
+            id: f33efbf7-354f-496c-8b6b-b1c53a4be569
+            label: birth_day
+            type: integer
+            value: birth_day
+            fileType: ''
+          label: ''
+          value: ''
+        label: 开始
+        parentNode: true
+        value: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+      status: ''
+      nodeMeta:
+        aliasName: 大模型
+        nodeType: 基础节点
+      inputs:
+      - id: 8f48cfb7-5269-4eca-a00b-04e22de5cd3a
+        name: birth_month
+        nameErrMsg: ''
+        schema:
+          type: integer
+          value:
+            type: ref
+            content:
+              name: birth_month
+              id: 0300465b-5429-4205-aef9-1a48d0a1450c
+              nodeId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            contentErrMsg: ''
+        fileType: ''
+      - id: a1db677a-df3e-4638-8d35-29f7119975b5
+        name: birth_day
+        nameErrMsg: ''
+        schema:
+          type: integer
+          value:
+            type: ref
+            content:
+              name: birth_day
+              id: f33efbf7-354f-496c-8b6b-b1c53a4be569
+              nodeId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            contentErrMsg: ''
+        fileType: ''
+      outputs:
+      - id: dcda1c1a-58c2-4bb4-b72d-8e677b79aad5
+        name: output
+        nameErrMsg: ''
+        schema:
+          type: string
+          default: ''
+      nodeParam:
+        topK: 4
+        template: 根据用户的{{birth_month}},{{birth_day}}生成真实的生日相同的男科学家
+        enableChatHistoryV2:
+          isEnabled: false
+          rounds: 1
+        auditing: default
+        llmId: 110
+        url: wss://spark-api.xf-yun.com/v4.0/chat
+        uid: '20740872236'
+        patchId: '0'
+        templateErrMsg: ''
+        domain: 4.0Ultra
+        appId: 12a0a7e2
+        maxTokens: 2048
+        temperature: 0.5
+        model: spark
+        serviceId: bm4
+        respFormat: 0
+        llmIdErrMsg: ''
+      icon: https://oss-beijing-m8.openstorage.cn/pro-bucket/sparkBot/common/workflow/icon/largeModelIcon.png
+      description: 根据输入的提示词，调用选定的大模型，对提示词作出回答
+      updatable: false
+  edges:
+  - source: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+    target: if-else::b83f0779-ec91-420f-9ce2-0fb6b466d768
+    type: customEdge
+    id: reactflow__edge-node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783-if-else::b83f0779-ec91-420f-9ce2-0fb6b466d768
+    markerEnd:
+      color: '#275EFF'
+      type: arrow
+    data:
+      edgeType: curve
+  - source: spark-llm::b7eabedc-afb5-4e5a-834f-3b04a4e36b30
+    target: node-end::cda617af-551e-462e-b3b8-3bb9a041bf88
+    targetHandle: node-end::cda617af-551e-462e-b3b8-3bb9a041bf88
+    type: customEdge
+    id: reactflow__edge-spark-llm::b7eabedc-afb5-4e5a-834f-3b04a4e36b30-node-end::cda617af-551e-462e-b3b8-3bb9a041bf88node-end::cda617af-551e-462e-b3b8-3bb9a041bf88
+    markerEnd:
+      color: '#275EFF'
+      type: arrow
+    data:
+      edgeType: curve
+  - source: spark-llm::5ba3e4a4-5d65-4240-9195-40933993ce62
+    target: node-end::cda617af-551e-462e-b3b8-3bb9a041bf88
+    targetHandle: node-end::cda617af-551e-462e-b3b8-3bb9a041bf88
+    type: customEdge
+    id: reactflow__edge-spark-llm::5ba3e4a4-5d65-4240-9195-40933993ce62-node-end::cda617af-551e-462e-b3b8-3bb9a041bf88node-end::cda617af-551e-462e-b3b8-3bb9a041bf88
+    markerEnd:
+      color: '#275EFF'
+      type: arrow
+    data:
+      edgeType: curve
+  - source: if-else::b83f0779-ec91-420f-9ce2-0fb6b466d768
+    sourceHandle: branch_one_of::a6b781f0-0684-435b-aefe-2319b75c3bc8
+    target: spark-llm::b7eabedc-afb5-4e5a-834f-3b04a4e36b30
+    type: customEdge
+    id: reactflow__edge-if-else::b83f0779-ec91-420f-9ce2-0fb6b466d768branch_one_of::a6b781f0-0684-435b-aefe-2319b75c3bc8-spark-llm::b7eabedc-afb5-4e5a-834f-3b04a4e36b30
+    markerEnd:
+      color: '#275EFF'
+      type: arrow
+    data:
+      edgeType: curve
+  - source: if-else::b83f0779-ec91-420f-9ce2-0fb6b466d768
+    sourceHandle: branch_one_of::1f1663f6-a7b7-4fec-b800-d8cecd17500a
+    target: spark-llm::5ba3e4a4-5d65-4240-9195-40933993ce62
+    type: customEdge
+    id: reactflow__edge-if-else::b83f0779-ec91-420f-9ce2-0fb6b466d768branch_one_of::1f1663f6-a7b7-4fec-b800-d8cecd17500a-spark-llm::5ba3e4a4-5d65-4240-9195-40933993ce62
+    markerEnd:
+      color: '#275EFF'
+      type: arrow
+    data:
+      edgeType: curve
+  - source: if-else::b83f0779-ec91-420f-9ce2-0fb6b466d768
+    sourceHandle: branch_one_of::856c482f-b1a3-4f1e-81ae-d25de381641d
+    target: spark-llm::5ba3e4a4-5d65-4240-9195-40933993ce62
+    type: customEdge
+    id: reactflow__edge-if-else::b83f0779-ec91-420f-9ce2-0fb6b466d768branch_one_of::856c482f-b1a3-4f1e-81ae-d25de381641d-spark-llm::5ba3e4a4-5d65-4240-9195-40933993ce62
+    markerEnd:
+      color: '#275EFF'
+      type: arrow
+    data:
+      edgeType: curve

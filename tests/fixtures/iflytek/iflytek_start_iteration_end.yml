@@ -1,0 +1,535 @@
+flowMeta:
+  name: 自定义17520250916134747
+  description: ''
+  avatarIcon: https://oss-beijing-m8.openstorage.cn/SparkBotProd/icon/common/emojiitem_00_10@2x.png
+  avatarColor: '#FFEAD5'
+  advancedConfig: '{"prologue":{"enabled":true,"inputExample":["","",""]},"needGuide":false}'
+  dslVersion: v1
+flowData:
+  nodes:
+  - id: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+    dragging: false
+    selected: false
+    width: 658
+    height: 296
+    position:
+      x: 0
+      y: 255.82991379957932
+    positionAbsolute:
+      x: -427.7922770797239
+      y: 408.15964699939826
+    type: 开始节点
+    data:
+      allowInputReference: false
+      allowOutputReference: true
+      label: 开始
+      status: ''
+      nodeMeta:
+        aliasName: 开始节点
+        nodeType: 基础节点
+      inputs: [
+        ]
+      outputs:
+      - id: 0918514b-72a8-4646-8dd9-ff4a8fc26d44
+        name: AGENT_USER_INPUT
+        nameErrMsg: ''
+        schema:
+          type: string
+          default: 用户本轮对话输入内容
+        required: true
+        deleteDisabled: true
+      - id: e7d648f2-6747-4875-b904-309345adffc6
+        name: input_01
+        nameErrMsg: ''
+        schema:
+          type: string
+          properties: [
+            ]
+          default: 学习内容
+        required: false
+        customParameterType: xfyun-file
+      nodeParam: {
+        }
+      icon: https://oss-beijing-m8.openstorage.cn/pro-bucket/sparkBot/common/workflow/icon/start-node-icon.png
+      description: 工作流的开启节点，用于定义流程调用所需的业务变量信息。
+      updatable: false
+  - id: node-end::cda617af-551e-462e-b3b8-3bb9a041bf88
+    dragging: false
+    selected: false
+    width: 408
+    height: 616
+    position:
+      x: 3151.722189096304
+      y: 94.37267596905048
+    positionAbsolute:
+      x: 2678.490721536955
+      y: 1459.6970085480814
+    type: 结束节点
+    data:
+      allowInputReference: true
+      allowOutputReference: false
+      label: 结束
+      references:
+      - children:
+        - references:
+          - originId: iteration::7edacd7a-facc-475c-bac2-5ea63d63a135
+            id: 37a660ab-5bed-4d00-a77c-89c705935773
+            label: output
+            type: array-string
+            value: output
+            fileType: ''
+          label: ''
+          value: ''
+        label: 学习要点迭代器
+        parentNode: true
+        value: iteration::7edacd7a-facc-475c-bac2-5ea63d63a135
+      - children:
+        - references:
+          - originId: ifly-code::83b0cd48-968b-4ade-a02a-75c4ed25c69e
+            children: [
+              ]
+            id: c1919634-cb80-43d7-9be1-e357ee1a7184
+            label: result
+            type: array-string
+            value: result
+            fileType: ''
+          label: ''
+          value: ''
+        label: 编程学习路径生成器
+        parentNode: true
+        value: ifly-code::83b0cd48-968b-4ade-a02a-75c4ed25c69e
+      - children:
+        - references:
+          - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            id: 0918514b-72a8-4646-8dd9-ff4a8fc26d44
+            label: AGENT_USER_INPUT
+            type: string
+            value: AGENT_USER_INPUT
+            fileType: ''
+          - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            children: [
+              ]
+            id: e7d648f2-6747-4875-b904-309345adffc6
+            label: input_01
+            type: string
+            value: input_01
+            fileType: ''
+          label: ''
+          value: ''
+        label: 开始
+        parentNode: true
+        value: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+      status: ''
+      nodeMeta:
+        aliasName: 结束节点
+        nodeType: 基础节点
+      inputs:
+      - id: 82de2b42-a059-4c98-bffb-b6b4800fcac9
+        name: result1
+        nameErrMsg: ''
+        schema:
+          type: array-string
+          value:
+            type: ref
+            content:
+              name: output
+              id: 37a660ab-5bed-4d00-a77c-89c705935773
+              nodeId: iteration::7edacd7a-facc-475c-bac2-5ea63d63a135
+            contentErrMsg: ''
+        fileType: ''
+      outputs: [
+        ]
+      nodeParam:
+        template: |
+          {{result1}}
+        streamOutput: true
+        templateErrMsg: ''
+        outputMode: 1
+      icon: https://oss-beijing-m8.openstorage.cn/pro-bucket/sparkBot/common/workflow/icon/end-node-icon.png
+      description: 工作流的结束节点，用于输出工作流运行后的最终结果。
+      updatable: false
+  - id: ifly-code::83b0cd48-968b-4ade-a02a-75c4ed25c69e
+    dragging: false
+    selected: false
+    width: 587
+    height: 803
+    position:
+      x: 1048.6083984375
+      y: 0
+    positionAbsolute:
+      x: 996.1598106439471
+      y: 1470.175787670076
+    type: 代码
+    data:
+      allowInputReference: true
+      allowOutputReference: true
+      label: 编程学习路径生成器
+      labelEdit: false
+      references:
+      - children:
+        - references:
+          - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            id: 0918514b-72a8-4646-8dd9-ff4a8fc26d44
+            label: AGENT_USER_INPUT
+            type: string
+            value: AGENT_USER_INPUT
+            fileType: ''
+          - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            children: [
+              ]
+            id: e7d648f2-6747-4875-b904-309345adffc6
+            label: input_01
+            type: string
+            value: input_01
+            fileType: ''
+          label: ''
+          value: ''
+        label: 开始
+        parentNode: true
+        value: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+      status: ''
+      nodeMeta:
+        aliasName: 代码
+        nodeType: 工具
+      inputs:
+      - id: 101955e2-1af6-44c4-8a1b-490f3e209af6
+        name: content
+        nameErrMsg: ''
+        schema:
+          type: string
+          value:
+            type: ref
+            content:
+              name: input_01
+              id: e7d648f2-6747-4875-b904-309345adffc6
+              nodeId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            contentErrMsg: ''
+        fileType: ''
+      outputs:
+      - id: c1919634-cb80-43d7-9be1-e357ee1a7184
+        name: result
+        nameErrMsg: ''
+        schema:
+          type: array-string
+          properties: [
+            ]
+          default: ''
+      nodeParam:
+        uid: '20718349453'
+        code: "def main(content: str) -> dict:\n    # 分析编程学习内容，生成学习路径\n    if \"python\"\
+          \ in content.lower():\n        path = [\"基础语法\", \"数据结构\", \"函数编程\", \"项\
+          目实战\"]\n    elif \"javascript\" in content.lower():\n        path = [\"基\
+          础语法\", \"DOM操作\", \"异步编程\", \"框架学习\"]\n    else:\n        path = [\"基础概念\
+          \", \"核心语法\", \"实践练习\", \"项目应用\"]\n    \n    return{\n        \"result\"\
+          : path\n    }"
+        appId: 12a0a7e2
+        codeErrMsg: ''
+      icon: https://oss-beijing-m8.openstorage.cn/pro-bucket/sparkBot/common/workflow/icon/codeIcon.png
+      description: 面向开发者提供代码开发能力，目前仅支持python语言，允许使用该节点已定义的变量作为参数传入，返回语句用于输出函数的结果
+      updatable: false
+  - id: iteration::7edacd7a-facc-475c-bac2-5ea63d63a135
+    dragging: false
+    selected: false
+    width: 735
+    height: 763
+    position:
+      x: 2025.570326585036
+      y: 20.27681790865381
+    positionAbsolute:
+      x: 1849.6596679908012
+      y: 1461.570780758065
+    type: 迭代
+    data:
+      allowInputReference: true
+      allowOutputReference: true
+      label: 学习要点迭代器
+      labelEdit: false
+      references:
+      - children:
+        - references: [
+            ]
+          label: ''
+          value: ''
+        label: 开始
+        parentNode: true
+        value: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+      status: ''
+      nodeMeta:
+        aliasName: 迭代
+        nodeType: 基础节点
+      inputs:
+      - id: 78d412d2-0e10-4af3-9ba5-18476cbf81e5
+        name: input
+        nameErrMsg: ''
+        schema:
+          type: array-string
+          value:
+            type: ref
+            content:
+              name: result
+              id: c1919634-cb80-43d7-9be1-e357ee1a7184
+              nodeId: ifly-code::83b0cd48-968b-4ade-a02a-75c4ed25c69e
+            contentErrMsg: ''
+        fileType: ''
+      outputs:
+      - id: 37a660ab-5bed-4d00-a77c-89c705935773
+        name: output
+        nameErrMsg: ''
+        schema:
+          type: array-string
+          default: ''
+      nodeParam:
+        uid: '20718349453'
+        IterationStartNodeId: iteration-node-start::d4274d51-b9aa-4508-ba31-f49703ab6d61
+        appId: 12a0a7e2
+      icon: https://oss-beijing-m8.openstorage.cn/pro-bucket/sparkBot/common/workflow/icon/iteration-icon.png
+      description: 该节点用于处理循环逻辑，仅支持嵌套一次
+      updatable: false
+  - id: iteration-node-start::d4274d51-b9aa-4508-ba31-f49703ab6d61
+    dragging: false
+    selected: false
+    width: 658
+    height: 232
+    position:
+      x: 30
+      y: 397.5048613482776
+    positionAbsolute:
+      x: -668
+      y: 57.99999999999997
+    type: 开始节点
+    data:
+      allowInputReference: false
+      allowOutputReference: true
+      label: 开始
+      status: ''
+      nodeMeta:
+        aliasName: 开始节点
+        nodeType: 基础节点
+      inputs: [
+        ]
+      outputs:
+      - id: 78d412d2-0e10-4af3-9ba5-18476cbf81e5
+        name: input
+        nameErrMsg: ''
+        schema:
+          type: string
+          default: ''
+      nodeParam: {
+        }
+      icon: https://oss-beijing-m8.openstorage.cn/pro-bucket/sparkBot/common/workflow/icon/start-node-icon.png
+      description: 工作流的开启节点，用于定义流程调用所需的业务变量信息。
+      parentId: iteration::7edacd7a-facc-475c-bac2-5ea63d63a135
+      originPosition:
+        x: -668
+        y: 57.99999999999997
+      updatable: false
+    parentId: iteration::7edacd7a-facc-475c-bac2-5ea63d63a135
+    extent: parent
+    zIndex: 1
+    draggable: false
+  - id: iteration-node-end::f1b9a06f-6b0b-4017-ba1e-273024b1ec4e
+    dragging: false
+    selected: false
+    width: 408
+    height: 229
+    position:
+      x: 502.71523605095194
+      y: 421.44173768984035
+    positionAbsolute:
+      x: 1222.8609442038078
+      y: 153.74750536625112
+    type: 结束节点
+    data:
+      allowInputReference: true
+      allowOutputReference: false
+      label: 结束
+      references:
+      - children:
+        - references:
+          - originId: ifly-code::66799d24-cf6a-4be4-93be-7f879e511752
+            id: 450e372c-7682-40f4-84f4-a4658d365f3d
+            label: result
+            type: string
+            value: result
+            fileType: ''
+          label: ''
+          value: ''
+        label: 代码_1
+        parentNode: true
+        value: ifly-code::66799d24-cf6a-4be4-93be-7f879e511752
+      - children:
+        - references:
+          - originId: iteration-node-start::d4274d51-b9aa-4508-ba31-f49703ab6d61
+            id: 78d412d2-0e10-4af3-9ba5-18476cbf81e5
+            label: input
+            type: string
+            value: input
+            fileType: ''
+          label: ''
+          value: ''
+        label: 开始
+        parentNode: true
+        value: iteration-node-start::d4274d51-b9aa-4508-ba31-f49703ab6d61
+      status: ''
+      nodeMeta:
+        aliasName: 结束节点
+        nodeType: 基础节点
+      inputs:
+      - id: 7f9d08da-0b1f-4a5a-be44-622d9b008f6c
+        name: output
+        nameErrMsg: ''
+        schema:
+          type: string
+          value:
+            type: ref
+            content:
+              name: result
+              id: 450e372c-7682-40f4-84f4-a4658d365f3d
+              nodeId: ifly-code::66799d24-cf6a-4be4-93be-7f879e511752
+            contentErrMsg: ''
+        fileType: ''
+      outputs: [
+        ]
+      nodeParam:
+        template: ''
+        outputMode: 0
+      icon: https://oss-beijing-m8.openstorage.cn/pro-bucket/sparkBot/common/workflow/icon/end-node-icon.png
+      description: 工作流的结束节点，用于输出工作流运行后的最终结果。
+      parentId: iteration::7edacd7a-facc-475c-bac2-5ea63d63a135
+      originPosition:
+        x: 1222.8609442038078
+        y: 153.74750536625112
+      updatable: false
+    parentId: iteration::7edacd7a-facc-475c-bac2-5ea63d63a135
+    extent: parent
+    zIndex: 1
+    draggable: false
+  - id: ifly-code::66799d24-cf6a-4be4-93be-7f879e511752
+    dragging: false
+    selected: false
+    width: 587
+    height: 803
+    position:
+      x: 247.4548396786726
+      y: 330
+    positionAbsolute:
+      x: 201.81935871469045
+      y: -212.01944539311023
+    type: 代码
+    data:
+      allowInputReference: true
+      allowOutputReference: true
+      label: 代码_1
+      labelEdit: false
+      references:
+      - children:
+        - references:
+          - originId: iteration-node-start::d4274d51-b9aa-4508-ba31-f49703ab6d61
+            id: 78d412d2-0e10-4af3-9ba5-18476cbf81e5
+            label: input
+            type: string
+            value: input
+            fileType: ''
+          label: ''
+          value: ''
+        label: 开始
+        parentNode: true
+        value: iteration-node-start::d4274d51-b9aa-4508-ba31-f49703ab6d61
+      status: ''
+      nodeMeta:
+        aliasName: 代码
+        nodeType: 工具
+      inputs:
+      - id: 48d1096f-8041-4f89-a513-d241d01c2a0a
+        name: content
+        nameErrMsg: ''
+        schema:
+          type: string
+          value:
+            type: ref
+            content:
+              name: input
+              id: 78d412d2-0e10-4af3-9ba5-18476cbf81e5
+              nodeId: iteration-node-start::d4274d51-b9aa-4508-ba31-f49703ab6d61
+            contentErrMsg: ''
+        fileType: ''
+      outputs:
+      - id: 450e372c-7682-40f4-84f4-a4658d365f3d
+        name: result
+        nameErrMsg: ''
+        schema:
+          type: string
+          default: ''
+      nodeParam:
+        uid: '20718349453'
+        code: "def main(content: str) -> dict:\n    # 为每个学习要点生成详细的学习指导\n    if \"语\
+          法\" in content:\n        guide = f\"{content}学习指导：掌握基本语法规则，多做练习题，理解核心概念\"\
+          \n    elif \"数据结构\" in content:\n        guide = f\"{content}学习指导：理解各种数据\
+          结构特点，练习算法实现，分析时间复杂度\"\n    elif \"函数\" in content or \"编程\" in content:\n\
+          \        guide = f\"{content}学习指导：学习函数定义和调用，理解参数传递，掌握递归思想\"\n    elif \"\
+          项目\" in content or \"实战\" in content:\n        guide = f\"{content}学习指导：\
+          选择合适项目，从简单开始，注重代码质量和文档\"\n    else:\n        guide = f\"{content}学习指导：制定\
+          学习计划，循序渐进，理论结合实践\"\n    \n    return{\n        \"result\": guide\n    }"
+        appId: 12a0a7e2
+        codeErrMsg: ''
+      icon: https://oss-beijing-m8.openstorage.cn/pro-bucket/sparkBot/common/workflow/icon/codeIcon.png
+      description: 面向开发者提供代码开发能力，目前仅支持python语言，允许使用该节点已定义的变量作为参数传入，返回语句用于输出函数的结果
+      parentId: iteration::7edacd7a-facc-475c-bac2-5ea63d63a135
+      originPosition:
+        x: 201.81935871469045
+        y: -212.01944539311023
+      updatable: false
+    parentId: iteration::7edacd7a-facc-475c-bac2-5ea63d63a135
+    extent: parent
+    zIndex: 1
+    draggable: false
+  edges:
+  - source: ifly-code::83b0cd48-968b-4ade-a02a-75c4ed25c69e
+    target: iteration::7edacd7a-facc-475c-bac2-5ea63d63a135
+    type: customEdge
+    id: reactflow__edge-ifly-code::83b0cd48-968b-4ade-a02a-75c4ed25c69e-iteration::7edacd7a-facc-475c-bac2-5ea63d63a135
+    markerEnd:
+      color: '#275EFF'
+      type: arrow
+    data:
+      edgeType: curve
+  - source: iteration::7edacd7a-facc-475c-bac2-5ea63d63a135
+    target: node-end::cda617af-551e-462e-b3b8-3bb9a041bf88
+    targetHandle: node-end::cda617af-551e-462e-b3b8-3bb9a041bf88
+    type: customEdge
+    id: reactflow__edge-iteration::7edacd7a-facc-475c-bac2-5ea63d63a135-node-end::cda617af-551e-462e-b3b8-3bb9a041bf88node-end::cda617af-551e-462e-b3b8-3bb9a041bf88
+    markerEnd:
+      color: '#275EFF'
+      type: arrow
+    data:
+      edgeType: curve
+  - source: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+    target: ifly-code::83b0cd48-968b-4ade-a02a-75c4ed25c69e
+    type: customEdge
+    id: reactflow__edge-node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783-ifly-code::83b0cd48-968b-4ade-a02a-75c4ed25c69e
+    markerEnd:
+      color: '#275EFF'
+      type: arrow
+    data:
+      edgeType: curve
+  - source: iteration-node-start::d4274d51-b9aa-4508-ba31-f49703ab6d61
+    target: ifly-code::66799d24-cf6a-4be4-93be-7f879e511752
+    type: customEdge
+    id: reactflow__edge-iteration-node-start::d4274d51-b9aa-4508-ba31-f49703ab6d61-ifly-code::66799d24-cf6a-4be4-93be-7f879e511752
+    markerEnd:
+      color: '#275EFF'
+      type: arrow
+    data:
+      edgeType: curve
+    zIndex: 1
+  - source: ifly-code::66799d24-cf6a-4be4-93be-7f879e511752
+    target: iteration-node-end::f1b9a06f-6b0b-4017-ba1e-273024b1ec4e
+    targetHandle: iteration-node-end::f1b9a06f-6b0b-4017-ba1e-273024b1ec4e
+    type: customEdge
+    id: reactflow__edge-ifly-code::66799d24-cf6a-4be4-93be-7f879e511752-iteration-node-end::f1b9a06f-6b0b-4017-ba1e-273024b1ec4eiteration-node-end::f1b9a06f-6b0b-4017-ba1e-273024b1ec4e
+    markerEnd:
+      color: '#275EFF'
+      type: arrow
+    data:
+      edgeType: curve
+    zIndex: 1

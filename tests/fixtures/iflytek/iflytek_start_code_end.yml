@@ -1,0 +1,236 @@
+flowMeta:
+  name: 自定义17520250916135920
+  description: ''
+  avatarIcon: https://oss-beijing-m8.openstorage.cn/SparkBotProd/icon/common/emojiitem_00_10@2x.png
+  avatarColor: '#FFEAD5'
+  advancedConfig: '{"prologue":{"enabled":true,"inputExample":["","",""]},"needGuide":false}'
+  dslVersion: v1
+flowData:
+  nodes:
+  - id: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+    dragging: false
+    selected: false
+    width: 658
+    height: 313
+    position:
+      x: -296.46749279698474
+      y: -76.9380255552096
+    positionAbsolute:
+      x: -296.46749279698474
+      y: -76.9380255552096
+    type: 开始节点
+    data:
+      allowInputReference: false
+      allowOutputReference: true
+      label: 开始
+      status: ''
+      nodeMeta:
+        aliasName: 开始节点
+        nodeType: 基础节点
+      inputs: [
+        ]
+      outputs:
+      - id: 0918514b-72a8-4646-8dd9-ff4a8fc26d44
+        name: AGENT_USER_INPUT
+        nameErrMsg: ''
+        schema:
+          type: string
+          default: 用户本轮对话输入内容
+        required: true
+        deleteDisabled: true
+      - id: e7d648f2-6747-4875-b904-309345adffc6
+        name: name
+        nameErrMsg: ''
+        schema:
+          type: string
+          properties: [
+            ]
+          default: 学习内容
+        required: false
+        customParameterType: xfyun-file
+      nodeParam: {
+        }
+      icon: https://oss-beijing-m8.openstorage.cn/pro-bucket/sparkBot/common/workflow/icon/start-node-icon.png
+      description: 工作流的开启节点，用于定义流程调用所需的业务变量信息。
+      updatable: false
+  - id: node-end::cda617af-551e-462e-b3b8-3bb9a041bf88
+    dragging: false
+    selected: false
+    width: 408
+    height: 656
+    position:
+      x: 2187.5455142852475
+      y: -367.40663772281624
+    positionAbsolute:
+      x: 2187.5455142852475
+      y: -367.40663772281624
+    type: 结束节点
+    data:
+      allowInputReference: true
+      allowOutputReference: false
+      label: 结束
+      references:
+      - children:
+        - references:
+          - originId: ifly-code::83b0cd48-968b-4ade-a02a-75c4ed25c69e
+            children: [
+              ]
+            id: c1919634-cb80-43d7-9be1-e357ee1a7184
+            label: result
+            type: array-string
+            value: result
+            fileType: ''
+          label: ''
+          value: ''
+        label: 编程学习路径生成器
+        parentNode: true
+        value: ifly-code::83b0cd48-968b-4ade-a02a-75c4ed25c69e
+      - children:
+        - references:
+          - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            id: 0918514b-72a8-4646-8dd9-ff4a8fc26d44
+            label: AGENT_USER_INPUT
+            type: string
+            value: AGENT_USER_INPUT
+            fileType: ''
+          - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            children: [
+              ]
+            id: e7d648f2-6747-4875-b904-309345adffc6
+            label: name
+            type: string
+            value: name
+            fileType: ''
+          label: ''
+          value: ''
+        label: 开始
+        parentNode: true
+        value: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+      status: ''
+      nodeMeta:
+        aliasName: 结束节点
+        nodeType: 基础节点
+      inputs:
+      - id: 82de2b42-a059-4c98-bffb-b6b4800fcac9
+        name: result
+        nameErrMsg: ''
+        schema:
+          type: array-string
+          value:
+            type: ref
+            content:
+              name: result
+              id: c1919634-cb80-43d7-9be1-e357ee1a7184
+              nodeId: ifly-code::83b0cd48-968b-4ade-a02a-75c4ed25c69e
+            contentErrMsg: ''
+        fileType: ''
+      outputs: [
+        ]
+      nodeParam:
+        template: |
+          {{result}}
+        streamOutput: true
+        templateErrMsg: ''
+        outputMode: 1
+      icon: https://oss-beijing-m8.openstorage.cn/pro-bucket/sparkBot/common/workflow/icon/end-node-icon.png
+      description: 工作流的结束节点，用于输出工作流运行后的最终结果。
+      updatable: false
+  - id: ifly-code::83b0cd48-968b-4ade-a02a-75c4ed25c69e
+    dragging: false
+    selected: true
+    width: 587
+    height: 843
+    position:
+      x: 838.6701975611254
+      y: -202.39818282164708
+    positionAbsolute:
+      x: 838.6701975611254
+      y: -202.39818282164708
+    type: 代码
+    data:
+      allowInputReference: true
+      allowOutputReference: true
+      label: 编程学习路径生成器
+      labelEdit: false
+      references:
+      - children:
+        - references:
+          - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            id: 0918514b-72a8-4646-8dd9-ff4a8fc26d44
+            label: AGENT_USER_INPUT
+            type: string
+            value: AGENT_USER_INPUT
+            fileType: ''
+          - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            children: [
+              ]
+            id: e7d648f2-6747-4875-b904-309345adffc6
+            label: name
+            type: string
+            value: name
+            fileType: ''
+          label: ''
+          value: ''
+        label: 开始
+        parentNode: true
+        value: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+      status: ''
+      nodeMeta:
+        aliasName: 代码
+        nodeType: 工具
+      inputs:
+      - id: 101955e2-1af6-44c4-8a1b-490f3e209af6
+        name: name
+        nameErrMsg: ''
+        schema:
+          type: string
+          value:
+            type: ref
+            content:
+              name: name
+              id: e7d648f2-6747-4875-b904-309345adffc6
+              nodeId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+            contentErrMsg: ''
+        fileType: ''
+      outputs:
+      - id: c1919634-cb80-43d7-9be1-e357ee1a7184
+        name: result
+        nameErrMsg: ''
+        schema:
+          type: array-string
+          properties: [
+            ]
+          default: ''
+      nodeParam:
+        uid: '20718349453'
+        code: "def main(name: str) -> dict:\n    # 分析编程学习内容，生成学习路径\n    if \"python\"\
+          \ in name.lower():\n        path = [\"基础语法\", \"数据结构\", \"函数编程\", \"项目实战\
+          \"]\n    elif \"javascript\" in name.lower():\n        path = [\"基础语法\"\
+          , \"DOM操作\", \"异步编程\", \"框架学习\"]\n    else:\n        path = [\"基础概念\", \"\
+          核心语法\", \"实践练习\", \"项目应用\"]\n    \n    return{\n        \"result\": path\n\
+          \    }"
+        appId: 12a0a7e2
+        codeErrMsg: ''
+      icon: https://oss-beijing-m8.openstorage.cn/pro-bucket/sparkBot/common/workflow/icon/codeIcon.png
+      description: 面向开发者提供代码开发能力，目前仅支持python语言，允许使用该节点已定义的变量作为参数传入，返回语句用于输出函数的结果
+      updatable: false
+  edges:
+  - source: ifly-code::83b0cd48-968b-4ade-a02a-75c4ed25c69e
+    target: node-end::cda617af-551e-462e-b3b8-3bb9a041bf88
+    targetHandle: node-end::cda617af-551e-462e-b3b8-3bb9a041bf88
+    type: customEdge
+    id: reactflow__edge-ifly-code::83b0cd48-968b-4ade-a02a-75c4ed25c69e-node-end::cda617af-551e-462e-b3b8-3bb9a041bf88node-end::cda617af-551e-462e-b3b8-3bb9a041bf88
+    markerEnd:
+      color: '#275EFF'
+      type: arrow
+    data:
+      edgeType: curve
+  - source: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+    target: ifly-code::83b0cd48-968b-4ade-a02a-75c4ed25c69e
+    type: customEdge
+    id: reactflow__edge-node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783-ifly-code::83b0cd48-968b-4ade-a02a-75c4ed25c69e
+    markerEnd:
+      color: '#275EFF'
+      type: arrow
+    data:
+      edgeType: curve

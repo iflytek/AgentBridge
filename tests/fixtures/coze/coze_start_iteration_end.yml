@@ -1,0 +1,557 @@
+workflowid: "7545789049244483584"
+name: coze___
+description: "111"
+version: ""
+createtime: 1756890921
+updatetime: 1756891687
+schema:
+  edges:
+    - sourceNodeID: "100001"
+      targetNodeID: "192085"
+    - sourceNodeID: "183106"
+      sourcePortID: loop-output
+      targetNodeID: "900001"
+    - sourceNodeID: "192085"
+      targetNodeID: "183106"
+  nodes:
+    - data:
+        nodeMeta:
+          description: 工作流的起始节点，用于设定启动工作流需要的信息
+          icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Start-v2.jpg
+          subTitle: ""
+          title: 开始
+        outputs:
+          - description: 学习内容
+            name: input
+            required: false
+            type: string
+        trigger_parameters: []
+      id: "100001"
+      meta:
+        position:
+          x: 0
+          "y": 0
+      type: "1"
+    - data:
+        inputs:
+          content:
+            type: string
+            value:
+              content: "{{output}}"
+              type: literal
+          inputParameters:
+            - input:
+                schema:
+                  type: string
+                type: list
+                value:
+                  content:
+                    blockID: "183106"
+                    name: output
+                    source: block-output
+                  rawMeta:
+                    type: 99
+                  type: ref
+              name: output
+          streamingOutput: false
+          terminatePlan: useAnswerContent
+        nodeMeta:
+          description: 工作流的最终节点，用于返回工作流运行后的结果信息
+          icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-End-v2.jpg
+          subTitle: ""
+          title: 结束
+      id: "900001"
+      meta:
+        position:
+          x: 1497
+          "y": -39.20835590362548
+      type: "2"
+    - data:
+        inputs:
+          code: "# 在这里，您可以通过 'args'  获取节点中的输入变量，并通过 'ret' 输出结果\n# 'args' 已经被正确地注入到环境中\n# 下面是一个示例，首先获取节点的全部输入参数params，其次获取其中参数名为'input'的值：\n# params = args.params; \n# input = params['input'];\n# 下面是一个示例，输出一个包含多种数据类型的 'ret' 对象：\n# ret: Output =  { \"name\": '小明', \"hobbies\": [\"看书\", \"旅游\"] };\n\nasync def main(args) -> dict:\n    # 获取节点的输入参数\n    params = args.params\n    content = str(params.get(\"content\", \"\"))\n\n    # 分析编程学习内容，生成学习路径\n    if \"python\" in content.lower():\n        path = [\"基础语法\", \"数据结构\", \"函数编程\", \"项目实战\"]\n    elif \"javascript\" in content.lower():\n        path = [\"基础语法\", \"DOM操作\", \"异步编程\", \"框架学习\"]\n    else:\n        path = [\"基础概念\", \"核心语法\", \"实践练习\", \"项目应用\"]\n\n    # 输出结果\n    ret = {\"result\": path}\n    return ret\n"
+          inputParameters:
+            - input:
+                type: string
+                value:
+                  content:
+                    blockID: "100001"
+                    name: input
+                    source: block-output
+                  rawMeta:
+                    type: 1
+                  type: ref
+              name: content
+          language: 3
+          settingOnError:
+            processType: 1
+            retryTimes: 0
+            timeoutMs: 60000
+        nodeMeta:
+          description: 编写代码，处理输入变量来生成返回值
+          icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Code-v2.jpg
+          mainColor: "#00B2B2"
+          subTitle: 代码
+          title: 代码
+        outputs:
+          - name: result
+            schema:
+              type: string
+            type: list
+      id: "192085"
+      meta:
+        position:
+          x: 315.0156419277191
+          "y": -102.93335590362548
+      type: "5"
+    - blocks:
+        - data:
+            inputs:
+              code: "# 在这里，您可以通过 'args'  获取节点中的输入变量，并通过 'ret' 输出结果\n# 'args' 已经被正确地注入到环境中\n# 下面是一个示例，首先获取节点的全部输入参数params，其次获取其中参数名为'input'的值：\n# params = args.params; \n# input = params['input'];\n# 下面是一个示例，输出一个包含多种数据类型的 'ret' 对象：\n# ret: Output =  { \"name\": '小明', \"hobbies\": [\"看书\", \"旅游\"] };\n\nasync def main(args) -> dict:\n    # 获取输入参数\n    params = args.params\n    content = str(params.get(\"content\", \"\"))\n\n    # 为每个学习要点生成详细的学习指导\n    if \"语法\" in content:\n        guide = f\"{content}学习指导：掌握基本语法规则，多做练习题，理解核心概念\"\n    elif \"数据结构\" in content:\n        guide = f\"{content}学习指导：理解各种数据结构特点，练习算法实现，分析时间复杂度\"\n    elif \"函数\" in content or \"编程\" in content:\n        guide = f\"{content}学习指导：学习函数定义和调用，理解参数传递，掌握递归思想\"\n    elif \"项目\" in content or \"实战\" in content:\n        guide = f\"{content}学习指导：选择合适项目，从简单开始，注重代码质量和文档\"\n    else:\n        guide = f\"{content}学习指导：制定学习计划，循序渐进，理论结合实践\"\n\n    # 返回结果\n    ret = {\"result\": guide}\n    return ret\n"
+              inputParameters:
+                - input:
+                    type: string
+                    value:
+                      content:
+                        blockID: "183106"
+                        name: input
+                        source: block-output
+                      rawMeta:
+                        type: 1
+                      type: ref
+                  name: content
+              language: 3
+              settingOnError:
+                processType: 1
+                retryTimes: 0
+                timeoutMs: 60000
+            nodeMeta:
+              description: 编写代码，处理输入变量来生成返回值
+              icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Code-v2.jpg
+              mainColor: "#00B2B2"
+              subTitle: 代码
+              title: 代码_1
+            outputs:
+              - name: result
+                type: string
+          id: "141351"
+          meta:
+            position:
+              x: 0
+              "y": 100
+          type: "5"
+      data:
+        inputs:
+          inputParameters:
+            - input:
+                schema:
+                  type: string
+                type: list
+                value:
+                  content:
+                    blockID: "192085"
+                    name: result
+                    source: block-output
+                  rawMeta:
+                    type: 99
+                  type: ref
+              name: input
+          loopCount:
+            type: integer
+            value:
+              content: "10"
+              type: literal
+          loopType: array
+          variableParameters: []
+        nodeMeta:
+          description: 用于通过设定循环次数和逻辑，重复执行一系列任务
+          icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Loop-v2.jpg
+          mainColor: "#00B2B2"
+          subTitle: 循环
+          title: 循环
+        outputs:
+          - input:
+              schema:
+                type: string
+              type: list
+              value:
+                content:
+                  blockID: "141351"
+                  name: result
+                  source: block-output
+                rawMeta:
+                  type: 1
+                type: ref
+            name: output
+      edges:
+        - sourceNodeID: "183106"
+          sourcePortID: loop-function-inline-output
+          targetNodeID: "141351"
+        - sourceNodeID: "141351"
+          targetNodeID: "183106"
+          targetPortID: loop-function-inline-input
+      id: "183106"
+      meta:
+        canvasPosition:
+          x: 777.6250169277191
+          "y": -120.05835590362548
+        position:
+          x: 711.0625169277191
+          "y": -331.1521059036255
+      type: "21"
+  versions:
+    loop: v2
+nodes:
+  - id: "100001"
+    type: "1"
+    meta:
+      position:
+        x: 0
+        "y": 0
+    data:
+      meta:
+        title: 开始
+        description: 工作流的起始节点，用于设定启动工作流需要的信息
+        icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Start-v2.jpg
+        subtitle: ""
+        maincolor: ""
+      outputs:
+        - description: 学习内容
+          name: input
+          required: false
+          type: string
+      inputs: null
+      size: null
+    blocks: []
+    edges: []
+    version: ""
+  - id: "900001"
+    type: "2"
+    meta:
+      position:
+        x: 1497
+        "y": -39.20835590362548
+    data:
+      meta:
+        title: 结束
+        description: 工作流的最终节点，用于返回工作流运行后的结果信息
+        icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-End-v2.jpg
+        subtitle: ""
+        maincolor: ""
+      outputs: []
+      inputs:
+        inputparameters:
+          - name: output
+            input:
+              Type: list
+              Schema:
+                type: string
+              Value:
+                type: ref
+                content:
+                  blockID: "183106"
+                  name: output
+                  source: block-output
+                rawmeta:
+                  type: 99
+            left: null
+            right: null
+            variables: []
+        settingonerror: null
+        nodebatchinfo: null
+        llmparam: null
+        outputemitter:
+          content:
+            Type: string
+            Value:
+              type: literal
+              content: "{{output}}"
+              rawmeta: null
+          streamingoutput: false
+        exit:
+          terminateplan: useAnswerContent
+        llm: null
+        loop: null
+        selector: null
+        textprocessor: null
+        subworkflow: null
+        intentdetector: null
+        databasenode: null
+        httprequestnode: null
+        knowledge: null
+        coderunner: null
+        pluginapiparam: null
+        variableaggregator: null
+        variableassigner: null
+        qa: null
+        batch: null
+        comment: null
+        inputreceiver: null
+      size: null
+    blocks: []
+    edges: []
+    version: ""
+  - id: "192085"
+    type: "5"
+    meta:
+      position:
+        x: 315.0156419277191
+        "y": -102.93335590362548
+    data:
+      meta:
+        title: 代码
+        description: 编写代码，处理输入变量来生成返回值
+        icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Code-v2.jpg
+        subtitle: 代码
+        maincolor: "#00B2B2"
+      outputs:
+        - name: result
+          schema:
+            type: string
+          type: list
+      inputs:
+        inputparameters:
+          - name: content
+            input:
+              Type: string
+              Value:
+                type: ref
+                content:
+                  blockID: "100001"
+                  name: input
+                  source: block-output
+                rawmeta:
+                  type: 1
+            left: null
+            right: null
+            variables: []
+        settingonerror:
+          dataonerr: ""
+          switch: false
+          processtype: 1
+          retrytimes: 0
+          timeoutms: 60000
+          ext: null
+        nodebatchinfo: null
+        llmparam: null
+        outputemitter: null
+        exit: null
+        llm: null
+        loop: null
+        selector: null
+        textprocessor: null
+        subworkflow: null
+        intentdetector: null
+        databasenode: null
+        httprequestnode: null
+        knowledge: null
+        coderunner:
+          code: "# 在这里，您可以通过 'args'  获取节点中的输入变量，并通过 'ret' 输出结果\n# 'args' 已经被正确地注入到环境中\n# 下面是一个示例，首先获取节点的全部输入参数params，其次获取其中参数名为'input'的值：\n# params = args.params; \n# input = params['input'];\n# 下面是一个示例，输出一个包含多种数据类型的 'ret' 对象：\n# ret: Output =  { \"name\": '小明', \"hobbies\": [\"看书\", \"旅游\"] };\n\nasync def main(args) -> dict:\n    # 获取节点的输入参数\n    params = args.params\n    content = str(params.get(\"content\", \"\"))\n\n    # 分析编程学习内容，生成学习路径\n    if \"python\" in content.lower():\n        path = [\"基础语法\", \"数据结构\", \"函数编程\", \"项目实战\"]\n    elif \"javascript\" in content.lower():\n        path = [\"基础语法\", \"DOM操作\", \"异步编程\", \"框架学习\"]\n    else:\n        path = [\"基础概念\", \"核心语法\", \"实践练习\", \"项目应用\"]\n\n    # 输出结果\n    ret = {\"result\": path}\n    return ret\n"
+          language: 3
+        pluginapiparam: null
+        variableaggregator: null
+        variableassigner: null
+        qa: null
+        batch: null
+        comment: null
+        inputreceiver: null
+      size: null
+    blocks: []
+    edges: []
+    version: ""
+  - id: "183106"
+    type: "21"
+    meta:
+      canvasPosition:
+        x: 777.6250169277191
+        "y": -120.05835590362548
+      position:
+        x: 711.0625169277191
+        "y": -331.1521059036255
+    data:
+      meta:
+        title: 循环
+        description: 用于通过设定循环次数和逻辑，重复执行一系列任务
+        icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Loop-v2.jpg
+        subtitle: 循环
+        maincolor: "#00B2B2"
+      outputs:
+        - input:
+            schema:
+              type: string
+            type: list
+            value:
+              content:
+                blockID: "141351"
+                name: result
+                source: block-output
+              rawMeta:
+                type: 1
+              type: ref
+          name: output
+      inputs:
+        inputparameters:
+          - name: input
+            input:
+              Type: list
+              Schema:
+                type: string
+              Value:
+                type: ref
+                content:
+                  blockID: "192085"
+                  name: result
+                  source: block-output
+                rawmeta:
+                  type: 99
+            left: null
+            right: null
+            variables: []
+        settingonerror: null
+        nodebatchinfo: null
+        llmparam: null
+        outputemitter: null
+        exit: null
+        llm: null
+        loop:
+          looptype: array
+          loopcount:
+            Type: integer
+            Value:
+              type: literal
+              content: "10"
+              rawmeta: null
+          variableparameters: []
+        selector: null
+        textprocessor: null
+        subworkflow: null
+        intentdetector: null
+        databasenode: null
+        httprequestnode: null
+        knowledge: null
+        coderunner: null
+        pluginapiparam: null
+        variableaggregator: null
+        variableassigner: null
+        qa: null
+        batch: null
+        comment: null
+        inputreceiver: null
+      size: null
+    blocks:
+      - id: "141351"
+        type: "5"
+        meta:
+          position:
+            x: 0
+            "y": 100
+        data:
+          meta:
+            title: 代码_1
+            description: 编写代码，处理输入变量来生成返回值
+            icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Code-v2.jpg
+            subtitle: 代码
+            maincolor: "#00B2B2"
+          outputs:
+            - name: result
+              type: string
+          inputs:
+            inputparameters:
+              - name: content
+                input:
+                  Type: string
+                  Value:
+                    type: ref
+                    content:
+                      blockID: "183106"
+                      name: input
+                      source: block-output
+                    rawmeta:
+                      type: 1
+                left: null
+                right: null
+                variables: []
+            settingonerror:
+              dataonerr: ""
+              switch: false
+              processtype: 1
+              retrytimes: 0
+              timeoutms: 60000
+              ext: null
+            nodebatchinfo: null
+            llmparam: null
+            outputemitter: null
+            exit: null
+            llm: null
+            loop: null
+            selector: null
+            textprocessor: null
+            subworkflow: null
+            intentdetector: null
+            databasenode: null
+            httprequestnode: null
+            knowledge: null
+            coderunner:
+              code: "# 在这里，您可以通过 'args'  获取节点中的输入变量，并通过 'ret' 输出结果\n# 'args' 已经被正确地注入到环境中\n# 下面是一个示例，首先获取节点的全部输入参数params，其次获取其中参数名为'input'的值：\n# params = args.params; \n# input = params['input'];\n# 下面是一个示例，输出一个包含多种数据类型的 'ret' 对象：\n# ret: Output =  { \"name\": '小明', \"hobbies\": [\"看书\", \"旅游\"] };\n\nasync def main(args) -> dict:\n    # 获取输入参数\n    params = args.params\n    content = str(params.get(\"content\", \"\"))\n\n    # 为每个学习要点生成详细的学习指导\n    if \"语法\" in content:\n        guide = f\"{content}学习指导：掌握基本语法规则，多做练习题，理解核心概念\"\n    elif \"数据结构\" in content:\n        guide = f\"{content}学习指导：理解各种数据结构特点，练习算法实现，分析时间复杂度\"\n    elif \"函数\" in content or \"编程\" in content:\n        guide = f\"{content}学习指导：学习函数定义和调用，理解参数传递，掌握递归思想\"\n    elif \"项目\" in content or \"实战\" in content:\n        guide = f\"{content}学习指导：选择合适项目，从简单开始，注重代码质量和文档\"\n    else:\n        guide = f\"{content}学习指导：制定学习计划，循序渐进，理论结合实践\"\n\n    # 返回结果\n    ret = {\"result\": guide}\n    return ret\n"
+              language: 3
+            pluginapiparam: null
+            variableaggregator: null
+            variableassigner: null
+            qa: null
+            batch: null
+            comment: null
+            inputreceiver: null
+          size: null
+        blocks: []
+        edges: []
+        version: ""
+    edges:
+      - sourcenodeid: "183106"
+        targetnodeid: "141351"
+        sourceportid: loop-function-inline-output
+        targetportid: ""
+      - sourcenodeid: "141351"
+        targetnodeid: "183106"
+        sourceportid: ""
+        targetportid: loop-function-inline-input
+    version: ""
+edges:
+  - from_node: "100001"
+    from_port: ""
+    to_node: "192085"
+    to_port: ""
+  - from_node: "183106"
+    from_port: loop-output
+    to_node: "900001"
+    to_port: ""
+  - from_node: "192085"
+    from_port: ""
+    to_node: "183106"
+    to_port: ""
+metadata:
+  content_type: "0"
+  creator_id: "7543236139662966784"
+  mode: "0"
+  space_id: "7543236139704909824"
+dependencies:
+  - metadata:
+      node_type: workflow_node
+    resource_id: node_100001
+    resource_name: 开始
+    resource_type: node
+  - metadata:
+      node_type: workflow_node
+    resource_id: node_900001
+    resource_name: 结束
+    resource_type: node
+  - metadata:
+      node_type: workflow_node
+    resource_id: node_192085
+    resource_name: 代码
+    resource_type: node
+  - metadata:
+      node_type: workflow_node
+    resource_id: node_183106
+    resource_name: 循环
+    resource_type: node
+exportformat: yml
+serializeddata: ""

@@ -1,0 +1,293 @@
+app:
+  description: 智能学习助手，可以根据用户输入进行问题分类、条件判断、代码处理等多种学习辅助功能
+  icon: 📚
+  icon_background: '#E8F5E8'
+  mode: workflow
+  name: 智能学习助手
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/openai_api_compatible:0.0.16@d41b09aca46cdd3876f70b4c91d464c4588fc0bdc844ced6ee426283ead6ce8e
+kind: app
+version: 0.3.1
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 50
+        batch_count_limit: 10
+        file_size_limit: 100
+        image_file_size_limit: 20
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: 欢迎使用智能学习助手！我可以帮您解答学习问题、分析学习内容、制定学习计划。请输入您的学习需求。
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions:
+    - 我想学习Python编程
+    - 帮我分析数学概念
+    - 制定英语学习计划
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInLoop: false
+        sourceType: start
+        targetType: question-classifier
+      id: 1754269219469-source-1754270706489-target
+      selected: false
+      source: '1754269219469'
+      sourceHandle: source
+      target: '1754270706489'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: question-classifier
+        targetType: llm
+      id: 1754270706489-1-1754283055597-target
+      selected: false
+      source: '1754270706489'
+      sourceHandle: '1'
+      target: '1754283055597'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: question-classifier
+        targetType: llm
+      id: 1754270706489-2-1754283055599-target
+      selected: false
+      source: '1754270706489'
+      sourceHandle: '2'
+      target: '1754283055599'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: end
+      id: 1754283055597-source-1754269231715-target
+      selected: false
+      source: '1754283055597'
+      sourceHandle: source
+      target: '1754269231715'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: end
+      id: 1754283055599-source-1754269231715-target
+      selected: false
+      source: '1754283055599'
+      sourceHandle: source
+      target: '1754269231715'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: 用户输入学习需求和相关信息
+        selected: false
+        title: 学习需求输入
+        type: start
+        variables:
+        - label: 学习内容
+          max_length: 200
+          options: []
+          required: true
+          type: text-input
+          variable: input_01
+      height: 117
+      id: '1754269219469'
+      position:
+        x: 30
+        y: 481
+      positionAbsolute:
+        x: 30
+        y: 481
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: 输出最终的学习建议和方案
+        outputs:
+        - value_selector:
+          - '1754283055599'
+          - text
+          value_type: string
+          variable: result1
+        - value_selector:
+          - '1754283055597'
+          - text
+          value_type: string
+          variable: result2
+        selected: false
+        title: 学习方案输出
+        type: end
+      height: 143
+      id: '1754269231715'
+      position:
+        x: 1020.7534827938086
+        y: 517.6803911655251
+      positionAbsolute:
+        x: 1020.7534827938086
+        y: 517.6803911655251
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        classes:
+        - id: '1'
+          name: 知识学习类
+        - id: '2'
+          name: 技能实践类
+        desc: 根据用户学习内容自动分类学习需求类型
+        instruction: ''
+        instructions: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: xdeepseekv32
+          provider: langgenius/openai_api_compatible/openai_api_compatible
+        query_variable_selector:
+        - '1754269219469'
+        - input_01
+        selected: false
+        title: 学习需求分类器
+        topics: []
+        type: question-classifier
+        vision:
+          enabled: false
+      height: 215
+      id: '1754270706489'
+      position:
+        x: 393.84776588102045
+        y: 446.58743688042716
+      positionAbsolute:
+        x: 393.84776588102045
+        y: 446.58743688042716
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1754269219469'
+          - input_01
+        desc: 为知识学习类提供理论指导和学习方法
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: xdeepseekv32
+          provider: langgenius/openai_api_compatible/openai_api_compatible
+        prompt_template:
+        - id: 4c99d572-b484-4ff7-a1b7-b55a32fadc5b
+          role: system
+          text: "学习内容：{{#1754269219469.input_01#}} \n这是知识学习类需求，请提供学习方法建议。"
+        selected: false
+        title: 知识学习指导
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 117
+      id: '1754283055597'
+      position:
+        x: 711.6656780864031
+        y: 446.58743688042716
+      positionAbsolute:
+        x: 711.6656780864031
+        y: 446.58743688042716
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1754269219469'
+          - input_01
+        desc: 为技能实践类提供实操指导和练习建议
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: xdeepseekv32
+          provider: langgenius/openai_api_compatible/openai_api_compatible
+        prompt_template:
+        - id: 5c99d572-b484-4ff7-a1b7-b55a32fadc5c
+          role: system
+          text: "学习内容：{{#1754269219469.input_01#}} \n这是技能实践类需求，请提供实践指导。"
+        selected: true
+        title: 技能实践指导
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 117
+      id: '1754283055599'
+      position:
+        x: 718.5578682163854
+        y: 584.9332211207595
+      positionAbsolute:
+        x: 718.5578682163854
+        y: 584.9332211207595
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    viewport:
+      x: -312.7481256587645
+      y: -260.64115309011754
+      zoom: 0.8705505632961253

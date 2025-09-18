@@ -1,0 +1,292 @@
+app:
+  description: ''
+  icon: 🤖
+  icon_background: '#E8F5E8'
+  mode: workflow
+  name: 自定义17520250813173052
+  use_icon_as_answer_icon: false
+dependencies: []
+kind: app
+version: 0.3.1
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 50
+        batch_count_limit: 10
+        file_size_limit: 100
+        image_file_size_limit: 20
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: iteration
+      id: 5134172206028821-source-5134172206038022-target
+      source: '5134172206028821'
+      sourceHandle: source
+      target: '5134172206038022'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: iteration
+        targetType: end
+      id: 5134172206038022-source-5134172206013397-target
+      source: '5134172206038022'
+      sourceHandle: source
+      target: '5134172206013397'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: start
+        targetType: code
+      id: 5134172206002395-source-5134172206028821-target
+      source: '5134172206002395'
+      sourceHandle: source
+      target: '5134172206028821'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '5134172206038022'
+        sourceType: iteration-start
+        targetType: code
+      id: 5134172206038022start-source-5134172206022235-target
+      source: 5134172206038022start
+      sourceHandle: source
+      target: '5134172206022235'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    nodes:
+    - data:
+        desc: 工作流的开启节点，用于定义流程调用所需的业务变量信息。
+        selected: false
+        title: 开始
+        type: start
+        variables:
+        - label: 学习内容
+          max_length: 200
+          options: []
+          required: true
+          type: text-input
+          variable: input_01
+      height: 133
+      id: '5134172206002395'
+      position:
+        x: 30
+        y: 325
+      positionAbsolute:
+        x: 30
+        y: 325
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: 工作流的结束节点，用于输出工作流运行后的最终结果。
+        outputs:
+        - type: array[string]
+          value_selector:
+          - '5134172206038022'
+          - output
+          value_type: array[string]
+          variable: result1
+        selected: false
+        title: 结束
+        type: end
+      height: 133
+      id: '5134172206013397'
+      position:
+        x: 1206
+        y: 325
+      positionAbsolute:
+        x: 1206
+        y: 325
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "def main(content: str) -> dict:\n    # 分析编程学习内容，生成学习路径\n    if \"python\"\
+          \ in content.lower():\n        path = [\"基础语法\", \"数据结构\", \"函数编程\", \"\
+          项目实战\"]\n    elif \"javascript\" in content.lower():\n        path = [\"\
+          基础语法\", \"DOM操作\", \"异步编程\", \"框架学习\"]\n    else:\n        path = [\"基础概念\"\
+          , \"核心语法\", \"实践练习\", \"项目应用\"]\n    \n    return{\n        \"result\":\
+          \ path\n    }"
+        code_language: python3
+        desc: 面向开发者提供代码开发能力，目前仅支持python语言，允许使用该节点已定义的变量作为参数传入，返回语句用于输出函数的结果
+        outputs:
+          result:
+            description: ''
+            type: array[string]
+        selected: false
+        title: 编程学习路径生成器
+        type: code
+        variables:
+        - value_selector:
+          - '5134172206002395'
+          - input_01
+          value_type: string
+          variable: content
+      height: 129
+      id: '5134172206028821'
+      position:
+        x: 334
+        y: 325
+      positionAbsolute:
+        x: 334
+        y: 325
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: 该节点用于处理循环逻辑，仅支持嵌套一次
+        error_handle_mode: terminated
+        height: 250
+        is_parallel: false
+        iterator_input_type: array[string]
+        iterator_selector:
+        - '5134172206028821'
+        - result
+        output_selector:
+        - '5134172206022235'
+        - result
+        output_type: array[string]
+        parallel_nums: 10
+        selected: false
+        start_node_id: 5134172206038022start
+        title: 学习要点迭代器
+        type: iteration
+        width: 508
+      height: 250
+      id: '5134172206038022'
+      position:
+        x: 638
+        y: 325
+      positionAbsolute:
+        x: 638
+        y: 325
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 508
+      zIndex: 1
+    - data:
+        desc: 迭代器开始节点
+        isInIteration: true
+        selected: false
+        title: ''
+        type: iteration-start
+      draggable: false
+      height: 48
+      id: 5134172206038022start
+      parentId: '5134172206038022'
+      position:
+        x: 60
+        y: 100.5
+      positionAbsolute:
+        x: 698
+        y: 425.5
+      selectable: false
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-iteration-start
+      width: 44
+      zIndex: 1002
+    - data:
+        code: "def main(content: str) -> dict:\n    # 为每个学习要点生成详细的学习指导\n    if \"\
+          语法\" in content:\n        guide = f\"{content}学习指导：掌握基本语法规则，多做练习题，理解核心概念\"\
+          \n    elif \"数据结构\" in content:\n        guide = f\"{content}学习指导：理解各种数据结构特点，练习算法实现，分析时间复杂度\"\
+          \n    elif \"函数\" in content or \"编程\" in content:\n        guide = f\"\
+          {content}学习指导：学习函数定义和调用，理解参数传递，掌握递归思想\"\n    elif \"项目\" in content or \"\
+          实战\" in content:\n        guide = f\"{content}学习指导：选择合适项目，从简单开始，注重代码质量和文档\"\
+          \n    else:\n        guide = f\"{content}学习指导：制定学习计划，循序渐进，理论结合实践\"\n   \
+          \ \n    return{\n        \"result\": guide\n    }"
+        code_language: python3
+        desc: 面向开发者提供代码开发能力，目前仅支持python语言，允许使用该节点已定义的变量作为参数传入，返回语句用于输出函数的结果
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '5134172206038022'
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: 代码_1
+        type: code
+        variables:
+        - value_selector:
+          - '5134172206038022'
+          - item
+          value_type: string
+          variable: content
+      height: 129
+      id: '5134172206022235'
+      parentId: '5134172206038022'
+      position:
+        x: 204
+        y: 60
+      positionAbsolute:
+        x: 842
+        y: 385
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+      zIndex: 1002
+    viewport:
+      x: 161.22029911135473
+      y: -19.69279407146533
+      zoom: 0.5305007982786393

@@ -1,0 +1,265 @@
+workflowid: "7550562265716490240"
+name: coze________
+description: "111"
+version: ""
+createtime: 1758002272
+updatetime: 1758002579
+schema:
+    edges:
+        - sourceNodeID: "100001"
+          targetNodeID: "900001"
+    nodes:
+        - data:
+            nodeMeta:
+                description: 工作流的起始节点，用于设定启动工作流需要的信息
+                icon: http://127.0.0.1:9000/opencoze/default_icon/workflow_icon/icon-start.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250915%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250915T071719Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=3819a94b81d07958164d176f2396ee5e0f3e32e76ef49568f102f465b521161d
+                subTitle: ""
+                title: 开始
+            outputs:
+                - name: input_01
+                  required: true
+                  type: string
+                - name: input_num_01
+                  required: true
+                  type: string
+                - name: input_num_02
+                  required: true
+                  type: string
+                - name: input_text_01
+                  required: true
+                  type: string
+            trigger_parameters:
+                - name: input_01
+                  required: true
+                  type: string
+                - name: input_num_01
+                  required: true
+                  type: string
+                - name: input_num_02
+                  required: true
+                  type: string
+                - name: input_text_01
+                  required: true
+                  type: string
+          id: "100001"
+          meta:
+            position:
+                x: 0
+                "y": 0
+          type: "1"
+        - data:
+            inputs:
+                inputParameters:
+                    - input:
+                        type: string
+                        value:
+                            content:
+                                blockID: "100001"
+                                name: input_01
+                                source: block-output
+                            rawMeta:
+                                type: 1
+                            type: ref
+                      name: result1
+                    - input:
+                        type: string
+                        value:
+                            content:
+                                blockID: "100001"
+                                name: input_num_01
+                                source: block-output
+                            rawMeta:
+                                type: 1
+                            type: ref
+                      name: result2
+                    - input:
+                        type: string
+                        value:
+                            content:
+                                blockID: "100001"
+                                name: input_num_02
+                                source: block-output
+                            rawMeta:
+                                type: 1
+                            type: ref
+                      name: result3
+                    - input:
+                        type: string
+                        value:
+                            content:
+                                blockID: "100001"
+                                name: input_text_01
+                                source: block-output
+                            rawMeta:
+                                type: 1
+                            type: ref
+                      name: result4
+                terminatePlan: returnVariables
+            nodeMeta:
+                description: 工作流的最终节点，用于返回工作流运行后的结果信息
+                icon: http://127.0.0.1:9000/opencoze/default_icon/workflow_icon/icon-end.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250915%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250915T071719Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=cf6c783f8a3ff87fa19472f836a0cb9042b8289616925a769466cf64c3a565ce
+                subTitle: ""
+                title: 结束
+          id: "900001"
+          meta:
+            position:
+                x: 545.1869806094182
+                "y": -13
+          type: "2"
+    versions:
+        loop: v2
+nodes:
+    - id: "100001"
+      type: "1"
+      meta:
+        position:
+            x: 0
+            "y": 0
+      data:
+        meta:
+            title: 开始
+            description: 工作流的起始节点，用于设定启动工作流需要的信息
+            icon: http://127.0.0.1:9000/opencoze/default_icon/workflow_icon/icon-start.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250915%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250915T071719Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=3819a94b81d07958164d176f2396ee5e0f3e32e76ef49568f102f465b521161d
+            subtitle: ""
+            maincolor: ""
+        outputs:
+            - name: input_01
+              required: true
+              type: string
+            - name: input_num_01
+              required: true
+              type: string
+            - name: input_num_02
+              required: true
+              type: string
+            - name: input_text_01
+              required: true
+              type: string
+        inputs: null
+        size: null
+      blocks: []
+      edges: []
+      version: ""
+    - id: "900001"
+      type: "2"
+      meta:
+        position:
+            x: 545.1869806094182
+            "y": -13
+      data:
+        meta:
+            title: 结束
+            description: 工作流的最终节点，用于返回工作流运行后的结果信息
+            icon: http://127.0.0.1:9000/opencoze/default_icon/workflow_icon/icon-end.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250915%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250915T071719Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=cf6c783f8a3ff87fa19472f836a0cb9042b8289616925a769466cf64c3a565ce
+            subtitle: ""
+            maincolor: ""
+        outputs: []
+        inputs:
+            inputparameters:
+                - name: result1
+                  input:
+                    Type: string
+                    Value:
+                        type: ref
+                        content:
+                            blockID: "100001"
+                            name: input_01
+                            source: block-output
+                        rawmeta:
+                            type: 1
+                  left: null
+                  right: null
+                  variables: []
+                - name: result2
+                  input:
+                    Type: string
+                    Value:
+                        type: ref
+                        content:
+                            blockID: "100001"
+                            name: input_num_01
+                            source: block-output
+                        rawmeta:
+                            type: 1
+                  left: null
+                  right: null
+                  variables: []
+                - name: result3
+                  input:
+                    Type: string
+                    Value:
+                        type: ref
+                        content:
+                            blockID: "100001"
+                            name: input_num_02
+                            source: block-output
+                        rawmeta:
+                            type: 1
+                  left: null
+                  right: null
+                  variables: []
+                - name: result4
+                  input:
+                    Type: string
+                    Value:
+                        type: ref
+                        content:
+                            blockID: "100001"
+                            name: input_text_01
+                            source: block-output
+                        rawmeta:
+                            type: 1
+                  left: null
+                  right: null
+                  variables: []
+            chathistorysetting: null
+            settingonerror: null
+            nodebatchinfo: null
+            llmparam: null
+            outputemitter: null
+            exit:
+                terminateplan: returnVariables
+            llm: null
+            loop: null
+            selector: null
+            textprocessor: null
+            subworkflow: null
+            intentdetector: null
+            databasenode: null
+            httprequestnode: null
+            knowledge: null
+            coderunner: null
+            pluginapiparam: null
+            variableaggregator: null
+            variableassigner: null
+            qa: null
+            batch: null
+            comment: null
+            inputreceiver: null
+        size: null
+      blocks: []
+      edges: []
+      version: ""
+edges:
+    - from_node: "100001"
+      from_port: ""
+      to_node: "900001"
+      to_port: ""
+metadata:
+    content_type: "0"
+    creator_id: "7550562047440715776"
+    mode: "0"
+    space_id: "7550562047528796160"
+dependencies:
+    - metadata:
+        node_type: workflow_node
+      resource_id: node_100001
+      resource_name: 开始
+      resource_type: node
+    - metadata:
+        node_type: workflow_node
+      resource_id: node_900001
+      resource_name: 结束
+      resource_type: node
+exportformat: yml
+serializeddata: ""

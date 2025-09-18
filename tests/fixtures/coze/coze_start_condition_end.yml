@@ -1,0 +1,1149 @@
+workflowid: "7550567803577696256"
+name: coze______llm____
+description: "11"
+version: ""
+createtime: 1758003561
+updatetime: 1758003561
+schema:
+    edges:
+        - sourceNodeID: "100001"
+          targetNodeID: "153119"
+        - sourceNodeID: "175991"
+          targetNodeID: "900001"
+        - sourceNodeID: "123844"
+          targetNodeID: "900001"
+        - sourceNodeID: "153119"
+          sourcePortID: "true"
+          targetNodeID: "123844"
+        - sourceNodeID: "153119"
+          sourcePortID: true_1
+          targetNodeID: "175991"
+        - sourceNodeID: "153119"
+          sourcePortID: "false"
+          targetNodeID: "175991"
+    nodes:
+        - data:
+            nodeMeta:
+                description: 工作流的起始节点，用于设定启动工作流需要的信息
+                icon: http://127.0.0.1:9000/opencoze/default_icon/workflow_icon/icon-start.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250915%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250915T071719Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=3819a94b81d07958164d176f2396ee5e0f3e32e76ef49568f102f465b521161d
+                subTitle: ""
+                title: 开始
+            outputs:
+                - description: 性别
+                  name: gender
+                  required: true
+                  type: string
+                - description: 出生年
+                  name: birth_year
+                  required: true
+                  type: integer
+                - description: 出生月
+                  name: birth_month
+                  required: true
+                  type: integer
+                - description: 出生日
+                  name: birth_day
+                  required: true
+                  type: integer
+            trigger_parameters:
+                - description: 性别
+                  name: gender
+                  required: true
+                  type: string
+                - description: 出生年
+                  name: birth_year
+                  required: true
+                  type: integer
+                - description: 出生月
+                  name: birth_month
+                  required: true
+                  type: integer
+                - description: 出生日
+                  name: birth_day
+                  required: true
+                  type: integer
+          id: "100001"
+          meta:
+            position:
+                x: -15.53125
+                "y": -138.671875
+          type: "1"
+        - data:
+            inputs:
+                content:
+                    type: string
+                    value:
+                        content: '{{output}},{{output3}}'
+                        type: literal
+                inputParameters:
+                    - input:
+                        type: string
+                        value:
+                            content:
+                                blockID: "123844"
+                                name: output
+                                source: block-output
+                            rawMeta:
+                                type: 1
+                            type: ref
+                      name: output2
+                    - input:
+                        type: string
+                        value:
+                            content:
+                                blockID: "175991"
+                                name: output
+                                source: block-output
+                            rawMeta:
+                                type: 1
+                            type: ref
+                      name: output1
+                streamingOutput: true
+                terminatePlan: useAnswerContent
+            nodeMeta:
+                description: 工作流的最终节点，用于返回工作流运行后的结果信息
+                icon: http://127.0.0.1:9000/opencoze/default_icon/workflow_icon/icon-end.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250915%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250915T071719Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=cf6c783f8a3ff87fa19472f836a0cb9042b8289616925a769466cf64c3a565ce
+                subTitle: ""
+                title: 结束
+          id: "900001"
+          meta:
+            position:
+                x: 2073.986077961711
+                "y": -256.1521569268439
+          type: "2"
+        - data:
+            inputs:
+                branches:
+                    - condition:
+                        conditions:
+                            - left:
+                                input:
+                                    type: string
+                                    value:
+                                        content:
+                                            blockID: "100001"
+                                            name: gender
+                                            source: block-output
+                                        type: ref
+                              operator: 1
+                              right:
+                                input:
+                                    type: string
+                                    value:
+                                        content: 男
+                                        rawMeta:
+                                            type: 1
+                                        type: literal
+                            - left:
+                                input:
+                                    type: string
+                                    value:
+                                        content:
+                                            blockID: "100001"
+                                            name: gender
+                                            source: block-output
+                                        type: ref
+                              operator: 1
+                              right:
+                                input:
+                                    type: string
+                                    value:
+                                        content: man
+                                        rawMeta:
+                                            type: 1
+                                        type: literal
+                        logic: 1
+                    - condition:
+                        conditions:
+                            - left:
+                                input:
+                                    type: string
+                                    value:
+                                        content:
+                                            blockID: "100001"
+                                            name: gender
+                                            source: block-output
+                                        type: ref
+                              operator: 1
+                              right:
+                                input:
+                                    type: string
+                                    value:
+                                        content: 女
+                                        rawMeta:
+                                            type: 1
+                                        type: literal
+                            - left:
+                                input:
+                                    type: string
+                                    value:
+                                        content:
+                                            blockID: "100001"
+                                            name: gender
+                                            source: block-output
+                                        type: ref
+                              operator: 1
+                              right:
+                                input:
+                                    type: string
+                                    value:
+                                        content: woman
+                                        rawMeta:
+                                            type: 1
+                                        type: literal
+                        logic: 1
+            nodeMeta:
+                description: 连接多个下游分支，若设定的条件成立则仅运行对应的分支，若均不成立则只运行“否则”分支
+                icon: http://127.0.0.1:9000/opencoze/default_icon/workflow_icon/icon-condition.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250915%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250915T071719Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=138afe472740e73a7c9988170581e3a27dda681ddb341a72ed946eb6f572f4d9
+                mainColor: '#00B2B2'
+                subTitle: 选择器
+                title: 选择器
+          id: "153119"
+          meta:
+            position:
+                x: 399.3281419277191
+                "y": -232.871875
+          type: "8"
+        - data:
+            inputs:
+                inputParameters:
+                    - input:
+                        type: integer
+                        value:
+                            content:
+                                blockID: "100001"
+                                name: birth_month
+                                source: block-output
+                            rawMeta:
+                                type: 2
+                            type: ref
+                      name: birth_month
+                    - input:
+                        type: integer
+                        value:
+                            content:
+                                blockID: "100001"
+                                name: birth_day
+                                source: block-output
+                            rawMeta:
+                                type: 2
+                            type: ref
+                      name: birth_day
+                llmParam:
+                    - input:
+                        type: integer
+                        value:
+                            content: "61010"
+                            rawMeta:
+                                type: 2
+                            type: literal
+                      name: modelType
+                    - input:
+                        type: string
+                        value:
+                            content: Doubao-Seed-1.6
+                            rawMeta:
+                                type: 1
+                            type: literal
+                      name: modleName
+                    - input:
+                        type: string
+                        value:
+                            content: balance
+                            rawMeta:
+                                type: 1
+                            type: literal
+                      name: generationDiversity
+                    - input:
+                        type: float
+                        value:
+                            content: "0.8"
+                            rawMeta:
+                                type: 4
+                            type: literal
+                      name: temperature
+                    - input:
+                        type: integer
+                        value:
+                            content: "4096"
+                            rawMeta:
+                                type: 2
+                            type: literal
+                      name: maxTokens
+                    - input:
+                        type: float
+                        value:
+                            content: "0.7"
+                            rawMeta:
+                                type: 4
+                            type: literal
+                      name: topP
+                    - input:
+                        type: integer
+                        value:
+                            content: "2"
+                            rawMeta:
+                                type: 2
+                            type: literal
+                      name: responseFormat
+                    - input:
+                        type: string
+                        value:
+                            content: 根据{{birth_month}}{{birth_day}}真实的生成相同生日的男科学家
+                            rawMeta:
+                                type: 1
+                            type: literal
+                      name: prompt
+                    - input:
+                        type: boolean
+                        value:
+                            content: false
+                            rawMeta:
+                                type: 3
+                            type: literal
+                      name: enableChatHistory
+                    - input:
+                        type: integer
+                        value:
+                            content: "3"
+                            rawMeta:
+                                type: 2
+                            type: literal
+                      name: chatHistoryRound
+                    - input:
+                        type: string
+                        value:
+                            content: ""
+                            rawMeta:
+                                type: 1
+                            type: literal
+                      name: systemPrompt
+                settingOnError:
+                    processType: 1
+                    retryTimes: 0
+                    timeoutMs: 180000
+            nodeMeta:
+                description: 调用大语言模型,使用变量和提示词生成回复
+                icon: http://127.0.0.1:9000/opencoze/default_icon/workflow_icon/icon-llm.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250915%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250915T071719Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=d4786a2e34634cc8e22ee6df395887544c0fe7b3c80e9f7f6258332f1d1c9c79
+                mainColor: '#5C62FF'
+                subTitle: 大模型
+                title: 大模型_1
+            outputs:
+                - name: output
+                  type: string
+                - name: reasoning_content
+                  type: string
+            version: "3"
+          id: "175991"
+          meta:
+            position:
+                x: 1307.4476509800998
+                "y": -85.75315885543822
+          type: "3"
+        - data:
+            inputs:
+                inputParameters:
+                    - input:
+                        type: integer
+                        value:
+                            content:
+                                blockID: "100001"
+                                name: birth_month
+                                source: block-output
+                            rawMeta:
+                                type: 2
+                            type: ref
+                      name: birth_month
+                    - input:
+                        type: integer
+                        value:
+                            content:
+                                blockID: "100001"
+                                name: birth_day
+                                source: block-output
+                            rawMeta:
+                                type: 2
+                            type: ref
+                      name: birth_day
+                llmParam:
+                    - input:
+                        type: integer
+                        value:
+                            content: "61010"
+                            rawMeta:
+                                type: 2
+                            type: literal
+                      name: modelType
+                    - input:
+                        type: string
+                        value:
+                            content: Doubao-Seed-1.6
+                            rawMeta:
+                                type: 1
+                            type: literal
+                      name: modleName
+                    - input:
+                        type: string
+                        value:
+                            content: balance
+                            rawMeta:
+                                type: 1
+                            type: literal
+                      name: generationDiversity
+                    - input:
+                        type: float
+                        value:
+                            content: "0.8"
+                            rawMeta:
+                                type: 4
+                            type: literal
+                      name: temperature
+                    - input:
+                        type: integer
+                        value:
+                            content: "4096"
+                            rawMeta:
+                                type: 2
+                            type: literal
+                      name: maxTokens
+                    - input:
+                        type: float
+                        value:
+                            content: "0.7"
+                            rawMeta:
+                                type: 4
+                            type: literal
+                      name: topP
+                    - input:
+                        type: integer
+                        value:
+                            content: "2"
+                            rawMeta:
+                                type: 2
+                            type: literal
+                      name: responseFormat
+                    - input:
+                        type: string
+                        value:
+                            content: 根据用户的{{birth_month}},{{birth_day}}生成真实的生日相同的女科学家
+                            rawMeta:
+                                type: 1
+                            type: literal
+                      name: prompt
+                    - input:
+                        type: boolean
+                        value:
+                            content: false
+                            rawMeta:
+                                type: 3
+                            type: literal
+                      name: enableChatHistory
+                    - input:
+                        type: integer
+                        value:
+                            content: "3"
+                            rawMeta:
+                                type: 2
+                            type: literal
+                      name: chatHistoryRound
+                    - input:
+                        type: string
+                        value:
+                            content: ""
+                            rawMeta:
+                                type: 1
+                            type: literal
+                      name: systemPrompt
+                settingOnError:
+                    processType: 1
+                    retryTimes: 0
+                    timeoutMs: 180000
+            nodeMeta:
+                description: 调用大语言模型,使用变量和提示词生成回复
+                icon: http://127.0.0.1:9000/opencoze/default_icon/workflow_icon/icon-llm.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250915%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250915T071719Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=d4786a2e34634cc8e22ee6df395887544c0fe7b3c80e9f7f6258332f1d1c9c79
+                mainColor: '#5C62FF'
+                subTitle: 大模型
+                title: 大模型_2
+            outputs:
+                - name: output
+                  type: string
+                - name: reasoning_content
+                  type: string
+            version: "3"
+          id: "123844"
+          meta:
+            position:
+                x: 1297.9160821562195
+                "y": -452.29769046281
+          type: "3"
+    versions:
+        loop: v2
+nodes:
+    - id: "100001"
+      type: "1"
+      meta:
+        position:
+            x: -15.53125
+            "y": -138.671875
+      data:
+        meta:
+            title: 开始
+            description: 工作流的起始节点，用于设定启动工作流需要的信息
+            icon: http://127.0.0.1:9000/opencoze/default_icon/workflow_icon/icon-start.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250915%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250915T071719Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=3819a94b81d07958164d176f2396ee5e0f3e32e76ef49568f102f465b521161d
+            subtitle: ""
+            maincolor: ""
+        outputs:
+            - description: 性别
+              name: gender
+              required: true
+              type: string
+            - description: 出生年
+              name: birth_year
+              required: true
+              type: integer
+            - description: 出生月
+              name: birth_month
+              required: true
+              type: integer
+            - description: 出生日
+              name: birth_day
+              required: true
+              type: integer
+        inputs: null
+        size: null
+      blocks: []
+      edges: []
+      version: ""
+    - id: "900001"
+      type: "2"
+      meta:
+        position:
+            x: 2073.986077961711
+            "y": -256.1521569268439
+      data:
+        meta:
+            title: 结束
+            description: 工作流的最终节点，用于返回工作流运行后的结果信息
+            icon: http://127.0.0.1:9000/opencoze/default_icon/workflow_icon/icon-end.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250915%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250915T071719Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=cf6c783f8a3ff87fa19472f836a0cb9042b8289616925a769466cf64c3a565ce
+            subtitle: ""
+            maincolor: ""
+        outputs: []
+        inputs:
+            inputparameters:
+                - name: output2
+                  input:
+                    Type: string
+                    Value:
+                        type: ref
+                        content:
+                            blockID: "123844"
+                            name: output
+                            source: block-output
+                        rawmeta:
+                            type: 1
+                  left: null
+                  right: null
+                  variables: []
+                - name: output1
+                  input:
+                    Type: string
+                    Value:
+                        type: ref
+                        content:
+                            blockID: "175991"
+                            name: output
+                            source: block-output
+                        rawmeta:
+                            type: 1
+                  left: null
+                  right: null
+                  variables: []
+            chathistorysetting: null
+            settingonerror: null
+            nodebatchinfo: null
+            llmparam: null
+            outputemitter:
+                content:
+                    Type: string
+                    Value:
+                        type: literal
+                        content: '{{output}},{{output3}}'
+                        rawmeta: null
+                streamingoutput: true
+            exit:
+                terminateplan: useAnswerContent
+            llm: null
+            loop: null
+            selector: null
+            textprocessor: null
+            subworkflow: null
+            intentdetector: null
+            databasenode: null
+            httprequestnode: null
+            knowledge: null
+            coderunner: null
+            pluginapiparam: null
+            variableaggregator: null
+            variableassigner: null
+            qa: null
+            batch: null
+            comment: null
+            inputreceiver: null
+        size: null
+      blocks: []
+      edges: []
+      version: ""
+    - id: "153119"
+      type: "8"
+      meta:
+        position:
+            x: 399.3281419277191
+            "y": -232.871875
+      data:
+        meta:
+            title: 选择器
+            description: 连接多个下游分支，若设定的条件成立则仅运行对应的分支，若均不成立则只运行“否则”分支
+            icon: http://127.0.0.1:9000/opencoze/default_icon/workflow_icon/icon-condition.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250915%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250915T071719Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=138afe472740e73a7c9988170581e3a27dda681ddb341a72ed946eb6f572f4d9
+            subtitle: 选择器
+            maincolor: '#00B2B2'
+        outputs: []
+        inputs:
+            inputparameters: []
+            chathistorysetting: null
+            settingonerror: null
+            nodebatchinfo: null
+            llmparam: null
+            outputemitter: null
+            exit: null
+            llm: null
+            loop: null
+            selector:
+                branches:
+                    - condition:
+                        logic: 1
+                        conditions:
+                            - operator: 1
+                              left:
+                                name: ""
+                                input:
+                                    Type: string
+                                    Value:
+                                        type: ref
+                                        content:
+                                            blockID: "100001"
+                                            name: gender
+                                            source: block-output
+                                        rawmeta: null
+                                left: null
+                                right: null
+                                variables: []
+                              right:
+                                name: ""
+                                input:
+                                    Type: string
+                                    Value:
+                                        type: literal
+                                        content: 男
+                                        rawmeta:
+                                            type: 1
+                                left: null
+                                right: null
+                                variables: []
+                            - operator: 1
+                              left:
+                                name: ""
+                                input:
+                                    Type: string
+                                    Value:
+                                        type: ref
+                                        content:
+                                            blockID: "100001"
+                                            name: gender
+                                            source: block-output
+                                        rawmeta: null
+                                left: null
+                                right: null
+                                variables: []
+                              right:
+                                name: ""
+                                input:
+                                    Type: string
+                                    Value:
+                                        type: literal
+                                        content: man
+                                        rawmeta:
+                                            type: 1
+                                left: null
+                                right: null
+                                variables: []
+                    - condition:
+                        logic: 1
+                        conditions:
+                            - operator: 1
+                              left:
+                                name: ""
+                                input:
+                                    Type: string
+                                    Value:
+                                        type: ref
+                                        content:
+                                            blockID: "100001"
+                                            name: gender
+                                            source: block-output
+                                        rawmeta: null
+                                left: null
+                                right: null
+                                variables: []
+                              right:
+                                name: ""
+                                input:
+                                    Type: string
+                                    Value:
+                                        type: literal
+                                        content: 女
+                                        rawmeta:
+                                            type: 1
+                                left: null
+                                right: null
+                                variables: []
+                            - operator: 1
+                              left:
+                                name: ""
+                                input:
+                                    Type: string
+                                    Value:
+                                        type: ref
+                                        content:
+                                            blockID: "100001"
+                                            name: gender
+                                            source: block-output
+                                        rawmeta: null
+                                left: null
+                                right: null
+                                variables: []
+                              right:
+                                name: ""
+                                input:
+                                    Type: string
+                                    Value:
+                                        type: literal
+                                        content: woman
+                                        rawmeta:
+                                            type: 1
+                                left: null
+                                right: null
+                                variables: []
+            textprocessor: null
+            subworkflow: null
+            intentdetector: null
+            databasenode: null
+            httprequestnode: null
+            knowledge: null
+            coderunner: null
+            pluginapiparam: null
+            variableaggregator: null
+            variableassigner: null
+            qa: null
+            batch: null
+            comment: null
+            inputreceiver: null
+        size: null
+      blocks: []
+      edges: []
+      version: ""
+    - id: "175991"
+      type: "3"
+      meta:
+        position:
+            x: 1307.4476509800998
+            "y": -85.75315885543822
+      data:
+        meta:
+            title: 大模型_1
+            description: 调用大语言模型,使用变量和提示词生成回复
+            icon: http://127.0.0.1:9000/opencoze/default_icon/workflow_icon/icon-llm.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250915%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250915T071719Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=d4786a2e34634cc8e22ee6df395887544c0fe7b3c80e9f7f6258332f1d1c9c79
+            subtitle: 大模型
+            maincolor: '#5C62FF'
+        outputs:
+            - name: output
+              type: string
+            - name: reasoning_content
+              type: string
+        inputs:
+            inputparameters:
+                - name: birth_month
+                  input:
+                    Type: integer
+                    Value:
+                        type: ref
+                        content:
+                            blockID: "100001"
+                            name: birth_month
+                            source: block-output
+                        rawmeta:
+                            type: 2
+                  left: null
+                  right: null
+                  variables: []
+                - name: birth_day
+                  input:
+                    Type: integer
+                    Value:
+                        type: ref
+                        content:
+                            blockID: "100001"
+                            name: birth_day
+                            source: block-output
+                        rawmeta:
+                            type: 2
+                  left: null
+                  right: null
+                  variables: []
+            chathistorysetting: null
+            settingonerror:
+                dataonerr: ""
+                switch: false
+                processtype: 1
+                retrytimes: 0
+                timeoutms: 180000
+                ext: null
+            nodebatchinfo: null
+            llmparam:
+                - input:
+                    type: integer
+                    value:
+                        content: "61010"
+                        rawMeta:
+                            type: 2
+                        type: literal
+                  name: modelType
+                - input:
+                    type: string
+                    value:
+                        content: Doubao-Seed-1.6
+                        rawMeta:
+                            type: 1
+                        type: literal
+                  name: modleName
+                - input:
+                    type: string
+                    value:
+                        content: balance
+                        rawMeta:
+                            type: 1
+                        type: literal
+                  name: generationDiversity
+                - input:
+                    type: float
+                    value:
+                        content: "0.8"
+                        rawMeta:
+                            type: 4
+                        type: literal
+                  name: temperature
+                - input:
+                    type: integer
+                    value:
+                        content: "4096"
+                        rawMeta:
+                            type: 2
+                        type: literal
+                  name: maxTokens
+                - input:
+                    type: float
+                    value:
+                        content: "0.7"
+                        rawMeta:
+                            type: 4
+                        type: literal
+                  name: topP
+                - input:
+                    type: integer
+                    value:
+                        content: "2"
+                        rawMeta:
+                            type: 2
+                        type: literal
+                  name: responseFormat
+                - input:
+                    type: string
+                    value:
+                        content: 根据{{birth_month}}{{birth_day}}真实的生成相同生日的男科学家
+                        rawMeta:
+                            type: 1
+                        type: literal
+                  name: prompt
+                - input:
+                    type: boolean
+                    value:
+                        content: false
+                        rawMeta:
+                            type: 3
+                        type: literal
+                  name: enableChatHistory
+                - input:
+                    type: integer
+                    value:
+                        content: "3"
+                        rawMeta:
+                            type: 2
+                        type: literal
+                  name: chatHistoryRound
+                - input:
+                    type: string
+                    value:
+                        content: ""
+                        rawMeta:
+                            type: 1
+                        type: literal
+                  name: systemPrompt
+            outputemitter: null
+            exit: null
+            llm: null
+            loop: null
+            selector: null
+            textprocessor: null
+            subworkflow: null
+            intentdetector: null
+            databasenode: null
+            httprequestnode: null
+            knowledge: null
+            coderunner: null
+            pluginapiparam: null
+            variableaggregator: null
+            variableassigner: null
+            qa: null
+            batch: null
+            comment: null
+            inputreceiver: null
+        size: null
+      blocks: []
+      edges: []
+      version: ""
+    - id: "123844"
+      type: "3"
+      meta:
+        position:
+            x: 1297.9160821562195
+            "y": -452.29769046281
+      data:
+        meta:
+            title: 大模型_2
+            description: 调用大语言模型,使用变量和提示词生成回复
+            icon: http://127.0.0.1:9000/opencoze/default_icon/workflow_icon/icon-llm.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250915%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250915T071719Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=d4786a2e34634cc8e22ee6df395887544c0fe7b3c80e9f7f6258332f1d1c9c79
+            subtitle: 大模型
+            maincolor: '#5C62FF'
+        outputs:
+            - name: output
+              type: string
+            - name: reasoning_content
+              type: string
+        inputs:
+            inputparameters:
+                - name: birth_month
+                  input:
+                    Type: integer
+                    Value:
+                        type: ref
+                        content:
+                            blockID: "100001"
+                            name: birth_month
+                            source: block-output
+                        rawmeta:
+                            type: 2
+                  left: null
+                  right: null
+                  variables: []
+                - name: birth_day
+                  input:
+                    Type: integer
+                    Value:
+                        type: ref
+                        content:
+                            blockID: "100001"
+                            name: birth_day
+                            source: block-output
+                        rawmeta:
+                            type: 2
+                  left: null
+                  right: null
+                  variables: []
+            chathistorysetting: null
+            settingonerror:
+                dataonerr: ""
+                switch: false
+                processtype: 1
+                retrytimes: 0
+                timeoutms: 180000
+                ext: null
+            nodebatchinfo: null
+            llmparam:
+                - input:
+                    type: integer
+                    value:
+                        content: "61010"
+                        rawMeta:
+                            type: 2
+                        type: literal
+                  name: modelType
+                - input:
+                    type: string
+                    value:
+                        content: Doubao-Seed-1.6
+                        rawMeta:
+                            type: 1
+                        type: literal
+                  name: modleName
+                - input:
+                    type: string
+                    value:
+                        content: balance
+                        rawMeta:
+                            type: 1
+                        type: literal
+                  name: generationDiversity
+                - input:
+                    type: float
+                    value:
+                        content: "0.8"
+                        rawMeta:
+                            type: 4
+                        type: literal
+                  name: temperature
+                - input:
+                    type: integer
+                    value:
+                        content: "4096"
+                        rawMeta:
+                            type: 2
+                        type: literal
+                  name: maxTokens
+                - input:
+                    type: float
+                    value:
+                        content: "0.7"
+                        rawMeta:
+                            type: 4
+                        type: literal
+                  name: topP
+                - input:
+                    type: integer
+                    value:
+                        content: "2"
+                        rawMeta:
+                            type: 2
+                        type: literal
+                  name: responseFormat
+                - input:
+                    type: string
+                    value:
+                        content: 根据用户的{{birth_month}},{{birth_day}}生成真实的生日相同的女科学家
+                        rawMeta:
+                            type: 1
+                        type: literal
+                  name: prompt
+                - input:
+                    type: boolean
+                    value:
+                        content: false
+                        rawMeta:
+                            type: 3
+                        type: literal
+                  name: enableChatHistory
+                - input:
+                    type: integer
+                    value:
+                        content: "3"
+                        rawMeta:
+                            type: 2
+                        type: literal
+                  name: chatHistoryRound
+                - input:
+                    type: string
+                    value:
+                        content: ""
+                        rawMeta:
+                            type: 1
+                        type: literal
+                  name: systemPrompt
+            outputemitter: null
+            exit: null
+            llm: null
+            loop: null
+            selector: null
+            textprocessor: null
+            subworkflow: null
+            intentdetector: null
+            databasenode: null
+            httprequestnode: null
+            knowledge: null
+            coderunner: null
+            pluginapiparam: null
+            variableaggregator: null
+            variableassigner: null
+            qa: null
+            batch: null
+            comment: null
+            inputreceiver: null
+        size: null
+      blocks: []
+      edges: []
+      version: ""
+edges:
+    - from_node: "100001"
+      from_port: ""
+      to_node: "153119"
+      to_port: ""
+    - from_node: "175991"
+      from_port: ""
+      to_node: "900001"
+      to_port: ""
+    - from_node: "123844"
+      from_port: ""
+      to_node: "900001"
+      to_port: ""
+    - from_node: "153119"
+      from_port: "true"
+      to_node: "123844"
+      to_port: ""
+    - from_node: "153119"
+      from_port: true_1
+      to_node: "175991"
+      to_port: ""
+    - from_node: "153119"
+      from_port: "false"
+      to_node: "175991"
+      to_port: ""
+metadata:
+    content_type: "0"
+    creator_id: "7549054273099661312"
+    mode: "0"
+    space_id: "7549054273355513856"
+dependencies:
+    - metadata:
+        node_type: workflow_node
+      resource_id: node_100001
+      resource_name: 开始
+      resource_type: node
+    - metadata:
+        node_type: workflow_node
+      resource_id: node_900001
+      resource_name: 结束
+      resource_type: node
+    - metadata:
+        node_type: workflow_node
+      resource_id: node_153119
+      resource_name: 选择器
+      resource_type: node
+    - metadata:
+        node_type: workflow_node
+      resource_id: node_175991
+      resource_name: 大模型_1
+      resource_type: node
+    - metadata:
+        node_type: workflow_node
+      resource_id: node_123844
+      resource_name: 大模型_2
+      resource_type: node
+exportformat: yml
+serializeddata: ""

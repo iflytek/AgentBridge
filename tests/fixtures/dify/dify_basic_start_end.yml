@@ -1,0 +1,148 @@
+app:
+  description: 智能学习助手，可以根据用户输入进行问题分类、条件判断、代码处理等多种学习辅助功能
+  icon: 📚
+  icon_background: '#E8F5E8'
+  mode: workflow
+  name: 智能学习助手
+  use_icon_as_answer_icon: false
+dependencies: []
+kind: app
+version: 0.3.1
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: 欢迎使用智能学习助手！我可以帮您解答学习问题、分析学习内容、制定学习计划。请输入您的学习需求。
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions:
+    - 我想学习Python编程
+    - 帮我分析数学概念
+    - 制定英语学习计划
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInLoop: false
+        sourceType: start
+        targetType: end
+      id: 1754269219469-source-1754269231715-target
+      source: '1754269219469'
+      sourceHandle: source
+      target: '1754269231715'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: 用户输入学习需求和相关信息
+        selected: false
+        title: 学习需求输入
+        type: start
+        variables:
+        - label: 学习内容
+          max_length: 200
+          required: true
+          type: text-input
+          variable: input_01
+        - label: 难度级别(1-10)
+          max_length: 48
+          required: true
+          type: number
+          variable: input_num_01
+        - label: 学习时间(小时)
+          max_length: 48
+          required: true
+          type: number
+          variable: input_num_02
+        - label: 学习目标
+          max_length: 100
+          required: true
+          type: text-input
+          variable: input_text_01
+      height: 195
+      id: '1754269219469'
+      position:
+        x: 208.61281550435513
+        y: 284.1435469250726
+      positionAbsolute:
+        x: 208.61281550435513
+        y: 284.1435469250726
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: 输出最终的学习建议和方案
+        outputs:
+        - value_selector:
+          - '1754269219469'
+          - input_01
+          value_type: string
+          variable: result1
+        - value_selector:
+          - '1754269219469'
+          - input_num_01
+          value_type: number
+          variable: result2
+        - value_selector:
+          - '1754269219469'
+          - input_num_02
+          value_type: number
+          variable: result3
+        - value_selector:
+          - '1754269219469'
+          - input_text_01
+          value_type: string
+          variable: result4
+        selected: true
+        title: 学习方案输出
+        type: end
+      height: 195
+      id: '1754269231715'
+      position:
+        x: 567.8795199882856
+        y: 284.1435469250726
+      positionAbsolute:
+        x: 567.8795199882856
+        y: 284.1435469250726
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    viewport:
+      x: -90.6501199916961
+      y: -167.22629690045846
+      zoom: 1.109569433866488

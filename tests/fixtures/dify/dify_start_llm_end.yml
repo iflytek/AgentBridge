@@ -1,0 +1,191 @@
+app:
+  description: 智能学习助手，可以根据用户输入进行问题分类、条件判断、代码处理等多种学习辅助功能
+  icon: 📚
+  icon_background: '#E8F5E8'
+  mode: workflow
+  name: 智能学习助手
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/openai_api_compatible:0.0.16@d41b09aca46cdd3876f70b4c91d464c4588fc0bdc844ced6ee426283ead6ce8e
+kind: app
+version: 0.3.1
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 50
+        batch_count_limit: 10
+        file_size_limit: 100
+        image_file_size_limit: 20
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: 欢迎使用智能学习助手！我可以帮您解答学习问题、分析学习内容、制定学习计划。请输入您的学习需求。
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions:
+    - 我想学习Python编程
+    - 帮我分析数学概念
+    - 制定英语学习计划
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        sourceType: llm
+        targetType: end
+      id: 1754290000001-source-1754269231715-target
+      source: '1754290000001'
+      sourceHandle: source
+      target: '1754269231715'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: start
+        targetType: llm
+      id: 1754269219469-source-1754290000001-target
+      source: '1754269219469'
+      sourceHandle: source
+      target: '1754290000001'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: 用户输入学习需求和相关信息
+        selected: false
+        title: 学习需求输入
+        type: start
+        variables:
+        - label: 学习内容
+          max_length: 200
+          required: true
+          type: text-input
+          variable: input_01
+        - label: 难度级别(1-10)
+          max_length: 48
+          required: true
+          type: number
+          variable: input_num_01
+        - label: 学习时间(小时)
+          max_length: 48
+          required: true
+          type: number
+          variable: input_num_02
+        - label: 学习目标
+          max_length: 100
+          required: true
+          type: text-input
+          variable: input_text_01
+      height: 195
+      id: '1754269219469'
+      position:
+        x: -380
+        y: 366
+      positionAbsolute:
+        x: -380
+        y: 366
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: 输出最终的学习建议和方案
+        outputs:
+        - value_selector:
+          - '1754290000001'
+          - text
+          value_type: string
+          variable: result1
+        selected: true
+        title: 学习方案输出
+        type: end
+      height: 117
+      id: '1754269231715'
+      position:
+        x: 356.0388886086955
+        y: 366
+      positionAbsolute:
+        x: 356.0388886086955
+        y: 366
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1754269219469'
+          - input_01
+        desc: 为非编程类学习需求提供通用学习建议
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: xdeepseekv32
+          provider: langgenius/openai_api_compatible/openai_api_compatible
+        prompt_template:
+        - id: 1754290000001-prompt-id
+          role: system
+          text: '学习内容：{{#1754269219469.input_01#}} 学习目标：{{#1754269219469.input_text_01#}}
+
+            这是一般性学习需求，请提供简洁的学习建议，包括学习方法和注意事项。'
+        selected: false
+        title: 通用学习建议
+        type: llm
+        vision:
+          enabled: false
+      height: 117
+      id: '1754290000001'
+      position:
+        x: 0.9366268962582467
+        y: 366
+      positionAbsolute:
+        x: 0.9366268962582467
+        y: 366
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    viewport:
+      x: 429.3201833543961
+      y: -16.079768624126643
+      zoom: 0.659753946300582

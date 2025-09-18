@@ -1,0 +1,966 @@
+workflowid: "7550567526120292352"
+name: coze___
+description: ""
+version: ""
+createtime: 1758003497
+updatetime: 1758003497
+schema:
+    edges:
+        - sourceNodeID: "100001"
+          targetNodeID: "197165"
+        - sourceNodeID: "197166"
+          targetNodeID: "900001"
+        - sourceNodeID: "197167"
+          targetNodeID: "900001"
+        - sourceNodeID: "197165"
+          sourcePortID: branch_0
+          targetNodeID: "197166"
+        - sourceNodeID: "197165"
+          sourcePortID: branch_1
+          targetNodeID: "197167"
+        - sourceNodeID: "197165"
+          sourcePortID: default
+          targetNodeID: "197167"
+    nodes:
+        - data:
+            nodeMeta:
+                description: 工作流的开启节点，用于定义流程调用所需的业务变量信息。
+                icon: http://127.0.0.1:9000/opencoze/default_icon/workflow_icon/icon-start.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250915%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250915T071719Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=3819a94b81d07958164d176f2396ee5e0f3e32e76ef49568f102f465b521161d
+                subTitle: ""
+                title: 开始
+            outputs:
+                - name: input_01
+                  required: true
+                  type: string
+            trigger_parameters:
+                - name: input_01
+                  required: true
+                  type: string
+          id: "100001"
+          meta:
+            position:
+                x: 189.84375
+                "y": 194.35
+          type: "1"
+        - data:
+            inputs:
+                inputParameters:
+                    - input:
+                        type: string
+                        value:
+                            content:
+                                blockID: "197167"
+                                name: output
+                                source: block-output
+                            rawMeta:
+                                type: 1
+                            type: ref
+                      name: result1
+                    - input:
+                        type: string
+                        value:
+                            content:
+                                blockID: "197166"
+                                name: output
+                                source: block-output
+                            rawMeta:
+                                type: 1
+                            type: ref
+                      name: result2
+                terminatePlan: returnVariables
+            nodeMeta:
+                description: 工作流的结束节点，用于输出工作流运行后的最终结果。
+                icon: http://127.0.0.1:9000/opencoze/default_icon/workflow_icon/icon-end.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250915%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250915T071719Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=cf6c783f8a3ff87fa19472f836a0cb9042b8289616925a769466cf64c3a565ce
+                subTitle: ""
+                title: 结束
+          id: "900001"
+          meta:
+            position:
+                x: 1560
+                "y": 171.35
+          type: "2"
+        - data:
+            inputs:
+                chatHistorySetting:
+                    chatHistoryRound: 3
+                    enableChatHistory: false
+                inputParameters:
+                    - input:
+                        type: string
+                        value:
+                            content:
+                                blockID: "100001"
+                                name: input_01
+                                source: block-output
+                            rawMeta:
+                                type: 1
+                            type: ref
+                      name: query
+                intents:
+                    - name: 知识学习类
+                    - name: 技能实践类
+                llmParam:
+                    chatHistoryRound: 3
+                    enableChatHistory: false
+                    generationDiversity: balance
+                    maxTokens: 8192
+                    modelName: Doubao-Seed-1.6
+                    modelType: 61010
+                    prompt:
+                        type: string
+                        value:
+                            content: '{{query}}'
+                            type: literal
+                    responseFormat: 2
+                    systemPrompt:
+                        type: string
+                        value:
+                            content: ""
+                            type: literal
+                    temperature: 0.5
+                    topP: 0
+                mode: all
+                settingOnError:
+                    processType: 1
+                    retryTimes: 0
+                    timeoutMs: 60000
+            nodeMeta:
+                description: 用于用户输入的意图识别，并将其与预设意图选项进行匹配。
+                icon: http://127.0.0.1:9000/opencoze/default_icon/workflow_icon/icon-intent.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250915%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250915T071719Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=4ae86333188019f408f56904a43460e441ae508e13aa20a9dddf37edf3ac6e69
+                maincolor: '#00B2B2'
+                subTitle: 意图识别
+                title: 学习需求分类器
+            outputs:
+                - name: classificationId
+                  required: false
+                  type: integer
+                - name: reason
+                  required: false
+                  type: string
+          id: "197165"
+          meta:
+            position:
+                x: 640
+                "y": 142.5
+          type: "22"
+        - data:
+            inputs:
+                inputParameters:
+                    - input:
+                        type: string
+                        value:
+                            content:
+                                blockID: "100001"
+                                name: input_01
+                                source: block-output
+                            rawMeta:
+                                type: 1
+                            type: ref
+                      name: input_01
+                llmParam:
+                    - input:
+                        type: integer
+                        value:
+                            content: "61010"
+                            rawMeta:
+                                type: 2
+                            type: literal
+                      name: modelType
+                    - input:
+                        type: string
+                        value:
+                            content: Doubao-Seed-1.6
+                            rawMeta:
+                                type: 1
+                            type: literal
+                      name: modleName
+                    - input:
+                        type: string
+                        value:
+                            content: balance
+                            rawMeta:
+                                type: 1
+                            type: literal
+                      name: generationDiversity
+                    - input:
+                        type: float
+                        value:
+                            content: "0.5"
+                            rawMeta:
+                                type: 4
+                            type: literal
+                      name: temperature
+                    - input:
+                        type: integer
+                        value:
+                            content: "8192"
+                            rawMeta:
+                                type: 2
+                            type: literal
+                      name: maxTokens
+                    - input:
+                        type: float
+                        value:
+                            content: "0.7"
+                            rawMeta:
+                                type: 4
+                            type: literal
+                      name: topP
+                    - input:
+                        type: integer
+                        value:
+                            content: "2"
+                            rawMeta:
+                                type: 2
+                            type: literal
+                      name: responseFormat
+                    - input:
+                        type: string
+                        value:
+                            content: 无
+                            rawMeta:
+                                type: 1
+                            type: literal
+                      name: prompt
+                    - input:
+                        type: boolean
+                        value:
+                            content: false
+                            rawMeta:
+                                type: 3
+                            type: literal
+                      name: enableChatHistory
+                    - input:
+                        type: integer
+                        value:
+                            content: "3"
+                            rawMeta:
+                                type: 2
+                            type: literal
+                      name: chatHistoryRound
+                    - input:
+                        type: string
+                        value:
+                            content: |-
+                                学习内容：{{input_01}}
+                                这是知识学习类需求，请提供学习方法建议。
+                            rawMeta:
+                                type: 1
+                            type: literal
+                      name: systemPrompt
+                settingOnError:
+                    processType: 1
+                    retryTimes: 0
+                    timeoutMs: 180000
+            nodeMeta:
+                description: 根据输入的提示词，调用选定的大模型，对提示词作出回答
+                icon: http://127.0.0.1:9000/opencoze/default_icon/workflow_icon/icon-llm.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250915%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250915T071719Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=d4786a2e34634cc8e22ee6df395887544c0fe7b3c80e9f7f6258332f1d1c9c79
+                maincolor: '#5C62FF'
+                subTitle: 大模型
+                title: 知识学习引导
+            outputs:
+                - name: output
+                  required: false
+                  type: string
+                - name: reasoning_content
+                  type: string
+            version: "3"
+          id: "197166"
+          meta:
+            position:
+                x: 1100
+                "y": 0
+          type: "3"
+        - data:
+            inputs:
+                inputParameters:
+                    - input:
+                        type: string
+                        value:
+                            content:
+                                blockID: "100001"
+                                name: input_01
+                                source: block-output
+                            rawMeta:
+                                type: 1
+                            type: ref
+                      name: input_01
+                llmParam:
+                    - input:
+                        type: integer
+                        value:
+                            content: "61010"
+                            rawMeta:
+                                type: 2
+                            type: literal
+                      name: modelType
+                    - input:
+                        type: string
+                        value:
+                            content: Doubao-Seed-1.6
+                            rawMeta:
+                                type: 1
+                            type: literal
+                      name: modleName
+                    - input:
+                        type: string
+                        value:
+                            content: balance
+                            rawMeta:
+                                type: 1
+                            type: literal
+                      name: generationDiversity
+                    - input:
+                        type: float
+                        value:
+                            content: "0.5"
+                            rawMeta:
+                                type: 4
+                            type: literal
+                      name: temperature
+                    - input:
+                        type: integer
+                        value:
+                            content: "8192"
+                            rawMeta:
+                                type: 2
+                            type: literal
+                      name: maxTokens
+                    - input:
+                        type: float
+                        value:
+                            content: "0.7"
+                            rawMeta:
+                                type: 4
+                            type: literal
+                      name: topP
+                    - input:
+                        type: integer
+                        value:
+                            content: "2"
+                            rawMeta:
+                                type: 2
+                            type: literal
+                      name: responseFormat
+                    - input:
+                        type: string
+                        value:
+                            content: 无
+                            rawMeta:
+                                type: 1
+                            type: literal
+                      name: prompt
+                    - input:
+                        type: boolean
+                        value:
+                            content: false
+                            rawMeta:
+                                type: 3
+                            type: literal
+                      name: enableChatHistory
+                    - input:
+                        type: integer
+                        value:
+                            content: "3"
+                            rawMeta:
+                                type: 2
+                            type: literal
+                      name: chatHistoryRound
+                    - input:
+                        type: string
+                        value:
+                            content: |-
+                                学习内容：{{input_01}}
+                                这是技能实践类需求，请提供实践指导。
+                            rawMeta:
+                                type: 1
+                            type: literal
+                      name: systemPrompt
+                settingOnError:
+                    processType: 1
+                    retryTimes: 0
+                    timeoutMs: 180000
+            nodeMeta:
+                description: 根据输入的提示词，调用选定的大模型，对提示词作出回答
+                icon: http://127.0.0.1:9000/opencoze/default_icon/workflow_icon/icon-llm.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250915%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250915T071719Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=d4786a2e34634cc8e22ee6df395887544c0fe7b3c80e9f7f6258332f1d1c9c79
+                maincolor: '#5C62FF'
+                subTitle: 大模型
+                title: 技能实践指导
+            outputs:
+                - name: output
+                  required: false
+                  type: string
+                - name: reasoning_content
+                  type: string
+            version: "3"
+          id: "197167"
+          meta:
+            position:
+                x: 1100
+                "y": 289
+          type: "3"
+    versions:
+        loop: v2
+nodes:
+    - id: "100001"
+      type: "1"
+      meta:
+        position:
+            x: 189.84375
+            "y": 194.35
+      data:
+        meta:
+            title: 开始
+            description: 工作流的开启节点，用于定义流程调用所需的业务变量信息。
+            icon: http://127.0.0.1:9000/opencoze/default_icon/workflow_icon/icon-start.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250915%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250915T071719Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=3819a94b81d07958164d176f2396ee5e0f3e32e76ef49568f102f465b521161d
+            subtitle: ""
+            maincolor: ""
+        outputs:
+            - name: input_01
+              required: true
+              type: string
+        inputs: null
+        size: null
+      blocks: []
+      edges: []
+      version: ""
+    - id: "900001"
+      type: "2"
+      meta:
+        position:
+            x: 1560
+            "y": 171.35
+      data:
+        meta:
+            title: 结束
+            description: 工作流的结束节点，用于输出工作流运行后的最终结果。
+            icon: http://127.0.0.1:9000/opencoze/default_icon/workflow_icon/icon-end.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250915%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250915T071719Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=cf6c783f8a3ff87fa19472f836a0cb9042b8289616925a769466cf64c3a565ce
+            subtitle: ""
+            maincolor: ""
+        outputs: []
+        inputs:
+            inputparameters:
+                - name: result1
+                  input:
+                    Type: string
+                    Value:
+                        type: ref
+                        content:
+                            blockID: "197167"
+                            name: output
+                            source: block-output
+                        rawmeta:
+                            type: 1
+                  left: null
+                  right: null
+                  variables: []
+                - name: result2
+                  input:
+                    Type: string
+                    Value:
+                        type: ref
+                        content:
+                            blockID: "197166"
+                            name: output
+                            source: block-output
+                        rawmeta:
+                            type: 1
+                  left: null
+                  right: null
+                  variables: []
+            chathistorysetting: null
+            settingonerror: null
+            nodebatchinfo: null
+            llmparam: null
+            outputemitter: null
+            exit:
+                terminateplan: returnVariables
+            llm: null
+            loop: null
+            selector: null
+            textprocessor: null
+            subworkflow: null
+            intentdetector: null
+            databasenode: null
+            httprequestnode: null
+            knowledge: null
+            coderunner: null
+            pluginapiparam: null
+            variableaggregator: null
+            variableassigner: null
+            qa: null
+            batch: null
+            comment: null
+            inputreceiver: null
+        size: null
+      blocks: []
+      edges: []
+      version: ""
+    - id: "197165"
+      type: "22"
+      meta:
+        position:
+            x: 640
+            "y": 142.5
+      data:
+        meta:
+            title: 学习需求分类器
+            description: 用于用户输入的意图识别，并将其与预设意图选项进行匹配。
+            icon: http://127.0.0.1:9000/opencoze/default_icon/workflow_icon/icon-intent.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250915%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250915T071719Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=4ae86333188019f408f56904a43460e441ae508e13aa20a9dddf37edf3ac6e69
+            subtitle: 意图识别
+            maincolor: '#00B2B2'
+        outputs:
+            - name: classificationId
+              required: false
+              type: integer
+            - name: reason
+              required: false
+              type: string
+        inputs:
+            inputparameters:
+                - name: query
+                  input:
+                    Type: string
+                    Value:
+                        type: ref
+                        content:
+                            blockID: "100001"
+                            name: input_01
+                            source: block-output
+                        rawmeta:
+                            type: 1
+                  left: null
+                  right: null
+                  variables: []
+            chathistorysetting:
+                enablechathistory: false
+                chathistoryround: 3
+            settingonerror:
+                dataonerr: ""
+                switch: false
+                processtype: 1
+                retrytimes: 0
+                timeoutms: 60000
+                ext: null
+            nodebatchinfo: null
+            llmparam:
+                chatHistoryRound: 3
+                enableChatHistory: false
+                generationDiversity: balance
+                maxTokens: 8192
+                modelName: Doubao-Seed-1.6
+                modelType: 61010
+                prompt:
+                    type: string
+                    value:
+                        content: '{{query}}'
+                        type: literal
+                responseFormat: 2
+                systemPrompt:
+                    type: string
+                    value:
+                        content: ""
+                        type: literal
+                temperature: 0.5
+                topP: 0
+            outputemitter: null
+            exit: null
+            llm: null
+            loop: null
+            selector: null
+            textprocessor: null
+            subworkflow: null
+            intentdetector:
+                intents:
+                    - name: 知识学习类
+                    - name: 技能实践类
+                mode: all
+            databasenode: null
+            httprequestnode: null
+            knowledge: null
+            coderunner: null
+            pluginapiparam: null
+            variableaggregator: null
+            variableassigner: null
+            qa: null
+            batch: null
+            comment: null
+            inputreceiver: null
+        size: null
+      blocks: []
+      edges: []
+      version: ""
+    - id: "197166"
+      type: "3"
+      meta:
+        position:
+            x: 1100
+            "y": 0
+      data:
+        meta:
+            title: 知识学习引导
+            description: 根据输入的提示词，调用选定的大模型，对提示词作出回答
+            icon: http://127.0.0.1:9000/opencoze/default_icon/workflow_icon/icon-llm.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250915%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250915T071719Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=d4786a2e34634cc8e22ee6df395887544c0fe7b3c80e9f7f6258332f1d1c9c79
+            subtitle: 大模型
+            maincolor: '#5C62FF'
+        outputs:
+            - name: output
+              required: false
+              type: string
+            - name: reasoning_content
+              type: string
+        inputs:
+            inputparameters:
+                - name: input_01
+                  input:
+                    Type: string
+                    Value:
+                        type: ref
+                        content:
+                            blockID: "100001"
+                            name: input_01
+                            source: block-output
+                        rawmeta:
+                            type: 1
+                  left: null
+                  right: null
+                  variables: []
+            chathistorysetting: null
+            settingonerror:
+                dataonerr: ""
+                switch: false
+                processtype: 1
+                retrytimes: 0
+                timeoutms: 180000
+                ext: null
+            nodebatchinfo: null
+            llmparam:
+                - input:
+                    type: integer
+                    value:
+                        content: "61010"
+                        rawMeta:
+                            type: 2
+                        type: literal
+                  name: modelType
+                - input:
+                    type: string
+                    value:
+                        content: Doubao-Seed-1.6
+                        rawMeta:
+                            type: 1
+                        type: literal
+                  name: modleName
+                - input:
+                    type: string
+                    value:
+                        content: balance
+                        rawMeta:
+                            type: 1
+                        type: literal
+                  name: generationDiversity
+                - input:
+                    type: float
+                    value:
+                        content: "0.5"
+                        rawMeta:
+                            type: 4
+                        type: literal
+                  name: temperature
+                - input:
+                    type: integer
+                    value:
+                        content: "8192"
+                        rawMeta:
+                            type: 2
+                        type: literal
+                  name: maxTokens
+                - input:
+                    type: float
+                    value:
+                        content: "0.7"
+                        rawMeta:
+                            type: 4
+                        type: literal
+                  name: topP
+                - input:
+                    type: integer
+                    value:
+                        content: "2"
+                        rawMeta:
+                            type: 2
+                        type: literal
+                  name: responseFormat
+                - input:
+                    type: string
+                    value:
+                        content: 无
+                        rawMeta:
+                            type: 1
+                        type: literal
+                  name: prompt
+                - input:
+                    type: boolean
+                    value:
+                        content: false
+                        rawMeta:
+                            type: 3
+                        type: literal
+                  name: enableChatHistory
+                - input:
+                    type: integer
+                    value:
+                        content: "3"
+                        rawMeta:
+                            type: 2
+                        type: literal
+                  name: chatHistoryRound
+                - input:
+                    type: string
+                    value:
+                        content: |-
+                            学习内容：{{input_01}}
+                            这是知识学习类需求，请提供学习方法建议。
+                        rawMeta:
+                            type: 1
+                        type: literal
+                  name: systemPrompt
+            outputemitter: null
+            exit: null
+            llm: null
+            loop: null
+            selector: null
+            textprocessor: null
+            subworkflow: null
+            intentdetector: null
+            databasenode: null
+            httprequestnode: null
+            knowledge: null
+            coderunner: null
+            pluginapiparam: null
+            variableaggregator: null
+            variableassigner: null
+            qa: null
+            batch: null
+            comment: null
+            inputreceiver: null
+        size: null
+      blocks: []
+      edges: []
+      version: ""
+    - id: "197167"
+      type: "3"
+      meta:
+        position:
+            x: 1100
+            "y": 289
+      data:
+        meta:
+            title: 技能实践指导
+            description: 根据输入的提示词，调用选定的大模型，对提示词作出回答
+            icon: http://127.0.0.1:9000/opencoze/default_icon/workflow_icon/icon-llm.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250915%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250915T071719Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=d4786a2e34634cc8e22ee6df395887544c0fe7b3c80e9f7f6258332f1d1c9c79
+            subtitle: 大模型
+            maincolor: '#5C62FF'
+        outputs:
+            - name: output
+              required: false
+              type: string
+            - name: reasoning_content
+              type: string
+        inputs:
+            inputparameters:
+                - name: input_01
+                  input:
+                    Type: string
+                    Value:
+                        type: ref
+                        content:
+                            blockID: "100001"
+                            name: input_01
+                            source: block-output
+                        rawmeta:
+                            type: 1
+                  left: null
+                  right: null
+                  variables: []
+            chathistorysetting: null
+            settingonerror:
+                dataonerr: ""
+                switch: false
+                processtype: 1
+                retrytimes: 0
+                timeoutms: 180000
+                ext: null
+            nodebatchinfo: null
+            llmparam:
+                - input:
+                    type: integer
+                    value:
+                        content: "61010"
+                        rawMeta:
+                            type: 2
+                        type: literal
+                  name: modelType
+                - input:
+                    type: string
+                    value:
+                        content: Doubao-Seed-1.6
+                        rawMeta:
+                            type: 1
+                        type: literal
+                  name: modleName
+                - input:
+                    type: string
+                    value:
+                        content: balance
+                        rawMeta:
+                            type: 1
+                        type: literal
+                  name: generationDiversity
+                - input:
+                    type: float
+                    value:
+                        content: "0.5"
+                        rawMeta:
+                            type: 4
+                        type: literal
+                  name: temperature
+                - input:
+                    type: integer
+                    value:
+                        content: "8192"
+                        rawMeta:
+                            type: 2
+                        type: literal
+                  name: maxTokens
+                - input:
+                    type: float
+                    value:
+                        content: "0.7"
+                        rawMeta:
+                            type: 4
+                        type: literal
+                  name: topP
+                - input:
+                    type: integer
+                    value:
+                        content: "2"
+                        rawMeta:
+                            type: 2
+                        type: literal
+                  name: responseFormat
+                - input:
+                    type: string
+                    value:
+                        content: 无
+                        rawMeta:
+                            type: 1
+                        type: literal
+                  name: prompt
+                - input:
+                    type: boolean
+                    value:
+                        content: false
+                        rawMeta:
+                            type: 3
+                        type: literal
+                  name: enableChatHistory
+                - input:
+                    type: integer
+                    value:
+                        content: "3"
+                        rawMeta:
+                            type: 2
+                        type: literal
+                  name: chatHistoryRound
+                - input:
+                    type: string
+                    value:
+                        content: |-
+                            学习内容：{{input_01}}
+                            这是技能实践类需求，请提供实践指导。
+                        rawMeta:
+                            type: 1
+                        type: literal
+                  name: systemPrompt
+            outputemitter: null
+            exit: null
+            llm: null
+            loop: null
+            selector: null
+            textprocessor: null
+            subworkflow: null
+            intentdetector: null
+            databasenode: null
+            httprequestnode: null
+            knowledge: null
+            coderunner: null
+            pluginapiparam: null
+            variableaggregator: null
+            variableassigner: null
+            qa: null
+            batch: null
+            comment: null
+            inputreceiver: null
+        size: null
+      blocks: []
+      edges: []
+      version: ""
+edges:
+    - from_node: "100001"
+      from_port: ""
+      to_node: "197165"
+      to_port: ""
+    - from_node: "197166"
+      from_port: ""
+      to_node: "900001"
+      to_port: ""
+    - from_node: "197167"
+      from_port: ""
+      to_node: "900001"
+      to_port: ""
+    - from_node: "197165"
+      from_port: branch_0
+      to_node: "197166"
+      to_port: ""
+    - from_node: "197165"
+      from_port: branch_1
+      to_node: "197167"
+      to_port: ""
+    - from_node: "197165"
+      from_port: default
+      to_node: "197167"
+      to_port: ""
+metadata:
+    content_type: "0"
+    creator_id: "7550148264692023296"
+    mode: "0"
+    space_id: "7550148266701094912"
+dependencies:
+    - metadata:
+        node_type: workflow_node
+      resource_id: node_100001
+      resource_name: 开始
+      resource_type: node
+    - metadata:
+        node_type: workflow_node
+      resource_id: node_900001
+      resource_name: 结束
+      resource_type: node
+    - metadata:
+        node_type: workflow_node
+      resource_id: node_197165
+      resource_name: 学习需求分类器
+      resource_type: node
+    - metadata:
+        node_type: workflow_node
+      resource_id: node_197166
+      resource_name: 知识学习引导
+      resource_type: node
+    - metadata:
+        node_type: workflow_node
+      resource_id: node_197167
+      resource_name: 技能实践指导
+      resource_type: node
+exportformat: yml
+serializeddata: ""

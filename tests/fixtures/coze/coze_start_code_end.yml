@@ -1,0 +1,284 @@
+workflowid: "7550564862779195392"
+name: a1
+description: "1"
+version: ""
+createtime: 1758002876
+updatetime: 1758002876
+schema:
+    edges:
+        - sourceNodeID: "100001"
+          targetNodeID: "185345"
+        - sourceNodeID: "185345"
+          targetNodeID: "900001"
+    nodes:
+        - data:
+            nodeMeta:
+                description: The starting node of the workflow, used to set the information needed to initiate the workflow.
+                icon: http://127.0.0.1:9000/opencoze/default_icon/workflow_icon/icon-start.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250915%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250915T071719Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=3819a94b81d07958164d176f2396ee5e0f3e32e76ef49568f102f465b521161d
+                subTitle: ""
+                title: Start
+            outputs:
+                - name: name
+                  required: false
+                  type: string
+            trigger_parameters:
+                - name: name
+                  required: false
+                  type: string
+          id: "100001"
+          meta:
+            position:
+                x: 0
+                "y": 0
+          type: "1"
+        - data:
+            inputs:
+                inputParameters:
+                    - input:
+                        schema:
+                            type: string
+                        type: list
+                        value:
+                            content:
+                                blockID: "185345"
+                                name: result
+                                source: block-output
+                            rawMeta:
+                                type: 99
+                            type: ref
+                      name: output
+                terminatePlan: returnVariables
+            nodeMeta:
+                description: The final node of the workflow, used to return the result information after the workflow runs.
+                icon: http://127.0.0.1:9000/opencoze/default_icon/workflow_icon/icon-end.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250915%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250915T071719Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=cf6c783f8a3ff87fa19472f836a0cb9042b8289616925a769466cf64c3a565ce
+                subTitle: ""
+                title: End
+          id: "900001"
+          meta:
+            position:
+                x: 1000
+                "y": 0
+          type: "2"
+        - data:
+            inputs:
+                code: "# Here, you can use 'args' to access the input variables in the node and use 'ret' to output the result\n# 'args'  have already been correctly injected into the environment\n# Below is an example: First, retrieve all input parameters (params) from the node, then get the value of the parameter 'input':\n# params = args.params; \n# input = params.input;\n# Below is an example of outputting a 'ret' object containing multiple data types:\n# ret: Output =  { \"name\": 'Xiao Ming', \"hobbies\": [\"reading\", \"traveling\"] };\n\nasync def main(args: Args) -> Output:\n    params = args.params\n    name = params.get(\"input\", \"\")  # 获取输入参数\n\n    # 分析编程学习内容，生成学习路径\n    if \"python\" in name.lower():\n        path = [\"基础语法\", \"数据结构\", \"函数编程\", \"项目实战\"]\n    elif \"javascript\" in name.lower():\n        path = [\"基础语法\", \"DOM操作\", \"异步编程\", \"框架学习\"]\n    else:\n        path = [\"基础概念\", \"核心语法\", \"实践练习\", \"项目应用\"]\n\n    # 构造返回对象\n    ret: Output = {\n        \"result\": path\n    }\n    return ret\n"
+                inputParameters:
+                    - input:
+                        type: string
+                        value:
+                            content:
+                                blockID: "100001"
+                                name: name
+                                source: block-output
+                            rawMeta:
+                                type: 1
+                            type: ref
+                      name: name
+                language: 3
+                settingOnError:
+                    processType: 1
+                    retryTimes: 0
+                    timeoutMs: 60000
+            nodeMeta:
+                description: Write code to process input variables to generate return values.
+                icon: http://127.0.0.1:9000/opencoze/default_icon/workflow_icon/icon-code.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250915%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250915T071719Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=a5e4ef3694cbeeaabc9c5a9265086cd68a60fa2d72d449dfcf8bdedb2548ceb6
+                mainColor: '#00B2B2'
+                subTitle: Code
+                title: Code
+            outputs:
+                - name: result
+                  schema:
+                    type: string
+                  type: list
+          id: "185345"
+          meta:
+            position:
+                x: 554.6348695755005
+                "y": -44.93335590362548
+          type: "5"
+    versions:
+        loop: v2
+nodes:
+    - id: "100001"
+      type: "1"
+      meta:
+        position:
+            x: 0
+            "y": 0
+      data:
+        meta:
+            title: Start
+            description: The starting node of the workflow, used to set the information needed to initiate the workflow.
+            icon: http://127.0.0.1:9000/opencoze/default_icon/workflow_icon/icon-start.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250915%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250915T071719Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=3819a94b81d07958164d176f2396ee5e0f3e32e76ef49568f102f465b521161d
+            subtitle: ""
+            maincolor: ""
+        outputs:
+            - name: name
+              required: false
+              type: string
+        inputs: null
+        size: null
+      blocks: []
+      edges: []
+      version: ""
+    - id: "900001"
+      type: "2"
+      meta:
+        position:
+            x: 1000
+            "y": 0
+      data:
+        meta:
+            title: End
+            description: The final node of the workflow, used to return the result information after the workflow runs.
+            icon: http://127.0.0.1:9000/opencoze/default_icon/workflow_icon/icon-end.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250915%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250915T071719Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=cf6c783f8a3ff87fa19472f836a0cb9042b8289616925a769466cf64c3a565ce
+            subtitle: ""
+            maincolor: ""
+        outputs: []
+        inputs:
+            inputparameters:
+                - name: output
+                  input:
+                    Type: list
+                    Schema:
+                        type: string
+                    Value:
+                        type: ref
+                        content:
+                            blockID: "185345"
+                            name: result
+                            source: block-output
+                        rawmeta:
+                            type: 99
+                  left: null
+                  right: null
+                  variables: []
+            chathistorysetting: null
+            settingonerror: null
+            nodebatchinfo: null
+            llmparam: null
+            outputemitter: null
+            exit:
+                terminateplan: returnVariables
+            llm: null
+            loop: null
+            selector: null
+            textprocessor: null
+            subworkflow: null
+            intentdetector: null
+            databasenode: null
+            httprequestnode: null
+            knowledge: null
+            coderunner: null
+            pluginapiparam: null
+            variableaggregator: null
+            variableassigner: null
+            qa: null
+            batch: null
+            comment: null
+            inputreceiver: null
+        size: null
+      blocks: []
+      edges: []
+      version: ""
+    - id: "185345"
+      type: "5"
+      meta:
+        position:
+            x: 554.6348695755005
+            "y": -44.93335590362548
+      data:
+        meta:
+            title: Code
+            description: Write code to process input variables to generate return values.
+            icon: http://127.0.0.1:9000/opencoze/default_icon/workflow_icon/icon-code.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20250915%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250915T071719Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=a5e4ef3694cbeeaabc9c5a9265086cd68a60fa2d72d449dfcf8bdedb2548ceb6
+            subtitle: Code
+            maincolor: '#00B2B2'
+        outputs:
+            - name: result
+              schema:
+                type: string
+              type: list
+        inputs:
+            inputparameters:
+                - name: name
+                  input:
+                    Type: string
+                    Value:
+                        type: ref
+                        content:
+                            blockID: "100001"
+                            name: name
+                            source: block-output
+                        rawmeta:
+                            type: 1
+                  left: null
+                  right: null
+                  variables: []
+            chathistorysetting: null
+            settingonerror:
+                dataonerr: ""
+                switch: false
+                processtype: 1
+                retrytimes: 0
+                timeoutms: 60000
+                ext: null
+            nodebatchinfo: null
+            llmparam: null
+            outputemitter: null
+            exit: null
+            llm: null
+            loop: null
+            selector: null
+            textprocessor: null
+            subworkflow: null
+            intentdetector: null
+            databasenode: null
+            httprequestnode: null
+            knowledge: null
+            coderunner:
+                code: "# Here, you can use 'args' to access the input variables in the node and use 'ret' to output the result\n# 'args'  have already been correctly injected into the environment\n# Below is an example: First, retrieve all input parameters (params) from the node, then get the value of the parameter 'input':\n# params = args.params; \n# input = params.input;\n# Below is an example of outputting a 'ret' object containing multiple data types:\n# ret: Output =  { \"name\": 'Xiao Ming', \"hobbies\": [\"reading\", \"traveling\"] };\n\nasync def main(args: Args) -> Output:\n    params = args.params\n    name = params.get(\"input\", \"\")  # 获取输入参数\n\n    # 分析编程学习内容，生成学习路径\n    if \"python\" in name.lower():\n        path = [\"基础语法\", \"数据结构\", \"函数编程\", \"项目实战\"]\n    elif \"javascript\" in name.lower():\n        path = [\"基础语法\", \"DOM操作\", \"异步编程\", \"框架学习\"]\n    else:\n        path = [\"基础概念\", \"核心语法\", \"实践练习\", \"项目应用\"]\n\n    # 构造返回对象\n    ret: Output = {\n        \"result\": path\n    }\n    return ret\n"
+                language: 3
+            pluginapiparam: null
+            variableaggregator: null
+            variableassigner: null
+            qa: null
+            batch: null
+            comment: null
+            inputreceiver: null
+        size: null
+      blocks: []
+      edges: []
+      version: ""
+edges:
+    - from_node: "100001"
+      from_port: ""
+      to_node: "185345"
+      to_port: ""
+    - from_node: "185345"
+      from_port: ""
+      to_node: "900001"
+      to_port: ""
+metadata:
+    content_type: "0"
+    creator_id: "7549054273099661312"
+    mode: "0"
+    space_id: "7549054273355513856"
+dependencies:
+    - metadata:
+        node_type: workflow_node
+      resource_id: node_100001
+      resource_name: Start
+      resource_type: node
+    - metadata:
+        node_type: workflow_node
+      resource_id: node_900001
+      resource_name: End
+      resource_type: node
+    - metadata:
+        node_type: workflow_node
+      resource_id: node_185345
+      resource_name: Code
+      resource_type: node
+exportformat: yml
+serializeddata: ""

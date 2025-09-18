@@ -1,0 +1,325 @@
+flowMeta:
+  name: 自定义17520250917090220
+  description: ""
+  avatarIcon: https://oss-beijing-m8.openstorage.cn/SparkBotProd/icon/common/emojiitem_00_10@2x.png
+  avatarColor: "#FFEAD5"
+  advancedConfig: '{"prologue":{"enabled":true,"inputExample":["","",""]},"needGuide":false}'
+  dslVersion: v1
+flowData:
+  nodes:
+    - id: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+      dragging: false
+      selected: false
+      width: 658
+      height: 416
+      position:
+        x: -405.22463246142695
+        y: 361.412383147212
+      positionAbsolute:
+        x: -405.22463246142695
+        y: 361.412383147212
+      type: 开始节点
+      data:
+        allowInputReference: false
+        allowOutputReference: true
+        label: 开始
+        status: ""
+        nodeMeta:
+          aliasName: 开始节点
+          nodeType: 基础节点
+        inputs: []
+        outputs:
+          - id: 0918514b-72a8-4646-8dd9-ff4a8fc26d44
+            name: AGENT_USER_INPUT
+            nameErrMsg: ""
+            schema:
+              type: string
+              default: 用户本轮对话输入内容
+            required: true
+            deleteDisabled: true
+          - id: e7d648f2-6747-4875-b904-309345adffc6
+            name: input_01
+            nameErrMsg: ""
+            schema:
+              type: string
+              properties: []
+              default: 学习内容
+            required: true
+            customParameterType: xfyun-file
+          - id: 92f8a58a-1a64-4f56-8835-a03e82e45c2c
+            name: input_num_01
+            nameErrMsg: ""
+            schema:
+              type: integer
+              properties: []
+              default: 难度级别(1-10)
+            required: true
+            customParameterType: xfyun-file
+          - id: 77826071-af35-422a-a4f5-aaa1f3c5a5e8
+            name: input_num_02
+            nameErrMsg: ""
+            schema:
+              type: integer
+              properties: []
+              default: 学习时间(小时)
+            required: true
+            customParameterType: xfyun-file
+          - id: 9858eb4c-9e7d-4aa4-b568-7fef18cd0db6
+            name: intput_text_01
+            nameErrMsg: ""
+            schema:
+              type: string
+              properties: []
+              default: 学习目标
+            required: true
+            customParameterType: xfyun-file
+        nodeParam: {}
+        icon: https://oss-beijing-m8.openstorage.cn/pro-bucket/sparkBot/common/workflow/icon/start-node-icon.png
+        description: 工作流的开启节点，用于定义流程调用所需的业务变量信息。
+        updatable: false
+    - id: node-end::cda617af-551e-462e-b3b8-3bb9a041bf88
+      dragging: false
+      selected: false
+      width: 408
+      height: 616
+      position:
+        x: 1156.9014045852477
+        y: 257.0225257105655
+      positionAbsolute:
+        x: 1156.9014045852477
+        y: 257.0225257105655
+      type: 结束节点
+      data:
+        allowInputReference: true
+        allowOutputReference: false
+        label: 结束
+        references:
+          - children:
+              - references:
+                  - originId: spark-llm::a3875d12-c684-440e-b98d-193947ee9cce
+                    id: b9abd08b-259e-40de-b5f4-1b0d635630b9
+                    label: output
+                    type: string
+                    value: output
+                    fileType: ""
+                label: ""
+                value: ""
+            label: 通用学习建议
+            parentNode: true
+            value: spark-llm::a3875d12-c684-440e-b98d-193947ee9cce
+          - children:
+              - references:
+                  - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+                    id: 0918514b-72a8-4646-8dd9-ff4a8fc26d44
+                    label: AGENT_USER_INPUT
+                    type: string
+                    value: AGENT_USER_INPUT
+                    fileType: ""
+                  - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+                    children: []
+                    id: e7d648f2-6747-4875-b904-309345adffc6
+                    label: input_01
+                    type: string
+                    value: input_01
+                    fileType: ""
+                  - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+                    children: []
+                    id: 92f8a58a-1a64-4f56-8835-a03e82e45c2c
+                    label: input_num_01
+                    type: integer
+                    value: input_num_01
+                    fileType: ""
+                  - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+                    children: []
+                    id: 77826071-af35-422a-a4f5-aaa1f3c5a5e8
+                    label: input_num_02
+                    type: integer
+                    value: input_num_02
+                    fileType: ""
+                  - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+                    children: []
+                    id: 9858eb4c-9e7d-4aa4-b568-7fef18cd0db6
+                    label: intput_text_01
+                    type: string
+                    value: intput_text_01
+                    fileType: ""
+                label: ""
+                value: ""
+            label: 开始
+            parentNode: true
+            value: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+        status: ""
+        nodeMeta:
+          aliasName: 结束节点
+          nodeType: 基础节点
+        inputs:
+          - id: 82de2b42-a059-4c98-bffb-b6b4800fcac9
+            name: result1
+            nameErrMsg: ""
+            schema:
+              type: string
+              value:
+                type: ref
+                content:
+                  name: output
+                  id: b9abd08b-259e-40de-b5f4-1b0d635630b9
+                  nodeId: spark-llm::a3875d12-c684-440e-b98d-193947ee9cce
+                contentErrMsg: ""
+            fileType: ""
+        outputs: []
+        nodeParam:
+          template: "{{result1}}"
+          streamOutput: true
+          templateErrMsg: ""
+          outputMode: 1
+        icon: https://oss-beijing-m8.openstorage.cn/pro-bucket/sparkBot/common/workflow/icon/end-node-icon.png
+        description: 工作流的结束节点，用于输出工作流运行后的最终结果。
+        updatable: false
+    - id: spark-llm::a3875d12-c684-440e-b98d-193947ee9cce
+      dragging: false
+      selected: false
+      width: 587
+      height: 881
+      position:
+        x: 343.5890534939498
+        y: 128.26168264506902
+      positionAbsolute:
+        x: 343.5890534939498
+        y: 128.26168264506902
+      type: 大模型
+      data:
+        allowInputReference: true
+        allowOutputReference: true
+        label: 通用学习建议
+        labelEdit: false
+        references:
+          - children:
+              - references:
+                  - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+                    id: 0918514b-72a8-4646-8dd9-ff4a8fc26d44
+                    label: AGENT_USER_INPUT
+                    type: string
+                    value: AGENT_USER_INPUT
+                    fileType: ""
+                  - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+                    children: []
+                    id: e7d648f2-6747-4875-b904-309345adffc6
+                    label: input_01
+                    type: string
+                    value: input_01
+                    fileType: ""
+                  - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+                    children: []
+                    id: 92f8a58a-1a64-4f56-8835-a03e82e45c2c
+                    label: input_num_01
+                    type: integer
+                    value: input_num_01
+                    fileType: ""
+                  - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+                    children: []
+                    id: 77826071-af35-422a-a4f5-aaa1f3c5a5e8
+                    label: input_num_02
+                    type: integer
+                    value: input_num_02
+                    fileType: ""
+                  - originId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+                    children: []
+                    id: 9858eb4c-9e7d-4aa4-b568-7fef18cd0db6
+                    label: intput_text_01
+                    type: string
+                    value: intput_text_01
+                    fileType: ""
+                label: ""
+                value: ""
+            label: 开始
+            parentNode: true
+            value: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+        status: ""
+        nodeMeta:
+          aliasName: 大模型
+          nodeType: 基础节点
+        inputs:
+          - id: 9e8cba51-fb8b-49cd-81e0-a4c4af7dab93
+            name: input_01
+            nameErrMsg: ""
+            schema:
+              type: string
+              value:
+                type: ref
+                content:
+                  name: input_01
+                  id: e7d648f2-6747-4875-b904-309345adffc6
+                  nodeId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+                contentErrMsg: ""
+            fileType: ""
+          - id: a6816580-2564-4967-9ac6-2f58ced09851
+            name: input_text_01
+            nameErrMsg: ""
+            schema:
+              type: string
+              value:
+                type: ref
+                content:
+                  name: intput_text_01
+                  id: 9858eb4c-9e7d-4aa4-b568-7fef18cd0db6
+                  nodeId: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+                contentErrMsg: ""
+            fileType: ""
+        outputs:
+          - id: b9abd08b-259e-40de-b5f4-1b0d635630b9
+            name: output
+            nameErrMsg: ""
+            schema:
+              type: string
+              default: ""
+        nodeParam:
+          topK: 4
+          template: 无
+          modelId: 141
+          enableChatHistoryV2:
+            isEnabled: false
+            rounds: 1
+          auditing: default
+          llmId: 141
+          url: wss://maas-api.cn-huabei-1.xf-yun.com/v1.1/chat
+          multiMode: false
+          uid: "20718349453"
+          patchId: "0"
+          isThink: false
+          templateErrMsg: ""
+          searchDisable: true
+          domain: xdeepseekv3
+          appId: 12a0a7e2
+          maxTokens: 8192
+          temperature: 0.5
+          systemTemplate: |-
+            学习内容：{{input_01}}学习目标：{{input_text_01}}
+
+            这是一般性学习需求，请提供简洁的学习建议，包括学习方法和注意事项。
+          model: spark
+          serviceId: xdeepseekv3
+          respFormat: 0
+          llmIdErrMsg: ""
+        icon: https://oss-beijing-m8.openstorage.cn/pro-bucket/sparkBot/common/workflow/icon/largeModelIcon.png
+        description: 根据输入的提示词，调用选定的大模型，对提示词作出回答
+        updatable: false
+  edges:
+    - source: spark-llm::a3875d12-c684-440e-b98d-193947ee9cce
+      target: node-end::cda617af-551e-462e-b3b8-3bb9a041bf88
+      targetHandle: node-end::cda617af-551e-462e-b3b8-3bb9a041bf88
+      type: customEdge
+      id: reactflow__edge-spark-llm::a3875d12-c684-440e-b98d-193947ee9cce-node-end::cda617af-551e-462e-b3b8-3bb9a041bf88node-end::cda617af-551e-462e-b3b8-3bb9a041bf88
+      markerEnd:
+        color: "#275EFF"
+        type: arrow
+      data:
+        edgeType: curve
+    - source: node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783
+      target: spark-llm::a3875d12-c684-440e-b98d-193947ee9cce
+      type: customEdge
+      id: reactflow__edge-node-start::d61b0f71-87ee-475e-93ba-f1607f0ce783-spark-llm::a3875d12-c684-440e-b98d-193947ee9cce
+      markerEnd:
+        color: "#275EFF"
+        type: arrow
+      data:
+        edgeType: curve
