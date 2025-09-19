@@ -2,6 +2,7 @@ package generator
 
 import (
 	"ai-agents-transformer/internal/models"
+	"ai-agents-transformer/platforms/common"
 	"fmt"
 	"regexp"
 	"strings"
@@ -48,16 +49,17 @@ func (g *ClassifierNodeGenerator) SetNodeMapping(nodes []models.Node) {
 // setClassifierDataFields directly sets classifier node data fields, consistent with Dify standard format
 func (g *ClassifierNodeGenerator) setClassifierDataFields(data *DifyNodeData, node models.Node) {
 	// Extract classifier configuration from unified DSL config
-	var classifierConfig models.ClassifierConfig
-	if config, ok := node.Config.(*models.ClassifierConfig); ok {
-		classifierConfig = *config
+	var classifierConfig *models.ClassifierConfig
+	if config, ok := common.AsClassifierConfig(node.Config); ok && config != nil {
+		classifierConfig = config
 	} else {
 		// If config type doesn't match, use default config
-		classifierConfig = models.ClassifierConfig{}
+		defaultConfig := models.ClassifierConfig{}
+		classifierConfig = &defaultConfig
 	}
 
 	// Set classification classes
-	data.Classes = g.generateClassesFromConfig(classifierConfig)
+	data.Classes = g.generateClassesFromConfig(*classifierConfig)
 
 	// Need to convert variable reference format: {{Query}} -> {{#nodeId.variableName#}}
 	instruction := classifierConfig.Instructions
@@ -88,13 +90,13 @@ func (g *ClassifierNodeGenerator) setClassifierDataFields(data *DifyNodeData, no
 	data.Instructions = "" // Keep empty string, consistent with Dify instance
 
 	// Set model configuration - support complete parameters
-	data.Model = g.generateModelFromClassifierConfig(classifierConfig)
+	data.Model = g.generateModelFromClassifierConfig(*classifierConfig)
 
 	// Set query variable selector
 	data.QueryVariableSelector = g.generateQueryVariableSelector(node)
 
 	// Set vision configuration - dynamically get from config or use reasonable defaults
-	data.Vision = g.generateVisionConfig(classifierConfig)
+	data.Vision = g.generateVisionConfig(*classifierConfig)
 
 	// Set topics (ensure field exists, even if empty array)
 	data.Topics = make([]string, 0)

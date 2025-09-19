@@ -1,10 +1,11 @@
 package generator
 
 import (
-	"ai-agents-transformer/internal/models"
-	"fmt"
-	"regexp"
-	"strings"
+    "ai-agents-transformer/internal/models"
+    "ai-agents-transformer/platforms/common"
+    "fmt"
+    "regexp"
+    "strings"
 )
 
 // IterationNodeGenerator generates Coze iteration nodes
@@ -57,10 +58,10 @@ func (g *IterationNodeGenerator) ValidateNode(unifiedNode *models.Node) error {
 		return fmt.Errorf("node config is nil")
 	}
 
-	iterationConfig, ok := unifiedNode.Config.(*models.IterationConfig)
-	if !ok {
-		return fmt.Errorf("invalid config type: expected *IterationConfig")
-	}
+    iterationConfig, ok := common.AsIterationConfig(unifiedNode.Config)
+    if !ok || iterationConfig == nil {
+        return fmt.Errorf("invalid config type: expected IterationConfig")
+    }
 
 	if iterationConfig.Iterator.SourceNode == "" {
 		return fmt.Errorf("iteration source node is empty")
@@ -80,8 +81,11 @@ func (g *IterationNodeGenerator) GenerateNode(unifiedNode *models.Node) (*CozeNo
 	// Set current iteration node ID for edge generator use
 	g.idGenerator.SetCurrentIterationNodeID(cozeNodeID)
 
-	// Extract iteration configuration
-	iterationConfig := unifiedNode.Config.(*models.IterationConfig)
+    // Extract iteration configuration
+    iterationConfig, ok := common.AsIterationConfig(unifiedNode.Config)
+    if !ok || iterationConfig == nil {
+        return nil, fmt.Errorf("invalid iteration config type for node %s", unifiedNode.ID)
+    }
 
 	// Generate sub-blocks
 	blocks, err := g.generateSubBlocks(iterationConfig.SubWorkflow.Nodes)
@@ -176,8 +180,11 @@ func (g *IterationNodeGenerator) GenerateSchemaNode(unifiedNode *models.Node) (*
 	// FIXED: Set current iteration node ID for edge generation
 	g.idGenerator.SetCurrentIterationNodeID(cozeNodeID)
 
-	// Extract iteration configuration
-	iterationConfig := unifiedNode.Config.(*models.IterationConfig)
+    // Extract iteration configuration
+    iterationConfig, ok := common.AsIterationConfig(unifiedNode.Config)
+    if !ok || iterationConfig == nil {
+        return nil, fmt.Errorf("invalid iteration config type for node %s", unifiedNode.ID)
+    }
 
 	// Generate sub-blocks (same as in GenerateNode)
 	blocks, err := g.generateSubBlocks(iterationConfig.SubWorkflow.Nodes)
@@ -713,7 +720,10 @@ func (g *IterationNodeGenerator) generateNodeMeta(unifiedNode *models.Node) map[
 
 // getLastProcessingNodeID gets the ID of the last actual processing node in the iteration
 func (g *IterationNodeGenerator) getLastProcessingNodeID(unifiedNode *models.Node) string {
-	iterationConfig := unifiedNode.Config.(*models.IterationConfig)
+    iterationConfig, ok := common.AsIterationConfig(unifiedNode.Config)
+    if !ok || iterationConfig == nil {
+        return g.idGenerator.MapToCozeNodeID(unifiedNode.ID)
+    }
 
 	// CRITICAL: Need to analyze edge connections to find the real last processing node
 	// Cannot simply search from back to front, because node order does not represent execution order
@@ -784,7 +794,10 @@ func (g *IterationNodeGenerator) getLastProcessingNodeID(unifiedNode *models.Nod
 
 // getLastProcessingNodeOutputName gets output field name of final processing node - completely dynamic version without hardcoding
 func (g *IterationNodeGenerator) getLastProcessingNodeOutputName(unifiedNode *models.Node, lastProcessingNodeID string) string {
-	iterationConfig := unifiedNode.Config.(*models.IterationConfig)
+    iterationConfig, ok := common.AsIterationConfig(unifiedNode.Config)
+    if !ok || iterationConfig == nil {
+        return "result"
+    }
 	
 	// CRITICAL: Find corresponding unified DSL node, get its actual output definition
 	for _, subNode := range iterationConfig.SubWorkflow.Nodes {
@@ -813,9 +826,9 @@ func (g *IterationNodeGenerator) getLastProcessingNodeOutputName(unifiedNode *mo
 // inferMainOutputFieldName dynamically infers main output field name based on node configuration
 func (g *IterationNodeGenerator) inferMainOutputFieldName(node models.Node) string {
 	switch node.Type {
-	case models.NodeTypeCode:
-		// Code node: analyze return statements in code to infer output fields
-		if codeConfig, ok := node.Config.(*models.CodeConfig); ok {
+    case models.NodeTypeCode:
+        // Code node: analyze return statements in code to infer output fields
+        if codeConfig, ok := common.AsCodeConfig(node.Config); ok && codeConfig != nil {
 			// Simple regex matching to find field names in return statements
 			// Example: return {"integrated_result": result} or return {"output": data}
 			outputField := g.extractOutputFieldFromCode(codeConfig.Code)
@@ -824,9 +837,9 @@ func (g *IterationNodeGenerator) inferMainOutputFieldName(node models.Node) stri
 			}
 		}
 		
-	case models.NodeTypeLLM:
-		// LLM node: check prompt template to infer output usage
-		if llmConfig, ok := node.Config.(*models.LLMConfig); ok {
+    case models.NodeTypeLLM:
+        // LLM node: check prompt template to infer output usage
+        if llmConfig, ok := common.AsLLMConfig(node.Config); ok && llmConfig != nil {
 			// Analyze system prompt to infer output type
 			outputField := g.inferLLMOutputField(llmConfig.Prompt.SystemTemplate)
 			if outputField != "" {

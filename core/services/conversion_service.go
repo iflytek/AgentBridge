@@ -3,6 +3,7 @@ package services
 import (
 	"ai-agents-transformer/core/interfaces"
 	"ai-agents-transformer/internal/models"
+	"ai-agents-transformer/platforms/common"
 	"context"
 	"fmt"
 )
@@ -35,36 +36,81 @@ func (s *ConversionService) ConvertWithContext(
 ) ([]byte, error) {
 	// Check platform support
 	if err := s.validatePlatformSupport(sourcePlatform, targetPlatform); err != nil {
-		return nil, fmt.Errorf("platform validation failed: %w", err)
+		return nil, &models.ConversionError{
+			Code:           "PLATFORM_NOT_SUPPORTED",
+			Message:        "Platform validation failed",
+			SourcePlatform: string(sourcePlatform),
+			TargetPlatform: string(targetPlatform),
+			ErrorType:      "platform_support",
+			Details:        err.Error(),
+			Severity:       models.SeverityCritical,
+		}
 	}
 
 	// Get source platform parser
 	parser, err := s.getParser(sourcePlatform)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get parser for %s: %w", sourcePlatform, err)
+		return nil, &models.ConversionError{
+			Code:           "PARSER_NOT_FOUND",
+			Message:        fmt.Sprintf("Failed to get parser for %s", sourcePlatform),
+			SourcePlatform: string(sourcePlatform),
+			TargetPlatform: string(targetPlatform),
+			ErrorType:      "parser_error",
+			Details:        err.Error(),
+			Severity:       models.SeverityCritical,
+		}
 	}
 
 	// Parse source DSL to unified format
 	unifiedDSL, err := parser.Parse(sourceData)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse source DSL: %w", err)
+		return nil, &models.ParseError{
+			Code:    "PARSE_FAILED",
+			Message: "Failed to parse source DSL",
+			Suggestions: []string{
+				"Check DSL format and syntax",
+				"Verify all required fields are present",
+				"Ensure file encoding is correct",
+			},
+		}
 	}
 
-	// Basic validation (simplified)
-	if err := s.performBasicValidation(unifiedDSL); err != nil {
-		return nil, fmt.Errorf("validation failed: %w", err)
+	// Basic validation using the common validator
+	if err := s.performValidation(unifiedDSL); err != nil {
+		return nil, err // Already a typed error
 	}
 
 	// Get target platform generator
 	generator, err := s.getGenerator(targetPlatform)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get generator for %s: %w", targetPlatform, err)
+		return nil, &models.ConversionError{
+			Code:           "GENERATOR_NOT_FOUND",
+			Message:        fmt.Sprintf("Failed to get generator for %s", targetPlatform),
+			SourcePlatform: string(sourcePlatform),
+			TargetPlatform: string(targetPlatform),
+			ErrorType:      "generator_error",
+			Details:        err.Error(),
+			Severity:       models.SeverityCritical,
+		}
 	}
 
 	// Generate target platform DSL
 	targetData, err := generator.Generate(unifiedDSL)
 	if err != nil {
-		return nil, fmt.Errorf("failed to generate target DSL: %w", err)
+		return nil, &models.ConversionError{
+			Code:           "GENERATION_FAILED",
+			Message:        "Failed to generate target DSL",
+			SourcePlatform: string(sourcePlatform),
+			TargetPlatform: string(targetPlatform),
+			ErrorType:      "generation_error",
+			Details:        err.Error(),
+			Severity:       models.SeverityError,
+			Suggestions: []string{
+				"Check if all nodes are supported on target platform",
+				"Verify node configurations are valid",
+				"Review variable references and connections",
+			},
+		}
 	}
 
 	return targetData, nil
@@ -98,25 +144,30 @@ func (s *ConversionService) validatePlatformSupport(sourcePlatform, targetPlatfo
 	return nil
 }
 
-// performBasicValidation performs simplified validation on the unified DSL.
-func (s *ConversionService) performBasicValidation(unifiedDSL *models.UnifiedDSL) error {
-	// Basic null checks
-	if unifiedDSL == nil {
-		return fmt.Errorf("unified DSL is nil")
-	}
+// performValidation performs comprehensive validation using the common validator
+func (s *ConversionService) performValidation(unifiedDSL *models.UnifiedDSL) error {
+	// Use the common DSL validator
+	validator := common.NewUnifiedDSLValidator()
 
-	// Check for minimum required nodes
-	if len(unifiedDSL.Workflow.Nodes) == 0 {
-		return fmt.Errorf("workflow must contain at least one node")
-	}
-
-	// Basic node validation
-	for i, node := range unifiedDSL.Workflow.Nodes {
-		if node.ID == "" {
-			return fmt.Errorf("node at index %d has empty ID", i)
+	// Validate metadata
+	if err := validator.ValidateMetadata(&unifiedDSL.Metadata); err != nil {
+		return &models.ValidationError{
+			Type:           "metadata",
+			Severity:       "error",
+			Message:        fmt.Sprintf("Metadata validation failed: %v", err),
+			AffectedItems:  []string{err.Error()},
+			FixSuggestions: []string{"Check workflow name and description", "Verify metadata completeness"},
 		}
-		if node.Type == "" {
-			return fmt.Errorf("node %s has empty type", node.ID)
+	}
+
+	// Validate workflow
+	if err := validator.ValidateWorkflow(&unifiedDSL.Workflow); err != nil {
+		return &models.ValidationError{
+			Type:           "workflow",
+			Severity:       "error",
+			Message:        fmt.Sprintf("Workflow validation failed: %v", err),
+			AffectedItems:  []string{err.Error()},
+			FixSuggestions: []string{"Check node connections", "Verify required start and end nodes", "Validate node references"},
 		}
 	}
 

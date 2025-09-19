@@ -60,31 +60,13 @@ func (g *DifyGenerator) Generate(unifiedDSL *models.UnifiedDSL) ([]byte, error) 
 		return nil, fmt.Errorf("failed to marshal to YAML: %w", err)
 	}
 
-	// Final text replacement step: ensure all node IDs are properly mapped
+	// Apply node ID mappings using the ID mapper for safer replacements
 	yamlString := string(yamlData)
-	for oldID, newID := range nodeIDMapping {
-		// Replace regular ID references
-		yamlString = strings.ReplaceAll(yamlString, oldID, newID)
+	idMapper := common.NewUnifiedIDMapper(common.StrategyTimestampBased).(*common.UnifiedIDMapper)
+	idMapper.SetMapping(nodeIDMapping)
 
-		// Ensure IDs in value_selector are in quoted string format
-		// Replace "- numericID" with "- 'numericID'"
-		yamlString = strings.ReplaceAll(yamlString, fmt.Sprintf("- %s", newID), fmt.Sprintf("- '%s'", newID))
-		// Replace "- numericID\n" with "- 'numericID'\n" (handle end of line case)
-		yamlString = strings.ReplaceAll(yamlString, fmt.Sprintf("- %s\n", newID), fmt.Sprintf("- '%s'\n", newID))
-
-		// Ensure parentId field is in quoted string format
-		yamlString = strings.ReplaceAll(yamlString, fmt.Sprintf("parentId: %s", newID), fmt.Sprintf("parentId: '%s'", newID))
-		// Ensure iteration_id field is in quoted string format
-		yamlString = strings.ReplaceAll(yamlString, fmt.Sprintf("iteration_id: %s", newID), fmt.Sprintf("iteration_id: '%s'", newID))
-
-		// Special handling for iteration start node IDs (numeric+start format)
-		if strings.HasSuffix(newID, "start") {
-			startNodeID := newID
-			// Ensure iteration start node IDs are correctly formatted in value_selector
-			yamlString = strings.ReplaceAll(yamlString, fmt.Sprintf("- %s", startNodeID), fmt.Sprintf("- '%s'", startNodeID))
-			yamlString = strings.ReplaceAll(yamlString, fmt.Sprintf("- %s\n", startNodeID), fmt.Sprintf("- '%s'\n", startNodeID))
-		}
-	}
+	// Use structured YAML processing instead of string replacement
+	yamlString = g.applyNodeIDMappingsToYAML(yamlString, idMapper)
 
 	// Add required empty fields for classifier nodes (if missing)
 	yamlString = g.ensureClassifierRequiredFields(yamlString)
@@ -855,4 +837,51 @@ func (g *DifyGenerator) insertTopicsField(lines []string, selectorIndex int) str
 
 	newLines := append(lines[:insertPos], append([]string{"                topics: []"}, lines[insertPos:]...)...)
 	return strings.Join(newLines, "\n")
+}
+
+// applyNodeIDMappingsToYAML applies node ID mappings using structured processing
+func (g *DifyGenerator) applyNodeIDMappingsToYAML(yamlString string, idMapper *common.UnifiedIDMapper) string {
+	// Process YAML using regex patterns to safely replace node IDs
+	// This approach is safer than direct string replacement as it targets specific patterns
+
+	for oldID, newID := range idMapper.GetMapping() {
+		// Replace node IDs in edges (source/target fields)
+		yamlString = g.replaceNodeIDInField(yamlString, "source:", oldID, newID)
+		yamlString = g.replaceNodeIDInField(yamlString, "target:", oldID, newID)
+
+		// Replace node IDs in variable selectors and references
+		yamlString = g.replaceNodeIDInVariableSelectors(yamlString, oldID, newID)
+
+		// Replace node IDs in template references
+		yamlString = g.replaceNodeIDInTemplates(yamlString, oldID, newID)
+	}
+
+	return yamlString
+}
+
+// replaceNodeIDInField safely replaces node IDs in specific YAML fields
+func (g *DifyGenerator) replaceNodeIDInField(yamlString, fieldName, oldID, newID string) string {
+	// Pattern to match field: "oldID" with proper YAML formatting
+	pattern := fmt.Sprintf(`(%s\s+)(%s)(\s|$)`, regexp.QuoteMeta(fieldName), regexp.QuoteMeta(oldID))
+	re := regexp.MustCompile(pattern)
+
+	return re.ReplaceAllString(yamlString, fmt.Sprintf("${1}%s${3}", newID))
+}
+
+// replaceNodeIDInVariableSelectors replaces node IDs in variable selector arrays
+func (g *DifyGenerator) replaceNodeIDInVariableSelectors(yamlString, oldID, newID string) string {
+	// Pattern to match variable selectors: [oldID, fieldName]
+	pattern := fmt.Sprintf(`(\[\s*)(%s)(\s*,)`, regexp.QuoteMeta(oldID))
+	re := regexp.MustCompile(pattern)
+
+	return re.ReplaceAllString(yamlString, fmt.Sprintf("${1}%s${3}", newID))
+}
+
+// replaceNodeIDInTemplates replaces node IDs in template expressions
+func (g *DifyGenerator) replaceNodeIDInTemplates(yamlString, oldID, newID string) string {
+	// Pattern to match template references: {{#oldID.field#}}
+	pattern := fmt.Sprintf(`(\{\{#)(%s)(\.[\w]+#\}\})`, regexp.QuoteMeta(oldID))
+	re := regexp.MustCompile(pattern)
+
+	return re.ReplaceAllString(yamlString, fmt.Sprintf("${1}%s${3}", newID))
 }

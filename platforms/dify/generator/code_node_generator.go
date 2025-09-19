@@ -2,6 +2,7 @@ package generator
 
 import (
 	"ai-agents-transformer/internal/models"
+	"ai-agents-transformer/platforms/common"
 	"fmt"
 )
 
@@ -49,7 +50,7 @@ func (g *CodeNodeGenerator) setCodeNodeData(difyNode *DifyNode, node models.Node
 	var code string
 	var language string = "python3" // Default language
 
-	if codeConfig, ok := node.Config.(models.CodeConfig); ok {
+	if codeConfig, ok := common.AsCodeConfig(node.Config); ok && codeConfig != nil {
 		if codeConfig.Code != "" {
 			code = codeConfig.Code
 		}

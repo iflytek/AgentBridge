@@ -2,6 +2,7 @@ package generator
 
 import (
 	"ai-agents-transformer/internal/models"
+	"ai-agents-transformer/platforms/common"
 	"fmt"
 	"strings"
 )
@@ -68,7 +69,7 @@ func (g *ConditionNodeGenerator) generateCases(node models.Node) []map[string]in
 	}
 
 	// Get conditional configuration from unified DSL config
-	if conditionConfig, ok := node.Config.(*models.ConditionConfig); ok && len(conditionConfig.Cases) > 0 {
+	if conditionConfig, ok := common.AsConditionConfig(node.Config); ok && conditionConfig != nil && len(conditionConfig.Cases) > 0 {
 		cases := make([]map[string]interface{}, 0)
 
 		// Sort by level to ensure correct branch order

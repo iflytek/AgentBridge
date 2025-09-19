@@ -2,6 +2,7 @@ package generator
 
 import (
 	"ai-agents-transformer/internal/models"
+	"ai-agents-transformer/platforms/common"
 	"fmt"
 	"regexp"
 	"strings"
@@ -417,8 +418,8 @@ func (g *EdgeGenerator) tryConfigBasedMapping(sourceHandle string, node *models.
 
 // tryUnifiedConfigMapping tries to map using unified DSL configuration
 func (g *EdgeGenerator) tryUnifiedConfigMapping(sourceHandle string, node *models.Node) string {
-	config, ok := node.Config.(*models.ClassifierConfig)
-	if !ok {
+	config, ok := common.AsClassifierConfig(node.Config)
+	if !ok || config == nil {
 		return ""
 	}
 

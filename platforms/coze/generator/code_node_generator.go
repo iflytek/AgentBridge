@@ -1,11 +1,12 @@
 package generator
 
 import (
-	"ai-agents-transformer/internal/models"
-	"fmt"
-	"regexp"
-	"strconv"
-	"strings"
+    "ai-agents-transformer/internal/models"
+    "ai-agents-transformer/platforms/common"
+    "fmt"
+    "regexp"
+    "strconv"
+    "strings"
 )
 
 // CodeNodeGenerator generates Coze code nodes
@@ -50,14 +51,14 @@ func (g *CodeNodeGenerator) ValidateNode(unifiedNode *models.Node) error {
 		return fmt.Errorf("node config is nil")
 	}
 	
-	codeConfig, ok := unifiedNode.Config.(models.CodeConfig)
-	if !ok {
-		return fmt.Errorf("invalid config type: expected CodeConfig")
-	}
-	
-	if codeConfig.Code == "" {
-		return fmt.Errorf("code content is empty")
-	}
+    codeConfig, ok := common.AsCodeConfig(unifiedNode.Config)
+    if !ok || codeConfig == nil {
+        return fmt.Errorf("invalid config type: expected CodeConfig")
+    }
+
+    if codeConfig.Code == "" {
+        return fmt.Errorf("code content is empty")
+    }
 	
 	return nil
 }
@@ -70,11 +71,14 @@ func (g *CodeNodeGenerator) GenerateNode(unifiedNode *models.Node) (*CozeNode, e
 
 	cozeNodeID := g.idGenerator.MapToCozeNodeID(unifiedNode.ID)
 	
-	// Extract code configuration
-	codeConfig := unifiedNode.Config.(models.CodeConfig)
+    // Extract code configuration
+    codeConfig, ok := common.AsCodeConfig(unifiedNode.Config)
+    if !ok || codeConfig == nil {
+        return nil, fmt.Errorf("invalid code config type for node %s", unifiedNode.ID)
+    }
 	
 	// Convert Python code to Coze format if needed
-	convertedCode, err := g.convertPythonCodeToCozeFormat(codeConfig.Code, unifiedNode.Inputs)
+    convertedCode, err := g.convertPythonCodeToCozeFormat(codeConfig.Code, unifiedNode.Inputs)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert Python code to Coze format: %v", err)
 	}
@@ -86,7 +90,7 @@ func (g *CodeNodeGenerator) GenerateNode(unifiedNode *models.Node) (*CozeNode, e
 	errorSettings := g.generateErrorSettings()
 	
 	// Map language to Coze language code
-	languageCode := g.mapLanguageToCozeCode(codeConfig.Language)
+    languageCode := g.mapLanguageToCozeCode(codeConfig.Language)
 	
 	// Create code node input structure based on context
 	var codeInputs map[string]interface{}
@@ -179,17 +183,20 @@ func (g *CodeNodeGenerator) GenerateSchemaNode(unifiedNode *models.Node) (*CozeS
 	// Generate error handling settings for schema
 	errorSettings := g.generateSchemaErrorSettings()
 	
-	// Extract code configuration
-	codeConfig := unifiedNode.Config.(models.CodeConfig)
+    // Extract code configuration
+    codeConfig, ok := common.AsCodeConfig(unifiedNode.Config)
+    if !ok || codeConfig == nil {
+        return nil, fmt.Errorf("invalid code config type for node %s", unifiedNode.ID)
+    }
 	
 	// Convert Python code to Coze format if needed
-	convertedCode, err := g.convertPythonCodeToCozeFormat(codeConfig.Code, unifiedNode.Inputs)
+    convertedCode, err := g.convertPythonCodeToCozeFormat(codeConfig.Code, unifiedNode.Inputs)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert Python code to Coze format: %v", err)
 	}
 	
 	// Map language to Coze language code
-	languageCode := g.mapLanguageToCozeCode(codeConfig.Language)
+    languageCode := g.mapLanguageToCozeCode(codeConfig.Language)
 	
 	// Create schema inputs structure - use code and language for schema section
 	schemaInputs := map[string]interface{}{

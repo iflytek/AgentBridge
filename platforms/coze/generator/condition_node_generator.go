@@ -1,8 +1,9 @@
 package generator
 
 import (
-	"ai-agents-transformer/internal/models"
-	"fmt"
+    "ai-agents-transformer/internal/models"
+    "ai-agents-transformer/platforms/common"
+    "fmt"
 )
 
 // ConditionNodeGenerator generates Coze condition nodes (selectors)
@@ -33,11 +34,10 @@ func (g *ConditionNodeGenerator) ValidateNode(unifiedNode *models.Node) error {
 		return fmt.Errorf("expected condition node, got %s", unifiedNode.Type)
 	}
 
-	// The config is already a ConditionConfig, not an interface
-	conditionConfig, ok := unifiedNode.Config.(*models.ConditionConfig)
-	if !ok {
-		return fmt.Errorf("invalid condition node config type: %T", unifiedNode.Config)
-	}
+    conditionConfig, ok := common.AsConditionConfig(unifiedNode.Config)
+    if !ok || conditionConfig == nil {
+        return fmt.Errorf("invalid condition node config type: %T", unifiedNode.Config)
+    }
 
 	if len(conditionConfig.Cases) == 0 {
 		return fmt.Errorf("condition node must have at least one case")
@@ -130,7 +130,7 @@ func (g *ConditionNodeGenerator) GenerateSchemaNode(unifiedNode *models.Node) (*
 
 // generateConditionInputs generates condition inputs for nodes section
 func (g *ConditionNodeGenerator) generateConditionInputs(unifiedNode *models.Node) map[string]interface{} {
-	conditionConfig := unifiedNode.Config.(*models.ConditionConfig)
+    conditionConfig, _ := common.AsConditionConfig(unifiedNode.Config)
 	
 	// Generate selector branches, excluding empty condition branches (default cases with level=999)
 	branches := make([]map[string]interface{}, 0)
@@ -175,7 +175,7 @@ func (g *ConditionNodeGenerator) generateConditionInputs(unifiedNode *models.Nod
 
 // generateBranches generates branches for schema section
 func (g *ConditionNodeGenerator) generateBranches(unifiedNode *models.Node) ([]map[string]interface{}, error) {
-	conditionConfig := unifiedNode.Config.(*models.ConditionConfig)
+    conditionConfig, _ := common.AsConditionConfig(unifiedNode.Config)
 	branches := make([]map[string]interface{}, 0)
 
 	// Add condition branches, excluding empty condition branches (default cases with level=999)

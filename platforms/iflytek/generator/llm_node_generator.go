@@ -2,6 +2,7 @@ package generator
 
 import (
 	"ai-agents-transformer/internal/models"
+	"ai-agents-transformer/platforms/common"
 	"fmt"
 	"regexp"
 	"strings"
@@ -58,9 +59,9 @@ func (g *LLMNodeGenerator) GenerateNode(node models.Node) (IFlytekNode, error) {
 	iflytekNode.Data.Icon = g.getNodeIcon(models.NodeTypeLLM)
 
 	// Parse LLM configuration
-	if llmConfig, ok := node.Config.(models.LLMConfig); ok {
+	if llmConfig, ok := common.AsLLMConfig(node.Config); ok && llmConfig != nil {
 		// Generate nodeParam configuration
-		nodeParam := g.generateNodeParam(llmConfig)
+		nodeParam := g.generateNodeParam(*llmConfig)
 		iflytekNode.Data.NodeParam = nodeParam
 	}
 
@@ -83,7 +84,7 @@ func (g *LLMNodeGenerator) ValidateNode(node models.Node) error {
 	}
 
 	// Validate LLM configuration
-	if _, ok := node.Config.(models.LLMConfig); !ok {
+	if cfg, ok := common.AsLLMConfig(node.Config); !ok || cfg == nil {
 		return fmt.Errorf("LLM node must have LLMConfig")
 	}
 

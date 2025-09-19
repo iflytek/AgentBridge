@@ -173,7 +173,7 @@ func (g *IFlytekGenerator) hasCozePatterns(node models.Node) bool {
 	// Check for Coze-specific node structure patterns
 	// Coze typically has more structured metadata and specific field patterns
 	if node.Type == models.NodeTypeClassifier {
-		if classifierConfig, ok := node.Config.(models.ClassifierConfig); ok {
+		if classifierConfig, ok := common.AsClassifierConfig(node.Config); ok && classifierConfig != nil {
 			// Coze classifiers usually have more structured model configurations
 			if classifierConfig.Model.Provider == ProviderCoze {
 				return true
@@ -193,7 +193,7 @@ func (g *IFlytekGenerator) hasDifyPatterns(node models.Node) bool {
 	
 	// Check for Dify-specific node structure patterns
 	if node.Type == models.NodeTypeClassifier {
-		if classifierConfig, ok := node.Config.(models.ClassifierConfig); ok {
+		if classifierConfig, ok := common.AsClassifierConfig(node.Config); ok && classifierConfig != nil {
 			// Dify classifiers usually have simpler configurations
 			if classifierConfig.Model.Provider == ProviderDify || classifierConfig.Model.Provider == ProviderEmpty {
 				return true
@@ -329,7 +329,7 @@ func (g *IFlytekGenerator) getIterationCheckFunctions() map[models.NodeType]func
 
 // checkStartNodeIteration checks if start node is in iteration
 func (g *IFlytekGenerator) checkStartNodeIteration(node models.Node) bool {
-	if startConfig, ok := node.Config.(models.StartConfig); ok {
+	if startConfig, ok := common.AsStartConfig(node.Config); ok && startConfig != nil {
 		return startConfig.IsInIteration
 	}
 	return false
@@ -337,7 +337,7 @@ func (g *IFlytekGenerator) checkStartNodeIteration(node models.Node) bool {
 
 // checkCodeNodeIteration checks if code node is in iteration
 func (g *IFlytekGenerator) checkCodeNodeIteration(node models.Node) bool {
-	if codeConfig, ok := node.Config.(models.CodeConfig); ok {
+	if codeConfig, ok := common.AsCodeConfig(node.Config); ok && codeConfig != nil {
 		return codeConfig.IsInIteration
 	}
 	return false
@@ -345,7 +345,7 @@ func (g *IFlytekGenerator) checkCodeNodeIteration(node models.Node) bool {
 
 // checkLLMNodeIteration checks if LLM node is in iteration
 func (g *IFlytekGenerator) checkLLMNodeIteration(node models.Node) bool {
-	if llmConfig, ok := node.Config.(models.LLMConfig); ok {
+	if llmConfig, ok := common.AsLLMConfig(node.Config); ok && llmConfig != nil {
 		return llmConfig.IsInIteration
 	}
 	return false
@@ -353,7 +353,7 @@ func (g *IFlytekGenerator) checkLLMNodeIteration(node models.Node) bool {
 
 // checkConditionNodeIteration checks if condition node is in iteration
 func (g *IFlytekGenerator) checkConditionNodeIteration(node models.Node) bool {
-	if conditionConfig, ok := node.Config.(models.ConditionConfig); ok {
+	if conditionConfig, ok := common.AsConditionConfig(node.Config); ok && conditionConfig != nil {
 		return conditionConfig.IsInIteration
 	}
 	return false
@@ -361,7 +361,7 @@ func (g *IFlytekGenerator) checkConditionNodeIteration(node models.Node) bool {
 
 // checkClassifierNodeIteration checks if classifier node is in iteration
 func (g *IFlytekGenerator) checkClassifierNodeIteration(node models.Node) bool {
-	if classifierConfig, ok := node.Config.(models.ClassifierConfig); ok {
+	if classifierConfig, ok := common.AsClassifierConfig(node.Config); ok && classifierConfig != nil {
 		return classifierConfig.IsInIteration
 	}
 	return false
@@ -973,13 +973,13 @@ func (g *IFlytekGenerator) extractCasesFromNode(generatedNode IFlytekNode) []map
 func (g *IFlytekGenerator) buildBranchIDMapping(cases []map[string]interface{}, matchedNode *models.Node) map[string]string {
 	branchIDMapping := make(map[string]string)
 	
-	condConfig, ok := matchedNode.Config.(models.ConditionConfig)
-	if !ok {
+	condConfig, ok := common.AsConditionConfig(matchedNode.Config)
+	if !ok || condConfig == nil {
 		return branchIDMapping
 	}
 	
-	g.buildOriginalCaseIDToIndexMapping(condConfig)
-	g.extractBranchIDsFromCases(cases, branchIDMapping, condConfig)
+	g.buildOriginalCaseIDToIndexMapping(*condConfig)
+	g.extractBranchIDsFromCases(cases, branchIDMapping, *condConfig)
 	
 	return branchIDMapping
 }
@@ -2245,8 +2245,8 @@ func (g *IFlytekGenerator) generateIterationInternalEdges(subNodes []IFlytekNode
 
 // parseIterationConfig parses iteration configuration
 func (g *IFlytekGenerator) parseIterationConfig(originalIterationNode models.Node) (models.IterationConfig, bool) {
-	iterationConfig, ok := originalIterationNode.Config.(models.IterationConfig)
-	return iterationConfig, ok
+	iterationConfig, ok := common.AsIterationConfig(originalIterationNode.Config)
+	return *iterationConfig, ok && iterationConfig != nil
 }
 
 // findIterationNodes finds start, end, and source nodes in iteration

@@ -1,9 +1,10 @@
 package generator
 
 import (
-	"ai-agents-transformer/internal/models"
-	"fmt"
-	"strings"
+    "ai-agents-transformer/internal/models"
+    "ai-agents-transformer/platforms/common"
+    "fmt"
+    "strings"
 )
 
 // ClassifierNodeGenerator generates Coze Intent Recognition nodes from unified DSL classifier configurations.
@@ -38,9 +39,9 @@ func (g *ClassifierNodeGenerator) ValidateNode(node *models.Node) error {
 	if node.Type != models.NodeTypeClassifier {
 		return fmt.Errorf("expected classifier node, got %s", node.Type)
 	}
-	if _, ok := node.Config.(*models.ClassifierConfig); !ok {
-		return fmt.Errorf("invalid classifier config type for node %s, got %T, expected *models.ClassifierConfig", node.ID, node.Config)
-	}
+    if cfg, ok := common.AsClassifierConfig(node.Config); !ok || cfg == nil {
+        return fmt.Errorf("invalid classifier config type for node %s, got %T", node.ID, node.Config)
+    }
 	return nil
 }
 
@@ -51,10 +52,10 @@ func (g *ClassifierNodeGenerator) GenerateNode(unifiedNode *models.Node) (*CozeN
 	}
 
 	// Parse classifier configuration
-	classifierConfig, ok := unifiedNode.Config.(*models.ClassifierConfig)
-	if !ok {
-		return nil, fmt.Errorf("invalid classifier config type for node %s, got %T", unifiedNode.ID, unifiedNode.Config)
-	}
+    classifierConfig, ok := common.AsClassifierConfig(unifiedNode.Config)
+    if !ok || classifierConfig == nil {
+        return nil, fmt.Errorf("invalid classifier config type for node %s, got %T", unifiedNode.ID, unifiedNode.Config)
+    }
 
 	// Check if ID generator is set
 	if g.idGenerator == nil {

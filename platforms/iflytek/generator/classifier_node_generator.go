@@ -2,6 +2,7 @@ package generator
 
 import (
 	"ai-agents-transformer/internal/models"
+	"ai-agents-transformer/platforms/common"
 	"fmt"
 	"regexp"
 	"strings"
@@ -32,8 +33,8 @@ func (g *ClassifierNodeGenerator) GenerateNode(node models.Node) (IFlytekNode, e
 	}
 
 	// parse classifier configuration
-	classifierConfig, ok := node.Config.(models.ClassifierConfig)
-	if !ok {
+	classifierConfig, ok := common.AsClassifierConfig(node.Config)
+	if !ok || classifierConfig == nil {
 		return IFlytekNode{}, fmt.Errorf("invalid classifier config type")
 	}
 
@@ -48,7 +49,7 @@ func (g *ClassifierNodeGenerator) GenerateNode(node models.Node) (IFlytekNode, e
 	}
 
 	// set node parameters
-	nodeParam, err := g.generateNodeParam(classifierConfig, node.Inputs)
+	nodeParam, err := g.generateNodeParam(*classifierConfig, node.Inputs)
 	if err != nil {
 		return IFlytekNode{}, fmt.Errorf("failed to generate node parameters: %w", err)
 	}

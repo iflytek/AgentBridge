@@ -2,6 +2,7 @@ package generator
 
 import (
 	"ai-agents-transformer/internal/models"
+	"ai-agents-transformer/platforms/common"
 )
 
 // StartNodeGenerator handles start node generation
@@ -48,8 +49,8 @@ func (g *StartNodeGenerator) createBasicStartNode(node models.Node) IFlytekNode 
 
 // generateNodeOutputs generates outputs based on node configuration
 func (g *StartNodeGenerator) generateNodeOutputs(iflytekNode *IFlytekNode, node models.Node) {
-	if startConfig, ok := node.Config.(models.StartConfig); ok {
-		g.generateOutputsFromConfig(iflytekNode, startConfig)
+	if startConfig, ok := common.AsStartConfig(node.Config); ok && startConfig != nil {
+		g.generateOutputsFromConfig(iflytekNode, *startConfig)
 	} else {
 		iflytekNode.Data.Outputs = g.generateOutputs(node.Outputs)
 	}

@@ -88,8 +88,8 @@ func (g *IterationNodeGenerator) ExtractConditionBranchMappings(nodes []IFlytekN
 
 // GenerateNode generates iteration node
 func (g *IterationNodeGenerator) GenerateNode(node models.Node) (IFlytekNode, error) {
-	iterationConfig, ok := node.Config.(models.IterationConfig)
-	if !ok {
+	iterationConfig, ok := common.AsIterationConfig(node.Config)
+	if !ok || iterationConfig == nil {
 		return IFlytekNode{}, fmt.Errorf("迭代节点配置类型错误")
 	}
 
@@ -121,7 +121,7 @@ func (g *IterationNodeGenerator) GenerateNode(node models.Node) (IFlytekNode, er
 	g.recordOutputIDs(iterationID, outputs)
 
 	// Generate nodeParam
-	nodeParam := g.generateIterationNodeParam(iterationConfig, startNodeID)
+	nodeParam := g.generateIterationNodeParam(*iterationConfig, startNodeID)
 
 	// Create main iteration node
 	iflytekNode := IFlytekNode{
@@ -164,8 +164,8 @@ func (g *IterationNodeGenerator) GenerateIterationSubNodes(iterationNode models.
 
 // GenerateIterationSubNodesWithIDs generates iteration sub-nodes using pre-generated IDs
 func (g *IterationNodeGenerator) GenerateIterationSubNodesWithIDs(iterationNode models.Node, iterationID string, subNodes []models.Node, iterationStartNodeID string, iterationEndNodeID string, iterationCodeNodeID string) ([]IFlytekNode, []IFlytekEdge, error) {
-	iterationConfig, ok := iterationNode.Config.(models.IterationConfig)
-	if !ok {
+	iterationConfig, ok := common.AsIterationConfig(iterationNode.Config)
+	if !ok || iterationConfig == nil {
 		return nil, nil, fmt.Errorf("迭代节点配置类型错误")
 	}
 	
@@ -180,7 +180,7 @@ func (g *IterationNodeGenerator) GenerateIterationSubNodesWithIDs(iterationNode 
 	}
 	subIFlytekNodes = append(subIFlytekNodes, childNodes...)
 	
-	endNode, sourceNode, startNodePtr := g.createIterationEndNode(iterationEndNodeID, iterationID, iterationConfig, subIFlytekNodes)
+	endNode, sourceNode, startNodePtr := g.createIterationEndNode(iterationEndNodeID, iterationID, *iterationConfig, subIFlytekNodes)
 	subIFlytekNodes = append(subIFlytekNodes, endNode)
 	
 	g.ExtractConditionBranchMappings(subIFlytekNodes)
@@ -780,8 +780,8 @@ func (g *IterationNodeGenerator) fixIterationSubNodeReferencesWithID(subNode mod
 	fixedNode.Inputs = g.fixSubNodeInputReferences(subNode.Inputs, originalIterationID, iterationID, iterationStartNodeID)
 	
 	if fixedNode.Type == models.NodeTypeCondition {
-		if condConfig, ok := fixedNode.Config.(models.ConditionConfig); ok {
-			fixedNode.Config = g.fixConditionConfigReferences(condConfig, originalIterationID, iterationID, iterationStartNodeID)
+		if condConfig, ok := common.AsConditionConfig(fixedNode.Config); ok && condConfig != nil {
+			fixedNode.Config = g.fixConditionConfigReferences(*condConfig, originalIterationID, iterationID, iterationStartNodeID)
 		}
 	}
 	

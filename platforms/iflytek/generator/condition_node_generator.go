@@ -2,6 +2,7 @@ package generator
 
 import (
 	"ai-agents-transformer/internal/models"
+	"ai-agents-transformer/platforms/common"
 	"fmt"
 	"strings"
 )
@@ -86,8 +87,8 @@ func (g *ConditionNodeGenerator) generateConditionInputs(node models.Node) ([]IF
 	inputCounter := 0
 
 	// Extract condition configuration and process inputs
-	condConfig, ok := node.Config.(models.ConditionConfig)
-	if !ok {
+	condConfig, ok := common.AsConditionConfig(node.Config)
+	if !ok || condConfig == nil {
 		return inputs, inputIDMap
 	}
 
@@ -252,7 +253,7 @@ func (g *ConditionNodeGenerator) generateNodeParamWithInputIDs(node models.Node,
 	}
 
 	// Extract condition branch information from configuration
-	if condConfig, ok := node.Config.(models.ConditionConfig); ok {
+	if condConfig, ok := common.AsConditionConfig(node.Config); ok && condConfig != nil {
 		cases := g.generateCasesWithInputIDs(condConfig.Cases, inputIDMap)
 		nodeParam["cases"] = cases
 	}
@@ -676,8 +677,8 @@ func (g *ConditionNodeGenerator) findSourceNodeByMappedID(mappedNodeID string) *
 // generateConditionReferences generates references for condition node from variable selectors
 func (g *ConditionNodeGenerator) generateConditionReferences(node models.Node) []IFlytekReference {
 	// Extract condition configuration
-	condConfig, ok := node.Config.(models.ConditionConfig)
-	if !ok {
+	condConfig, ok := common.AsConditionConfig(node.Config)
+	if !ok || condConfig == nil {
 		return []IFlytekReference{}
 	}
 	

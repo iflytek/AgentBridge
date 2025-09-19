@@ -2,6 +2,7 @@ package generator
 
 import (
 	"ai-agents-transformer/internal/models"
+	"ai-agents-transformer/platforms/common"
 	"strings"
 )
 
@@ -78,7 +79,7 @@ func (g *CodeNodeGenerator) generateNodeParam(node models.Node) map[string]inter
 	}
 
 	// extract code information from configuration
-	if codeConfig, ok := node.Config.(models.CodeConfig); ok {
+	if codeConfig, ok := common.AsCodeConfig(node.Config); ok && codeConfig != nil {
 		nodeParam["code"] = codeConfig.Code
 	} else {
 		nodeParam["code"] = "def main() -> dict:\n    return {'result': ''}" // default code

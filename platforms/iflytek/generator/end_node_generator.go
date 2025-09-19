@@ -3,6 +3,7 @@ package generator
 import (
 	"fmt"
 	"ai-agents-transformer/internal/models"
+	"ai-agents-transformer/platforms/common"
 )
 
 // EndNodeGenerator handles end node generation
@@ -50,7 +51,7 @@ func (g *EndNodeGenerator) GenerateNode(node models.Node) (IFlytekNode, error) {
 	iflytekNode.Data.Icon = g.getNodeIcon(models.NodeTypeEnd)
 
 	// parse end node configuration
-	if endConfig, ok := node.Config.(models.EndConfig); ok {
+	if endConfig, ok := common.AsEndConfig(node.Config); ok && endConfig != nil {
 		// generate nodeParam configuration
 		nodeParam := map[string]interface{}{
 			"templateErrMsg": "",

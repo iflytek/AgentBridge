@@ -1,8 +1,9 @@
 package generator
 
 import (
-	"ai-agents-transformer/internal/models"
-	"fmt"
+    "ai-agents-transformer/internal/models"
+    "ai-agents-transformer/platforms/common"
+    "fmt"
 )
 
 // LLMNodeGenerator generates Coze LLM nodes
@@ -210,8 +211,8 @@ func (g *LLMNodeGenerator) generateInputParameters(unifiedNode *models.Node) []i
 
 // generateLLMParameters generates LLM-specific parameters from unified node config
 func (g *LLMNodeGenerator) generateLLMParameters(unifiedNode *models.Node) ([]map[string]interface{}, error) {
-	llmConfig, ok := unifiedNode.Config.(models.LLMConfig)
-	if !ok {
+	llmConfig, ok := common.AsLLMConfig(unifiedNode.Config)
+	if !ok || llmConfig == nil {
 		return nil, fmt.Errorf("invalid LLM config type for node %s", unifiedNode.ID)
 	}
 
@@ -233,7 +234,7 @@ func (g *LLMNodeGenerator) generateLLMParameters(unifiedNode *models.Node) ([]ma
 	})
 
 	// Model Name maps Spark domain to Coze model names
-	modelName := g.mapSparkDomainToCozeModel(llmConfig)
+	modelName := g.mapSparkDomainToCozeModel(*llmConfig)
 	llmParams = append(llmParams, map[string]interface{}{
 		"name": "modleName",
 		"input": map[string]interface{}{
@@ -477,7 +478,7 @@ func (g *LLMNodeGenerator) ValidateNode(unifiedNode *models.Node) error {
 	}
 
 	// Validates configuration type
-	if _, ok := unifiedNode.Config.(models.LLMConfig); !ok {
+	if cfg, ok := common.AsLLMConfig(unifiedNode.Config); !ok || cfg == nil {
 		return fmt.Errorf("invalid config type for LLM node")
 	}
 
