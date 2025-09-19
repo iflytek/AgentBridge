@@ -52,8 +52,8 @@ func (g *EndNodeGenerator) GenerateNodeWithWorkflowContext(node models.Node, wor
 	// Generate base node structure
 	difyNode := g.generateBaseNode(node)
 
-	// Use workflow context to generate intelligent output mapping
-	difyNode.Data.Outputs = g.generateSmartOutputsFromWorkflow(node, workflow)
+    // Build end node outputs with workflow context
+    difyNode.Data.Outputs = g.generateSmartOutputsFromWorkflow(node, workflow)
 
 	// End node needs empty config field (outputs directly at data level)
 	if difyNode.Data.Config == nil {
@@ -101,16 +101,51 @@ func (g *EndNodeGenerator) generateOutputsFromInputs(inputs []models.Input) []Di
 	return difyOutputs
 }
 
-// generateSmartOutputsFromWorkflow generates smart output mapping based on workflow context
+// generateSmartOutputsFromWorkflow builds end node outputs with workflow context
 func (g *EndNodeGenerator) generateSmartOutputsFromWorkflow(endNode models.Node, workflow *models.Workflow) []DifyOutput {
-	// Prioritize end node input configuration containing actual variable names and reference information
-	if len(endNode.Inputs) > 0 {
-		return g.generateOutputsFromInputs(endNode.Inputs)
-	}
+    // Handle explicit inputs and use workflow to infer types and mapped output names
+    if len(endNode.Inputs) > 0 {
+        outputs := make([]DifyOutput, 0, len(endNode.Inputs))
+        for _, input := range endNode.Inputs {
+            out := DifyOutput{
+                Variable:      input.Name,
+                ValueSelector: []string{},
+            }
 
-	// If no input configuration, infer from connection relationships
-	incomingEdges := g.findIncomingEdges(endNode.ID, workflow.Edges)
-	difyOutputs := make([]DifyOutput, 0)
+            // Default value_type based on declared input type
+            out.ValueType = g.mapUnifiedTypeToString(input.Type)
+
+            if input.Reference != nil && input.Reference.NodeID != "" {
+                // Find source node in workflow for accurate type inference
+                sourceNode := g.findNodeByID(input.Reference.NodeID, workflow.Nodes)
+                // Map output name according to platform-specific rules
+                mappedOutputName := g.mapOutputNameByNodeID(input.Reference.NodeID, input.Reference.OutputName)
+                out.ValueSelector = []string{input.Reference.NodeID, mappedOutputName}
+
+                // If source node is found, prefer its output type for value_type
+                if sourceNode != nil {
+                    inferredType := g.getNodeOutputType(sourceNode)
+                    if inferredType != "" {
+                        out.ValueType = inferredType
+                        out.Type = inferredType
+                    }
+                } else {
+                    // Fallback for iteration pattern by NodeID prefix
+                    if strings.HasPrefix(input.Reference.NodeID, "iteration::") {
+                        out.ValueType = "array[string]"
+                        out.Type = "array[string]"
+                    }
+                }
+            }
+
+            outputs = append(outputs, out)
+        }
+        return outputs
+    }
+
+    // If no input configuration, infer from connection relationships
+    incomingEdges := g.findIncomingEdges(endNode.ID, workflow.Edges)
+    difyOutputs := make([]DifyOutput, 0)
 
 	// Create an output for each source node connected to end node
 	for _, edge := range incomingEdges {

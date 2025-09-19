@@ -54,8 +54,11 @@ func (g *DifyGenerator) Generate(unifiedDSL *models.UnifiedDSL) ([]byte, error) 
 		return nil, fmt.Errorf("failed to generate workflow framework: %w", err)
 	}
 
-	// Serialize to YAML
-	yamlData, err := yaml.Marshal(difyDSL)
+    // Apply a final pass to update all node references using the complete ID mapping
+    g.finalizeNodeReferences(difyDSL, nodeIDMapping)
+
+    // Serialize to YAML
+    yamlData, err := yaml.Marshal(difyDSL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal to YAML: %w", err)
 	}
@@ -74,6 +77,29 @@ func (g *DifyGenerator) Generate(unifiedDSL *models.UnifiedDSL) ([]byte, error) 
 	yamlString = g.fixIterationStartNodeIDFormat(yamlString)
 
 	return []byte(yamlString), nil
+}
+
+// finalizeNodeReferences updates selectors and references using the node ID mapping.
+// It updates iteration selectors, start node id, iteration child parent/iteration ids,
+// variable selectors in code/condition/classifier/end nodes, and template references.
+func (g *DifyGenerator) finalizeNodeReferences(difyDSL *DifyRootStructure, nodeIDMapping map[string]string) {
+    if difyDSL == nil {
+        return
+    }
+
+    // Update nodes
+    for i := range difyDSL.Workflow.Graph.Nodes {
+        // Reuse existing updater which covers:
+        // - context.variable_selector
+        // - prompt_template references
+        // - if-else cases variable_selector
+        // - code variables value_selector
+        // - end node outputs value_selector
+        // - classifier query_variable_selector and instruction references
+        // - iteration iterator_selector/output_selector/start_node_id
+        // - iteration child node parentId / iteration_id
+        _ = g.updateVariableSelectorsWithNewIDs(&difyDSL.Workflow.Graph.Nodes[i], models.Node{}, nodeIDMapping)
+    }
 }
 
 // Validate validates if the unified DSL meets Dify platform requirements
@@ -288,6 +314,10 @@ func (g *DifyGenerator) generateNodesForWorkflow(unifiedDSL *models.UnifiedDSL, 
 			return fmt.Errorf("failed to generate node %s: %w", node.ID, err)
 		}
 	}
+
+	// Post-process iteration nodes to fix output selectors after all mappings are established
+	g.postProcessIterationNodes(graph, nodeIDMapping)
+
 	return nil
 }
 
@@ -496,7 +526,9 @@ func (g *DifyGenerator) updateVariableSelectorsWithNewIDs(difyNode *DifyNode, or
 	g.updateCodeVariableSelectors(difyNode, nodeIDMapping)
 	g.updateOutputValueSelectors(difyNode, nodeIDMapping)
 	g.updateClassifierQuerySelector(difyNode, nodeIDMapping)
-	
+	g.updateIterationNodeSelectors(difyNode, nodeIDMapping)
+	g.updateIterationChildNodeReferences(difyNode, nodeIDMapping)
+
 	return nil
 }
 
@@ -884,4 +916,99 @@ func (g *DifyGenerator) replaceNodeIDInTemplates(yamlString, oldID, newID string
 	re := regexp.MustCompile(pattern)
 
 	return re.ReplaceAllString(yamlString, fmt.Sprintf("${1}%s${3}", newID))
+}
+
+// updateIterationNodeSelectors updates iteration node specific selectors and references
+func (g *DifyGenerator) updateIterationNodeSelectors(difyNode *DifyNode, nodeIDMapping map[string]string) {
+	if difyNode.Data.Type != "iteration" {
+		return
+	}
+
+	// Update iterator_selector
+	g.updateIteratorSelector(difyNode, nodeIDMapping)
+
+	// Update output_selector
+	g.updateIterationOutputSelector(difyNode, nodeIDMapping)
+
+	// Update start_node_id
+	g.updateStartNodeID(difyNode, nodeIDMapping)
+}
+
+// updateIteratorSelector updates iterator_selector field in iteration nodes
+func (g *DifyGenerator) updateIteratorSelector(difyNode *DifyNode, nodeIDMapping map[string]string) {
+	if len(difyNode.Data.IteratorSelector) < 2 {
+		return
+	}
+
+	oldNodeID := difyNode.Data.IteratorSelector[0]
+	if newNodeID, found := nodeIDMapping[oldNodeID]; found {
+		difyNode.Data.IteratorSelector[0] = newNodeID
+	}
+}
+
+// updateIterationOutputSelector updates output_selector field in iteration nodes
+func (g *DifyGenerator) updateIterationOutputSelector(difyNode *DifyNode, nodeIDMapping map[string]string) {
+	if len(difyNode.Data.OutputSelector) < 2 {
+		return
+	}
+
+	oldNodeID := difyNode.Data.OutputSelector[0]
+	if newNodeID, found := nodeIDMapping[oldNodeID]; found {
+		difyNode.Data.OutputSelector[0] = newNodeID
+	}
+}
+
+// updateStartNodeID updates start_node_id field in iteration nodes
+func (g *DifyGenerator) updateStartNodeID(difyNode *DifyNode, nodeIDMapping map[string]string) {
+	if difyNode.Data.StartNodeID == "" {
+		return
+	}
+
+	// Handle cases like "originalNodeIDstart" -> "newNodeIDstart"
+	for oldNodeID, newNodeID := range nodeIDMapping {
+		if strings.HasPrefix(difyNode.Data.StartNodeID, oldNodeID) {
+			suffix := strings.TrimPrefix(difyNode.Data.StartNodeID, oldNodeID)
+			difyNode.Data.StartNodeID = newNodeID + suffix
+			break
+		}
+	}
+}
+
+// updateIterationChildNodeReferences updates parentId and iteration_id in iteration child nodes
+func (g *DifyGenerator) updateIterationChildNodeReferences(difyNode *DifyNode, nodeIDMapping map[string]string) {
+	// Update ParentID if it exists in the mapping
+	if difyNode.ParentID != "" {
+		if newParentID, found := nodeIDMapping[difyNode.ParentID]; found {
+			difyNode.ParentID = newParentID
+		}
+	}
+
+	// Update iteration_id in Data if it exists in the mapping
+	if difyNode.Data.IterationID != "" {
+		if newIterationID, found := nodeIDMapping[difyNode.Data.IterationID]; found {
+			difyNode.Data.IterationID = newIterationID
+		}
+	}
+}
+
+// postProcessIterationNodes post-processes iteration nodes to fix selectors after all mappings are established
+func (g *DifyGenerator) postProcessIterationNodes(graph *DifyGraph, nodeIDMapping map[string]string) {
+	for i := range graph.Nodes {
+		node := &graph.Nodes[i]
+		if node.Data.Type == "iteration" {
+			g.fixIterationOutputSelector(node, nodeIDMapping)
+		}
+	}
+}
+
+// fixIterationOutputSelector fixes output_selector for iteration nodes using complete node mapping
+func (g *DifyGenerator) fixIterationOutputSelector(iterationNode *DifyNode, nodeIDMapping map[string]string) {
+	if len(iterationNode.Data.OutputSelector) < 2 {
+		return
+	}
+
+	oldNodeID := iterationNode.Data.OutputSelector[0]
+	if newNodeID, found := nodeIDMapping[oldNodeID]; found {
+		iterationNode.Data.OutputSelector[0] = newNodeID
+	}
 }
