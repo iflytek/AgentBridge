@@ -1,8 +1,8 @@
 package common
 
 import (
-    "ai-agents-transformer/internal/models"
-    "fmt"
+	"ai-agents-transformer/internal/models"
+	"fmt"
 )
 
 // UnifiedDSLValidator validates unified DSL structures
@@ -180,76 +180,76 @@ func (v *UnifiedDSLValidator) validateNodeConfig(node *models.Node) error {
 
 // validateLLMConfig validates LLM node configuration
 func (v *UnifiedDSLValidator) validateLLMConfig(config interface{}) error {
-    llmConfig, ok := AsLLMConfig(config)
-    if !ok || llmConfig == nil {
-        return fmt.Errorf("invalid LLM config type")
-    }
+	llmConfig, ok := AsLLMConfig(config)
+	if !ok || llmConfig == nil {
+		return fmt.Errorf("invalid LLM config type")
+	}
 
-    if llmConfig.Model.Name == "" {
-        return fmt.Errorf("LLM model name is required")
-    }
+	if llmConfig.Model.Name == "" {
+		return fmt.Errorf("LLM model name is required")
+	}
 
 	return nil
 }
 
 // validateCodeConfig validates code node configuration
 func (v *UnifiedDSLValidator) validateCodeConfig(config interface{}) error {
-    codeConfig, ok := AsCodeConfig(config)
-    if !ok || codeConfig == nil {
-        return fmt.Errorf("invalid code config type")
-    }
+	codeConfig, ok := AsCodeConfig(config)
+	if !ok || codeConfig == nil {
+		return fmt.Errorf("invalid code config type")
+	}
 
-    if codeConfig.Code == "" {
-        return fmt.Errorf("code content is required")
-    }
+	if codeConfig.Code == "" {
+		return fmt.Errorf("code content is required")
+	}
 
 	return nil
 }
 
 // validateConditionConfig validates condition node configuration
 func (v *UnifiedDSLValidator) validateConditionConfig(config interface{}) error {
-    conditionConfig, ok := AsConditionConfig(config)
-    if !ok || conditionConfig == nil {
-        return fmt.Errorf("invalid condition config type")
-    }
+	conditionConfig, ok := AsConditionConfig(config)
+	if !ok || conditionConfig == nil {
+		return fmt.Errorf("invalid condition config type")
+	}
 
-    if len(conditionConfig.Cases) == 0 {
-        return fmt.Errorf("at least one condition case is required")
-    }
+	if len(conditionConfig.Cases) == 0 {
+		return fmt.Errorf("at least one condition case is required")
+	}
 
 	return nil
 }
 
 // validateClassifierConfig validates classifier node configuration
 func (v *UnifiedDSLValidator) validateClassifierConfig(config interface{}) error {
-    classifierConfig, ok := AsClassifierConfig(config)
-    if !ok || classifierConfig == nil {
-        return fmt.Errorf("invalid classifier config type")
-    }
+	classifierConfig, ok := AsClassifierConfig(config)
+	if !ok || classifierConfig == nil {
+		return fmt.Errorf("invalid classifier config type")
+	}
 
-    if len(classifierConfig.Classes) == 0 {
-        return fmt.Errorf("at least one class is required")
-    }
+	if len(classifierConfig.Classes) == 0 {
+		return fmt.Errorf("at least one class is required")
+	}
 
 	return nil
 }
 
 // validateIterationConfig validates iteration node configuration
 func (v *UnifiedDSLValidator) validateIterationConfig(config interface{}) error {
-    iterationConfig, ok := AsIterationConfig(config)
-    if !ok || iterationConfig == nil {
-        return fmt.Errorf("invalid iteration config type")
-    }
+	iterationConfig, ok := AsIterationConfig(config)
+	if !ok || iterationConfig == nil {
+		return fmt.Errorf("invalid iteration config type")
+	}
 
-    if len(iterationConfig.SubWorkflow.Nodes) == 0 {
-        return fmt.Errorf("iteration sub-workflow must have nodes")
-    }
+	if len(iterationConfig.SubWorkflow.Nodes) == 0 {
+		return fmt.Errorf("iteration sub-workflow must have nodes")
+	}
 
 	// Create sub-workflow object for validation
-    subWorkflow := &models.Workflow{
-        Nodes: iterationConfig.SubWorkflow.Nodes,
-        Edges: iterationConfig.SubWorkflow.Edges,
-    }
+	subWorkflow := &models.Workflow{
+		Nodes: iterationConfig.SubWorkflow.Nodes,
+		Edges: iterationConfig.SubWorkflow.Edges,
+	}
 
 	// Recursively validate sub-workflow
 	return v.ValidateWorkflow(subWorkflow)

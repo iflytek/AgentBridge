@@ -112,7 +112,6 @@ func (g *ConditionNodeGenerator) generateConditionID() string {
 	return "condition-" + generateRandomUUID()
 }
 
-
 // mapLogicalOperator maps logical operators.
 func (g *ConditionNodeGenerator) mapLogicalOperator(operator string) string {
 	switch operator {
@@ -215,7 +214,7 @@ func (g *ConditionNodeGenerator) generateSemanticCaseID(caseItem models.Conditio
 // buildSingleConditionID creates an ID for a single condition.
 func (g *ConditionNodeGenerator) buildSingleConditionID(condition models.Condition) string {
 	value := g.extractConditionValue(condition)
-	
+
 	operatorTemplate := g.getOperatorTemplate(condition.ComparisonOperator)
 	return g.buildConditionIDFromTemplate(operatorTemplate, value)
 }
@@ -234,34 +233,34 @@ func (g *ConditionNodeGenerator) extractConditionValue(condition models.Conditio
 // getOperatorTemplate returns the template for a given operator
 func (g *ConditionNodeGenerator) getOperatorTemplate(operator string) string {
 	templates := map[string]string{
-		"contains":         "contains_%s",
-		"not_contains":     "not_contains_%s",
-		"not contains":     "not_contains_%s",
-		"is":               "equals_%s",
-		"equals":           "equals_%s",
-		"is_not":           "not_equals_%s",
-		"is not":           "not_equals_%s",
-		"start_with":       "starts_%s",
-		"start with":       "starts_%s",
-		"end_with":         "ends_%s",
-		"end with":         "ends_%s",
-		"empty":            "is_empty",
-		"not_empty":        "not_empty",
-		"not empty":        "not_empty",
-		"greater_than":     "gt_%s",
-		">":                "gt_%s",
-		"less_than":        "lt_%s",
-		"<":                "lt_%s",
-		"greater_equal":    "gte_%s",
-		">=":               "gte_%s",
-		"less_equal":       "lte_%s",
-		"<=":               "lte_%s",
+		"contains":      "contains_%s",
+		"not_contains":  "not_contains_%s",
+		"not contains":  "not_contains_%s",
+		"is":            "equals_%s",
+		"equals":        "equals_%s",
+		"is_not":        "not_equals_%s",
+		"is not":        "not_equals_%s",
+		"start_with":    "starts_%s",
+		"start with":    "starts_%s",
+		"end_with":      "ends_%s",
+		"end with":      "ends_%s",
+		"empty":         "is_empty",
+		"not_empty":     "not_empty",
+		"not empty":     "not_empty",
+		"greater_than":  "gt_%s",
+		">":             "gt_%s",
+		"less_than":     "lt_%s",
+		"<":             "lt_%s",
+		"greater_equal": "gte_%s",
+		">=":            "gte_%s",
+		"less_equal":    "lte_%s",
+		"<=":            "lte_%s",
 	}
-	
+
 	if template, exists := templates[operator]; exists {
 		return template
 	}
-	
+
 	return operator + "_%s"
 }
 
@@ -282,7 +281,7 @@ func (g *ConditionNodeGenerator) sanitizeValueForID(value string) string {
 	cleaned := g.filterValidCharacters(value)
 	cleaned = g.truncateToMaxLength(cleaned)
 	cleaned = strings.Trim(cleaned, "_")
-	
+
 	return g.getFallbackIfEmpty(cleaned)
 }
 
@@ -304,11 +303,11 @@ func (g *ConditionNodeGenerator) filterValidCharacters(value string) string {
 
 // isValidIDCharacter checks if a rune is valid for ID usage
 func (g *ConditionNodeGenerator) isValidIDCharacter(r rune) bool {
-	return (r >= 'a' && r <= 'z') || 
-		   (r >= 'A' && r <= 'Z') || 
-		   (r >= '0' && r <= '9') || 
-		   r == '_' || 
-		   (r >= 0x4e00 && r <= 0x9fff) // Chinese characters range
+	return (r >= 'a' && r <= 'z') ||
+		(r >= 'A' && r <= 'Z') ||
+		(r >= '0' && r <= '9') ||
+		r == '_' ||
+		(r >= 0x4e00 && r <= 0x9fff) // Chinese characters range
 }
 
 // truncateToMaxLength truncates the string to maximum allowed length
@@ -316,12 +315,12 @@ func (g *ConditionNodeGenerator) truncateToMaxLength(value string) string {
 	if len(value) <= 20 {
 		return value
 	}
-	
+
 	runes := []rune(value)
 	if len(runes) > 20 {
 		return string(runes[:20])
 	}
-	
+
 	return value
 }
 
@@ -377,41 +376,41 @@ func (g *ConditionNodeGenerator) saveCaseIDMapping(originalNode models.Node, dif
 // mapComparisonOperator maps comparison operators.
 func (g *ConditionNodeGenerator) mapComparisonOperator(operator string) string {
 	operatorMap := g.getComparisonOperatorMap()
-	
+
 	if mappedOp, exists := operatorMap[operator]; exists {
 		return mappedOp
 	}
-	
+
 	return "contains" // Default to contains
 }
 
 // getComparisonOperatorMap returns the mapping table for comparison operators
 func (g *ConditionNodeGenerator) getComparisonOperatorMap() map[string]string {
 	return map[string]string{
-		"contains":         "contains",
-		"not_contains":     "not contains",
-		"is":               "is",
-		"equals":           "is",
-		"==":               "is",
-		"is_not":           "is not",
-		"not_equals":       "is not",
-		"!=":               "is not",
-		"start_with":       "start with",
-		"starts_with":      "start with",
-		"end_with":         "end with",
-		"ends_with":        "end with",
-		"empty":            "empty",
-		"is_empty":         "empty",
-		"not_empty":        "not empty",
-		"is_not_empty":     "not empty",
-		"greater_than":     ">",
-		">":                ">",
-		"less_than":        "<",
-		"<":                "<",
-		"greater_equal":    ">=",
-		">=":               ">=",
-		"less_equal":       "<=",
-		"<=":               "<=",
+		"contains":      "contains",
+		"not_contains":  "not contains",
+		"is":            "is",
+		"equals":        "is",
+		"==":            "is",
+		"is_not":        "is not",
+		"not_equals":    "is not",
+		"!=":            "is not",
+		"start_with":    "start with",
+		"starts_with":   "start with",
+		"end_with":      "end with",
+		"ends_with":     "end with",
+		"empty":         "empty",
+		"is_empty":      "empty",
+		"not_empty":     "not empty",
+		"is_not_empty":  "not empty",
+		"greater_than":  ">",
+		">":             ">",
+		"less_than":     "<",
+		"<":             "<",
+		"greater_equal": ">=",
+		">=":            ">=",
+		"less_equal":    "<=",
+		"<=":            "<=",
 	}
 }
 
@@ -420,11 +419,11 @@ func (g *ConditionNodeGenerator) mapVarType(varType models.UnifiedDataType) stri
 	switch varType {
 	case models.DataTypeString:
 		return "string"
-	case models.DataTypeInteger:  // Map integer to number
+	case models.DataTypeInteger: // Map integer to number
 		return "number"
-	case models.DataTypeFloat:    // Map float to number
+	case models.DataTypeFloat: // Map float to number
 		return "number"
-	case models.DataTypeNumber:   // Maintain backward compatibility
+	case models.DataTypeNumber: // Maintain backward compatibility
 		return "number"
 	case models.DataTypeBoolean:
 		return "boolean"
@@ -438,15 +437,15 @@ func (g *ConditionNodeGenerator) mapVariableSelector(selector []string, node mod
 	if len(selector) == 0 {
 		return g.handleEmptySelector(node)
 	}
-	
+
 	if len(selector) == 1 {
 		return g.handleSingleSelector(selector[0], node)
 	}
-	
+
 	if len(selector) >= 2 {
 		return g.handleMultiSelector(selector)
 	}
-	
+
 	return selector
 }
 
@@ -455,37 +454,37 @@ func (g *ConditionNodeGenerator) handleEmptySelector(node models.Node) []string 
 	if len(node.Inputs) == 0 || node.Inputs[0].Reference == nil {
 		return []string{}
 	}
-	
+
 	return g.convertVariableReference(node.Inputs[0].Reference)
 }
 
 // handleSingleSelector handles single element selector case
 func (g *ConditionNodeGenerator) handleSingleSelector(selectorValue string, node models.Node) []string {
 	firstValidInput := g.findMatchingInput(selectorValue, node)
-	
+
 	if firstValidInput != nil {
 		return g.convertVariableReference(firstValidInput)
 	}
-	
+
 	return []string{selectorValue}
 }
 
 // findMatchingInput finds exact match or first valid input as fallback
 func (g *ConditionNodeGenerator) findMatchingInput(selectorValue string, node models.Node) *models.VariableReference {
 	var firstValidInput *models.VariableReference
-	
+
 	for _, input := range node.Inputs {
 		if input.Reference != nil && input.Reference.NodeID != "" {
 			if firstValidInput == nil {
 				firstValidInput = input.Reference
 			}
-			
+
 			if input.Reference.OutputName == selectorValue {
 				return input.Reference
 			}
 		}
 	}
-	
+
 	return firstValidInput
 }
 
@@ -496,11 +495,11 @@ func (g *ConditionNodeGenerator) handleMultiSelector(selector []string) []string
 		NodeID:     selector[0],
 		OutputName: selector[1],
 	}
-	
+
 	if convertedSelector, err := g.variableSelectorConverter.ConvertVariableReference(tempRef); err == nil {
 		return convertedSelector
 	}
-	
+
 	return selector
 }
 

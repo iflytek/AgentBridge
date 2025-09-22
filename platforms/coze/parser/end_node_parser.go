@@ -75,12 +75,12 @@ func (p *EndNodeParser) ParseNode(cozeNode CozeNode) (*models.Node, error) {
 				}
 
 				outputName := param.Input.Value.Content.Name
-				
+
 				// Apply variable reference system mapping first (for iteration output mappings)
 				if p.variableRefSystem != nil {
 					outputName = p.variableRefSystem.ResolveOutputName(sourceNodeID, outputName)
 				}
-				
+
 				// Then apply platform-specific output name mapping
 				outputName = p.mapOutputName(outputName)
 

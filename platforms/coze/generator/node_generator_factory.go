@@ -18,7 +18,7 @@ func NewNodeGeneratorFactory() *NodeGeneratorFactory {
 
 	// Register generators for Phase 1: start and end nodes only
 	factory.registerGenerators()
-	
+
 	return factory
 }
 
@@ -27,11 +27,11 @@ func (f *NodeGeneratorFactory) registerGenerators() {
 	// Phase 1-2: Basic nodes (completed)
 	f.generators[models.NodeTypeStart] = NewStartNodeGenerator()
 	f.generators[models.NodeTypeEnd] = NewEndNodeGenerator()
-	
+
 	// Phase 3: Core nodes (completed)
 	f.generators[models.NodeTypeLLM] = NewLLMNodeGenerator()
 	f.generators[models.NodeTypeCondition] = NewConditionNodeGenerator()
-	
+
 	// Phase 4: Advanced nodes (completed)
 	f.generators[models.NodeTypeCode] = NewCodeNodeGenerator()
 	f.generators[models.NodeTypeClassifier] = NewClassifierNodeGenerator()

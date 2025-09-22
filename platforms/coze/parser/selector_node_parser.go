@@ -77,7 +77,7 @@ func (p *SelectorNodeParser) extractBranches(cozeNode CozeNode) ([]map[string]in
 	if cozeNode.Data.Inputs != nil && len(cozeNode.Data.Inputs.Branches) > 0 {
 		return p.convertBranchesInterface(cozeNode.Data.Inputs.Branches)
 	}
-	
+
 	// Try selector.branches structure
 	if cozeNode.Data.Inputs != nil && cozeNode.Data.Inputs.Selector != nil {
 		if selectorMap, ok := cozeNode.Data.Inputs.Selector.(map[string]interface{}); ok {
@@ -200,7 +200,7 @@ func (p *SelectorNodeParser) parseVariableReference(left map[string]interface{})
 		// Try both "Value" (uppercase) and "value" (lowercase) for compatibility
 		var value map[string]interface{}
 		var found bool
-		
+
 		if v, ok := input["Value"].(map[string]interface{}); ok {
 			value = v
 			found = true
@@ -208,7 +208,7 @@ func (p *SelectorNodeParser) parseVariableReference(left map[string]interface{})
 			value = v
 			found = true
 		}
-		
+
 		if found {
 			// Check if type is directly in value
 			if valueType, ok := value["type"].(string); ok && valueType == "ref" {
@@ -231,7 +231,7 @@ func (p *SelectorNodeParser) parseLiteralValue(right map[string]interface{}) (in
 		// Try both "Value" (uppercase) and "value" (lowercase) for compatibility
 		var value map[string]interface{}
 		var found bool
-		
+
 		if v, ok := input["Value"].(map[string]interface{}); ok {
 			value = v
 			found = true
@@ -239,7 +239,7 @@ func (p *SelectorNodeParser) parseLiteralValue(right map[string]interface{}) (in
 			value = v
 			found = true
 		}
-		
+
 		if found {
 			// Check if type is directly in value
 			if valueType, ok := value["type"].(string); ok && valueType == "literal" {
@@ -286,7 +286,7 @@ func (p *SelectorNodeParser) mapCozeOperatorToUnified(operator int) string {
 		return "is_empty"
 	case 6: // Greater than or equal
 		return "gte"
-	case 7: // Greater than  
+	case 7: // Greater than
 		return "gt"
 	case 8: // Less than
 		return "lt"

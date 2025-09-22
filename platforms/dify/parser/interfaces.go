@@ -16,8 +16,6 @@ type NodeParser interface {
 	ValidateNode(difyNode DifyNode) error
 }
 
-
-
 // NodeParserFactory defines the interface for node parser factory.
 type NodeParserFactory interface {
 	// CreateParser creates a parser.

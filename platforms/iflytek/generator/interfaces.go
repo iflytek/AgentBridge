@@ -16,7 +16,6 @@ type NodeGenerator interface {
 	ValidateNode(node models.Node) error
 }
 
-
 // NodeGeneratorFactoryInterface interface for node generator factory
 type NodeGeneratorFactoryInterface interface {
 	// GetGenerator returns generator for specified node type

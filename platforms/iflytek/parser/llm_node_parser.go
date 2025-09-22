@@ -1,8 +1,8 @@
 package parser
 
 import (
-	"fmt"
 	"ai-agents-transformer/internal/models"
+	"fmt"
 )
 
 // LLMNodeParser parses LLM nodes.

@@ -16,7 +16,6 @@ type NodeParser interface {
 	ValidateNode(iflytekNode IFlytekNode) error
 }
 
-
 // NodeParserFactory defines the interface for node parser factory.
 type NodeParserFactory interface {
 	// CreateParser creates a parser.

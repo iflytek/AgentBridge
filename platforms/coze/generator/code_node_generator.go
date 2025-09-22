@@ -1,17 +1,17 @@
 package generator
 
 import (
-    "ai-agents-transformer/internal/models"
-    "ai-agents-transformer/platforms/common"
-    "fmt"
-    "regexp"
-    "strconv"
-    "strings"
+	"ai-agents-transformer/internal/models"
+	"ai-agents-transformer/platforms/common"
+	"fmt"
+	"regexp"
+	"strconv"
+	"strings"
 )
 
 // CodeNodeGenerator generates Coze code nodes
 type CodeNodeGenerator struct {
-	idGenerator *CozeIDGenerator
+	idGenerator   *CozeIDGenerator
 	isInIteration bool // Track if this code node is inside an iteration
 }
 
@@ -42,24 +42,24 @@ func (g *CodeNodeGenerator) ValidateNode(unifiedNode *models.Node) error {
 	if unifiedNode == nil {
 		return fmt.Errorf("unified node is nil")
 	}
-	
+
 	if unifiedNode.Type != models.NodeTypeCode {
 		return fmt.Errorf("invalid node type: expected %s, got %s", models.NodeTypeCode, unifiedNode.Type)
 	}
-	
+
 	if unifiedNode.Config == nil {
 		return fmt.Errorf("node config is nil")
 	}
-	
-    codeConfig, ok := common.AsCodeConfig(unifiedNode.Config)
-    if !ok || codeConfig == nil {
-        return fmt.Errorf("invalid config type: expected CodeConfig")
-    }
 
-    if codeConfig.Code == "" {
-        return fmt.Errorf("code content is empty")
-    }
-	
+	codeConfig, ok := common.AsCodeConfig(unifiedNode.Config)
+	if !ok || codeConfig == nil {
+		return fmt.Errorf("invalid config type: expected CodeConfig")
+	}
+
+	if codeConfig.Code == "" {
+		return fmt.Errorf("code content is empty")
+	}
+
 	return nil
 }
 
@@ -70,38 +70,38 @@ func (g *CodeNodeGenerator) GenerateNode(unifiedNode *models.Node) (*CozeNode, e
 	}
 
 	cozeNodeID := g.idGenerator.MapToCozeNodeID(unifiedNode.ID)
-	
-    // Extract code configuration
-    codeConfig, ok := common.AsCodeConfig(unifiedNode.Config)
-    if !ok || codeConfig == nil {
-        return nil, fmt.Errorf("invalid code config type for node %s", unifiedNode.ID)
-    }
-	
+
+	// Extract code configuration
+	codeConfig, ok := common.AsCodeConfig(unifiedNode.Config)
+	if !ok || codeConfig == nil {
+		return nil, fmt.Errorf("invalid code config type for node %s", unifiedNode.ID)
+	}
+
 	// Convert Python code to Coze format if needed
-    convertedCode, err := g.convertPythonCodeToCozeFormat(codeConfig.Code, unifiedNode.Inputs)
+	convertedCode, err := g.convertPythonCodeToCozeFormat(codeConfig.Code, unifiedNode.Inputs)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert Python code to Coze format: %v", err)
 	}
-	
+
 	// Generate input parameters from unified node inputs
 	inputParams := g.generateInputParameters(unifiedNode)
-	
+
 	// Generate error handling settings
 	errorSettings := g.generateErrorSettings()
-	
+
 	// Map language to Coze language code
-    languageCode := g.mapLanguageToCozeCode(codeConfig.Language)
-	
+	languageCode := g.mapLanguageToCozeCode(codeConfig.Language)
+
 	// Create code node input structure based on context
 	var codeInputs map[string]interface{}
-	
+
 	if g.isInIteration {
 		// For iteration internal nodes, use clean format with only essential fields
 		codeInputs = map[string]interface{}{
-			"inputParameters": inputParams,    // Essential input parameters
-			"settingOnError":  errorSettings, // Essential error handling 
-			"code":           convertedCode,   // Essential code field
-			"language":       languageCode,    // ✅ Essential: direct language field
+			"inputParameters": inputParams,   // Essential input parameters
+			"settingOnError":  errorSettings, // Essential error handling
+			"code":            convertedCode, // Essential code field
+			"language":        languageCode,  // ✅ Essential: direct language field
 		}
 	} else {
 		// For top-level nodes, use coderunner nesting
@@ -109,19 +109,19 @@ func (g *CodeNodeGenerator) GenerateNode(unifiedNode *models.Node) (*CozeNode, e
 			"inputparameters": inputParams,
 			"settingonerror":  errorSettings,
 			// Required null fields for Coze compatibility
-			"nodebatchinfo":      nil,
-			"llmparam":           nil,
-			"outputemitter":      nil,
-			"exit":               nil,
-			"llm":                nil,
-			"loop":               nil,
-			"selector":           nil,
-			"textprocessor":      nil,
-			"subworkflow":        nil,
-			"intentdetector":     nil,
-			"databasenode":       nil,
-			"httprequestnode":    nil,
-			"knowledge":          nil,
+			"nodebatchinfo":   nil,
+			"llmparam":        nil,
+			"outputemitter":   nil,
+			"exit":            nil,
+			"llm":             nil,
+			"loop":            nil,
+			"selector":        nil,
+			"textprocessor":   nil,
+			"subworkflow":     nil,
+			"intentdetector":  nil,
+			"databasenode":    nil,
+			"httprequestnode": nil,
+			"knowledge":       nil,
 			"coderunner": map[string]interface{}{
 				"code":     convertedCode,
 				"language": languageCode,
@@ -138,7 +138,7 @@ func (g *CodeNodeGenerator) GenerateNode(unifiedNode *models.Node) (*CozeNode, e
 
 	// Generate node metadata
 	nodeMeta := g.generateNodeMeta(unifiedNode)
-	
+
 	// Generate outputs
 	outputs := g.generateOutputs(unifiedNode)
 
@@ -152,7 +152,7 @@ func (g *CodeNodeGenerator) GenerateNode(unifiedNode *models.Node) (*CozeNode, e
 			},
 		},
 		Data: &CozeNodeData{
-			Meta:    &CozeNodeMetaInfo{
+			Meta: &CozeNodeMetaInfo{
 				Title:       nodeMeta["title"].(string),
 				Description: nodeMeta["description"].(string),
 				Icon:        nodeMeta["icon"].(string),
@@ -176,55 +176,55 @@ func (g *CodeNodeGenerator) GenerateSchemaNode(unifiedNode *models.Node) (*CozeS
 	}
 
 	cozeNodeID := g.idGenerator.MapToCozeNodeID(unifiedNode.ID)
-	
+
 	// Generate schema input parameters with proper RawMeta format
 	schemaInputParams := g.generateSchemaInputParameters(unifiedNode)
-	
+
 	// Generate error handling settings for schema
 	errorSettings := g.generateSchemaErrorSettings()
-	
-    // Extract code configuration
-    codeConfig, ok := common.AsCodeConfig(unifiedNode.Config)
-    if !ok || codeConfig == nil {
-        return nil, fmt.Errorf("invalid code config type for node %s", unifiedNode.ID)
-    }
-	
+
+	// Extract code configuration
+	codeConfig, ok := common.AsCodeConfig(unifiedNode.Config)
+	if !ok || codeConfig == nil {
+		return nil, fmt.Errorf("invalid code config type for node %s", unifiedNode.ID)
+	}
+
 	// Convert Python code to Coze format if needed
-    convertedCode, err := g.convertPythonCodeToCozeFormat(codeConfig.Code, unifiedNode.Inputs)
+	convertedCode, err := g.convertPythonCodeToCozeFormat(codeConfig.Code, unifiedNode.Inputs)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert Python code to Coze format: %v", err)
 	}
-	
+
 	// Map language to Coze language code
-    languageCode := g.mapLanguageToCozeCode(codeConfig.Language)
-	
+	languageCode := g.mapLanguageToCozeCode(codeConfig.Language)
+
 	// Create schema inputs structure - use code and language for schema section
 	schemaInputs := map[string]interface{}{
 		"inputParameters": schemaInputParams,
 		"settingOnError":  errorSettings,
-		"code":           convertedCode,
-		"language":       languageCode,
+		"code":            convertedCode,
+		"language":        languageCode,
 		// Required null fields for Coze compatibility
 		"batch":              nil,
-		"comment":           nil,
-		"databasenode":      nil,
-		"exit":              nil,
-		"httprequestnode":   nil,
-		"inputreceiver":     nil,
-		"intentdetector":    nil,
-		"knowledge":         nil,
-		"llm":               nil,
-		"llmparam":          nil,
-		"loop":              nil,
-		"nodebatchinfo":     nil,
-		"outputemitter":     nil,
-		"pluginapiparam":    nil,
-		"qa":                nil,
-		"selector":          nil,
-		"subworkflow":       nil,
-		"textprocessor":     nil,
+		"comment":            nil,
+		"databasenode":       nil,
+		"exit":               nil,
+		"httprequestnode":    nil,
+		"inputreceiver":      nil,
+		"intentdetector":     nil,
+		"knowledge":          nil,
+		"llm":                nil,
+		"llmparam":           nil,
+		"loop":               nil,
+		"nodebatchinfo":      nil,
+		"outputemitter":      nil,
+		"pluginapiparam":     nil,
+		"qa":                 nil,
+		"selector":           nil,
+		"subworkflow":        nil,
+		"textprocessor":      nil,
 		"variableaggregator": nil,
-		"variableassigner":  nil,
+		"variableassigner":   nil,
 	}
 
 	// Generate schema outputs
@@ -256,18 +256,18 @@ func (g *CodeNodeGenerator) GenerateSchemaNode(unifiedNode *models.Node) (*CozeS
 // generateInputParameters generates input parameters from unified node inputs
 func (g *CodeNodeGenerator) generateInputParameters(unifiedNode *models.Node) []map[string]interface{} {
 	var inputParams []map[string]interface{}
-	
+
 	if unifiedNode.Inputs == nil {
 		return inputParams
 	}
-	
+
 	for _, input := range unifiedNode.Inputs {
 		if g.isInIteration {
 			// CRITICAL: For iteration context, use format matching Coze iteration examples
 			param := map[string]interface{}{
 				"input": map[string]interface{}{
-					"type":  g.mapUnifiedTypeToCozeType(input.Type),  // lowercase 'type'
-					"value": g.generateIterationInputValue(input),    // lowercase 'value'
+					"type":  g.mapUnifiedTypeToCozeType(input.Type), // lowercase 'type'
+					"value": g.generateIterationInputValue(input),   // lowercase 'value'
 				},
 				"name":      input.Name,
 				"left":      nil,
@@ -290,7 +290,7 @@ func (g *CodeNodeGenerator) generateInputParameters(unifiedNode *models.Node) []
 			inputParams = append(inputParams, param)
 		}
 	}
-	
+
 	return inputParams
 }
 
@@ -302,7 +302,7 @@ func (g *CodeNodeGenerator) generateIterationInputValue(input models.Input) map[
 		if !g.isCozeNodeID(blockID) {
 			blockID = g.idGenerator.MapToCozeNodeID(blockID)
 		}
-		
+
 		// Reference to another node's output - use iteration format with lowercase fields
 		return map[string]interface{}{
 			"type": "ref",
@@ -311,21 +311,21 @@ func (g *CodeNodeGenerator) generateIterationInputValue(input models.Input) map[
 				"name":    g.mapOutputFieldNameForCoze(input.Reference.NodeID, input.Reference.OutputName),
 				"source":  "block-output",
 			},
-			"rawMeta": map[string]interface{}{  // CRITICAL: Use camelCase 'rawMeta' for iteration context
+			"rawMeta": map[string]interface{}{ // CRITICAL: Use camelCase 'rawMeta' for iteration context
 				"type": g.getCozeTypeCode(input.Type),
 			},
 		}
 	} else if input.Default != nil {
 		// Literal value
 		return map[string]interface{}{
-			"type": "literal",
+			"type":    "literal",
 			"content": fmt.Sprintf("%v", input.Default),
 			"rawMeta": map[string]interface{}{
 				"type": g.getCozeTypeCode(input.Type),
 			},
 		}
 	}
-	
+
 	// Empty value
 	return map[string]interface{}{
 		"type":    "literal",
@@ -344,7 +344,7 @@ func (g *CodeNodeGenerator) generateInputValue(input models.Input) map[string]in
 		if !g.isCozeNodeID(blockID) {
 			blockID = g.idGenerator.MapToCozeNodeID(blockID)
 		}
-		
+
 		// Reference to another node's output
 		return map[string]interface{}{
 			"type": "ref",
@@ -360,14 +360,14 @@ func (g *CodeNodeGenerator) generateInputValue(input models.Input) map[string]in
 	} else if input.Default != nil {
 		// Literal value
 		return map[string]interface{}{
-			"type": "literal",
+			"type":    "literal",
 			"content": fmt.Sprintf("%v", input.Default),
 			"rawMeta": map[string]interface{}{
 				"type": g.getCozeTypeCode(input.Type),
 			},
 		}
 	}
-	
+
 	// Empty value
 	return map[string]interface{}{
 		"type":    "literal",
@@ -381,27 +381,27 @@ func (g *CodeNodeGenerator) generateInputValue(input models.Input) map[string]in
 // generateOutputs generates output definitions from unified node outputs
 func (g *CodeNodeGenerator) generateOutputs(unifiedNode *models.Node) []map[string]interface{} {
 	var outputs []map[string]interface{}
-	
+
 	if unifiedNode.Outputs == nil {
 		return outputs
 	}
-	
+
 	for _, output := range unifiedNode.Outputs {
 		outputDef := map[string]interface{}{
 			"name": output.Name,
 			"type": g.mapUnifiedTypeToCozeType(output.Type),
 		}
-		
+
 		// Add schema for array types
 		if g.isArrayType(output.Type) {
 			outputDef["schema"] = map[string]interface{}{
 				"type": g.getArrayElementType(output.Type),
 			}
 		}
-		
+
 		outputs = append(outputs, outputDef)
 	}
-	
+
 	return outputs
 }
 
@@ -437,10 +437,10 @@ func (g *CodeNodeGenerator) mapOutputFieldNameForCoze(nodeID, outputName string)
 		// iFlytek classifier outputs "class_name", but Coze uses "classificationId"
 		return "classificationId"
 	}
-	
+
 	// Add more mappings as needed for other node types
 	// Example: if outputName == "some_other_field" { return "mappedField" }
-	
+
 	// Default: return original name if no mapping needed
 	return outputName
 }
@@ -451,12 +451,12 @@ func (g *CodeNodeGenerator) generateNodeMeta(unifiedNode *models.Node) map[strin
 	if title == "" {
 		title = "代码节点"
 	}
-	
+
 	description := unifiedNode.Description
 	if description == "" {
 		description = "编写代码，处理输入变量来生成返回值"
 	}
-	
+
 	return map[string]interface{}{
 		"title":       title,
 		"description": description,
@@ -489,9 +489,9 @@ func (g *CodeNodeGenerator) mapUnifiedTypeToCozeType(unifiedType models.UnifiedD
 		return "float"
 	case models.DataTypeBoolean:
 		return "boolean"
-	case models.DataTypeArrayString, models.DataTypeArrayInteger, models.DataTypeArrayFloat, 
-		 models.DataTypeArrayNumber, models.DataTypeArrayBoolean, models.DataTypeArrayObject:
-		return "list"  // Coze uses "list" for all array types
+	case models.DataTypeArrayString, models.DataTypeArrayInteger, models.DataTypeArrayFloat,
+		models.DataTypeArrayNumber, models.DataTypeArrayBoolean, models.DataTypeArrayObject:
+		return "list" // Coze uses "list" for all array types
 	case models.DataTypeObject:
 		return "object"
 	default:
@@ -502,7 +502,7 @@ func (g *CodeNodeGenerator) mapUnifiedTypeToCozeType(unifiedType models.UnifiedD
 // convertToCozeNodeOutputs converts map outputs to CozeNodeOutput array
 func (g *CodeNodeGenerator) convertToCozeNodeOutputs(outputs []map[string]interface{}) []CozeNodeOutput {
 	var cozeOutputs []CozeNodeOutput
-	
+
 	for _, output := range outputs {
 		cozeOutput := CozeNodeOutput{
 			Name:     output["name"].(string),
@@ -511,7 +511,7 @@ func (g *CodeNodeGenerator) convertToCozeNodeOutputs(outputs []map[string]interf
 		}
 		cozeOutputs = append(cozeOutputs, cozeOutput)
 	}
-	
+
 	return cozeOutputs
 }
 
@@ -527,8 +527,8 @@ func (g *CodeNodeGenerator) getCozeTypeCode(unifiedType models.UnifiedDataType) 
 	case models.DataTypeFloat, models.DataTypeNumber:
 		return 4
 	case models.DataTypeArrayString, models.DataTypeArrayInteger, models.DataTypeArrayFloat,
-		 models.DataTypeArrayNumber, models.DataTypeArrayBoolean, models.DataTypeArrayObject:
-		return 5  // All array types use code 5
+		models.DataTypeArrayNumber, models.DataTypeArrayBoolean, models.DataTypeArrayObject:
+		return 5 // All array types use code 5
 	case models.DataTypeObject:
 		return 6
 	default:
@@ -539,14 +539,14 @@ func (g *CodeNodeGenerator) getCozeTypeCode(unifiedType models.UnifiedDataType) 
 // generateSchemaInputParameters generates schema input parameters with proper RawMeta format
 func (g *CodeNodeGenerator) generateSchemaInputParameters(unifiedNode *models.Node) []CozeInputParameter {
 	var schemaInputParams []CozeInputParameter
-	
+
 	if unifiedNode.Inputs == nil {
 		return schemaInputParams
 	}
-	
+
 	for _, input := range unifiedNode.Inputs {
 		cozeType := g.mapUnifiedTypeToCozeType(input.Type)
-		
+
 		if input.Reference != nil && input.Reference.Type == models.ReferenceTypeNodeOutput {
 			// Variable reference input for schema - schema uses RawMeta with uppercase M
 			schemaInput := CozeInputParameter{
@@ -569,7 +569,7 @@ func (g *CodeNodeGenerator) generateSchemaInputParameters(unifiedNode *models.No
 			schemaInputParams = append(schemaInputParams, schemaInput)
 		}
 	}
-	
+
 	return schemaInputParams
 }
 
@@ -585,28 +585,28 @@ func (g *CodeNodeGenerator) generateSchemaErrorSettings() map[string]interface{}
 // generateSchemaOutputs generates schema outputs
 func (g *CodeNodeGenerator) generateSchemaOutputs(unifiedNode *models.Node) []CozeNodeOutput {
 	var outputs []CozeNodeOutput
-	
+
 	if unifiedNode.Outputs == nil {
 		return outputs
 	}
-	
+
 	for _, output := range unifiedNode.Outputs {
 		cozeOutput := CozeNodeOutput{
 			Name:     output.Name,
 			Type:     g.mapUnifiedTypeToCozeType(output.Type),
 			Required: false,
 		}
-		
+
 		// Add schema for array types in CozeNodeOutput
 		if g.isArrayType(output.Type) {
 			cozeOutput.Schema = &CozeOutputSchema{
 				Type: g.getArrayElementType(output.Type),
 			}
 		}
-		
+
 		outputs = append(outputs, cozeOutput)
 	}
-	
+
 	return outputs
 }
 
@@ -652,7 +652,7 @@ func (g *CodeNodeGenerator) convertPythonCodeToCozeFormat(originalCode string, i
 	// Use regex to match function definition
 	funcPattern := regexp.MustCompile(`def\s+main\s*\([^)]*\)\s*->\s*[^:]*:`)
 	funcMatch := funcPattern.FindString(originalCode)
-	
+
 	if funcMatch == "" {
 		// No function definition found, return as is
 		return originalCode, nil
@@ -665,7 +665,7 @@ func (g *CodeNodeGenerator) convertPythonCodeToCozeFormat(originalCode string, i
 	// Generate parameter extraction code
 	var paramExtractions []string
 	paramExtractions = append(paramExtractions, "    params = args.params")
-	
+
 	for _, paramName := range paramNames {
 		// Use str() to ensure string type for all parameters as seen in Coze examples
 		paramExtractions = append(paramExtractions, fmt.Sprintf("    %s = str(params.get('%s', ''))", paramName, paramName))
@@ -674,10 +674,10 @@ func (g *CodeNodeGenerator) convertPythonCodeToCozeFormat(originalCode string, i
 	// Find the position to insert parameter extraction (after function definition)
 	lines := strings.Split(codeAfterSignature, "\n")
 	var resultLines []string
-	
+
 	for _, line := range lines {
 		resultLines = append(resultLines, line)
-		
+
 		// Insert parameter extraction after the function definition line
 		if strings.Contains(line, "async def main(args: Args) -> Output:") {
 			// Add empty line and parameter extractions
@@ -695,8 +695,8 @@ func (g *CodeNodeGenerator) convertPythonCodeToCozeFormat(originalCode string, i
 // isArrayType checks if the unified type is an array type
 func (g *CodeNodeGenerator) isArrayType(unifiedType models.UnifiedDataType) bool {
 	return unifiedType == models.DataTypeArrayString || unifiedType == models.DataTypeArrayInteger ||
-		   unifiedType == models.DataTypeArrayFloat || unifiedType == models.DataTypeArrayNumber ||
-		   unifiedType == models.DataTypeArrayBoolean || unifiedType == models.DataTypeArrayObject
+		unifiedType == models.DataTypeArrayFloat || unifiedType == models.DataTypeArrayNumber ||
+		unifiedType == models.DataTypeArrayBoolean || unifiedType == models.DataTypeArrayObject
 }
 
 // getArrayElementType returns the element type for array types
@@ -709,7 +709,7 @@ func (g *CodeNodeGenerator) getArrayElementType(unifiedType models.UnifiedDataTy
 	case models.DataTypeArrayFloat:
 		return "float"
 	case models.DataTypeArrayNumber:
-		return "float"  // Map generic number to float for Coze
+		return "float" // Map generic number to float for Coze
 	case models.DataTypeArrayBoolean:
 		return "boolean"
 	case models.DataTypeArrayObject:

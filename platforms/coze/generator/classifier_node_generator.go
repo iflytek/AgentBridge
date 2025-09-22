@@ -1,10 +1,10 @@
 package generator
 
 import (
-    "ai-agents-transformer/internal/models"
-    "ai-agents-transformer/platforms/common"
-    "fmt"
-    "strings"
+	"ai-agents-transformer/internal/models"
+	"ai-agents-transformer/platforms/common"
+	"fmt"
+	"strings"
 )
 
 // ClassifierNodeGenerator generates Coze Intent Recognition nodes from unified DSL classifier configurations.
@@ -39,9 +39,9 @@ func (g *ClassifierNodeGenerator) ValidateNode(node *models.Node) error {
 	if node.Type != models.NodeTypeClassifier {
 		return fmt.Errorf("expected classifier node, got %s", node.Type)
 	}
-    if cfg, ok := common.AsClassifierConfig(node.Config); !ok || cfg == nil {
-        return fmt.Errorf("invalid classifier config type for node %s, got %T", node.ID, node.Config)
-    }
+	if cfg, ok := common.AsClassifierConfig(node.Config); !ok || cfg == nil {
+		return fmt.Errorf("invalid classifier config type for node %s, got %T", node.ID, node.Config)
+	}
 	return nil
 }
 
@@ -52,10 +52,10 @@ func (g *ClassifierNodeGenerator) GenerateNode(unifiedNode *models.Node) (*CozeN
 	}
 
 	// Parse classifier configuration
-    classifierConfig, ok := common.AsClassifierConfig(unifiedNode.Config)
-    if !ok || classifierConfig == nil {
-        return nil, fmt.Errorf("invalid classifier config type for node %s, got %T", unifiedNode.ID, unifiedNode.Config)
-    }
+	classifierConfig, ok := common.AsClassifierConfig(unifiedNode.Config)
+	if !ok || classifierConfig == nil {
+		return nil, fmt.Errorf("invalid classifier config type for node %s, got %T", unifiedNode.ID, unifiedNode.Config)
+	}
 
 	// Check if ID generator is set
 	if g.idGenerator == nil {
@@ -66,16 +66,16 @@ func (g *ClassifierNodeGenerator) GenerateNode(unifiedNode *models.Node) (*CozeN
 
 	// Generate input parameters from unified node inputs
 	inputParams := g.generateInputParameters(unifiedNode)
-	
+
 	// Generate intents from classifier classes
 	intents := g.generateIntents(classifierConfig)
-	
+
 	// Generate LLM parameters for intent recognition
 	llmParam := g.generateLLMParam(classifierConfig)
-	
+
 	// Generate chat history setting
 	chatHistorySetting := g.generateChatHistorySetting(classifierConfig)
-	
+
 	// Generate error handling settings
 	errorSettings := g.generateErrorSettings()
 
@@ -83,10 +83,10 @@ func (g *ClassifierNodeGenerator) GenerateNode(unifiedNode *models.Node) (*CozeN
 	intentInputs := map[string]interface{}{
 		"chatHistorySetting": chatHistorySetting,
 		"inputParameters":    inputParams,
-		"intents":           intents,
-		"llmParam":          llmParam,
-		"mode":              "all", // Default mode for intent recognition
-		"settingOnError":    errorSettings,
+		"intents":            intents,
+		"llmParam":           llmParam,
+		"mode":               "all", // Default mode for intent recognition
+		"settingOnError":     errorSettings,
 	}
 
 	// Generate outputs based on unified DSL definition - NO hardcoded defaults
@@ -138,13 +138,13 @@ func (g *ClassifierNodeGenerator) GenerateSchemaNode(unifiedNode *models.Node) (
 
 	// Generate input parameters for schema (simplified structure)
 	schemaInputParams := []map[string]interface{}{}
-	
+
 	for _, input := range unifiedNode.Inputs {
 		if input.Reference != nil {
 			param := map[string]interface{}{
-				"name": "query", 
+				"name": "query",
 				"input": map[string]interface{}{
-					"type": g.convertDataType(input.Type),
+					"type":  g.convertDataType(input.Type),
 					"value": g.convertVariableReference(*input.Reference),
 				},
 			}
@@ -155,13 +155,13 @@ func (g *ClassifierNodeGenerator) GenerateSchemaNode(unifiedNode *models.Node) (
 
 	// Generate intents for schema
 	schemaIntents := g.generateIntents(classifierConfig)
-	
+
 	// Generate LLM parameters for schema
 	schemaLLMParam := g.generateLLMParam(classifierConfig)
-	
+
 	// Generate chat history setting for schema
 	schemaChatHistorySetting := g.generateChatHistorySetting(classifierConfig)
-	
+
 	// Generate error settings for schema
 	schemaErrorSettings := g.generateErrorSettings()
 
@@ -169,10 +169,10 @@ func (g *ClassifierNodeGenerator) GenerateSchemaNode(unifiedNode *models.Node) (
 	schemaInputs := map[string]interface{}{
 		"inputParameters":    schemaInputParams,
 		"chatHistorySetting": schemaChatHistorySetting,
-		"intents":           schemaIntents,
-		"llmParam":          schemaLLMParam,
-		"mode":              "all",
-		"settingOnError":    schemaErrorSettings,
+		"intents":            schemaIntents,
+		"llmParam":           schemaLLMParam,
+		"mode":               "all",
+		"settingOnError":     schemaErrorSettings,
 	}
 
 	// Generate outputs for schema based on unified DSL definition - NO hardcoded defaults
@@ -207,13 +207,13 @@ func (g *ClassifierNodeGenerator) GenerateSchemaNode(unifiedNode *models.Node) (
 // generateInputParameters converts unified node inputs to Coze input parameter format.
 func (g *ClassifierNodeGenerator) generateInputParameters(unifiedNode *models.Node) []map[string]interface{} {
 	params := []map[string]interface{}{}
-	
+
 	for _, input := range unifiedNode.Inputs {
 		if input.Reference != nil {
 			param := map[string]interface{}{
 				"name": "query", // Use fixed query parameter name for Coze format compatibility
 				"input": map[string]interface{}{
-					"type": g.convertDataType(input.Type),
+					"type":  g.convertDataType(input.Type),
 					"value": g.convertVariableReference(*input.Reference),
 				},
 			}
@@ -221,38 +221,38 @@ func (g *ClassifierNodeGenerator) generateInputParameters(unifiedNode *models.No
 			break // Use only the first input as query parameter
 		}
 	}
-	
+
 	return params
 }
 
 // generateIntents converts classifier classes to Coze intent format.
 func (g *ClassifierNodeGenerator) generateIntents(config *models.ClassifierConfig) []map[string]interface{} {
-    intents := []map[string]interface{}{}
-    
-    for _, class := range config.Classes {
-        // Skip default intent
-        if class.IsDefault || strings.EqualFold(class.Name, "default") {
-            continue
-        }
-        
-        intent := map[string]interface{}{
-            "name": class.Name,
-        }
-        intents = append(intents, intent)
-    }
-    
-    return intents
+	intents := []map[string]interface{}{}
+
+	for _, class := range config.Classes {
+		// Skip default intent
+		if class.IsDefault || strings.EqualFold(class.Name, "default") {
+			continue
+		}
+
+		intent := map[string]interface{}{
+			"name": class.Name,
+		}
+		intents = append(intents, intent)
+	}
+
+	return intents
 }
 
 // generateLLMParam converts classifier model configuration to Coze LLM parameters.
 func (g *ClassifierNodeGenerator) generateLLMParam(config *models.ClassifierConfig) map[string]interface{} {
 	return map[string]interface{}{
-		"chatHistoryRound":    3,                              // Default value
-		"enableChatHistory":   false,                          // Default value
-		"generationDiversity": "balance",                      // Default value
-		"maxTokens":          config.Parameters.MaxTokens,
-		"modelName":          config.Model.Name,
-		"modelType":          g.convertModelType(config.Model.Provider),
+		"chatHistoryRound":    3,         // Default value
+		"enableChatHistory":   false,     // Default value
+		"generationDiversity": "balance", // Default value
+		"maxTokens":           config.Parameters.MaxTokens,
+		"modelName":           config.Model.Name,
+		"modelType":           g.convertModelType(config.Model.Provider),
 		"prompt": map[string]interface{}{
 			"type": "string",
 			"value": map[string]interface{}{
@@ -302,13 +302,13 @@ func (g *ClassifierNodeGenerator) normalizeSystemPromptForCoze(instructions stri
 	if instructions == "" {
 		return ""
 	}
-	
+
 	// Convert iFlytek {{Query}} (uppercase) to Coze standard {{query}} (lowercase)
 	normalized := strings.ReplaceAll(instructions, "{{Query}}", "{{query}}")
-	
+
 	// Handle other possible variants
 	normalized = strings.ReplaceAll(normalized, "{{QUERY}}", "{{query}}")
-	
+
 	return normalized
 }
 
@@ -427,10 +427,10 @@ func (g *ClassifierNodeGenerator) mapOutputFieldNameForCoze(nodeID, outputName s
 		// iFlytek classifier outputs "class_name", but Coze uses "classificationId"
 		return "classificationId"
 	}
-	
+
 	// Add more mappings as needed for other node types
 	// Example: if outputName == "some_other_field" { return "mappedField" }
-	
+
 	// Default: return original name if no mapping needed
 	return outputName
 }

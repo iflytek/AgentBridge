@@ -121,13 +121,13 @@ func (p *EndNodeParser) convertToArray(outputs interface{}) []interface{} {
 // processOutputArray processes array of output items
 func (p *EndNodeParser) processOutputArray(outputArray []interface{}) []DifyOutput {
 	var result []DifyOutput
-	
+
 	for _, item := range outputArray {
 		if output := p.processOutputItem(item); output != nil {
 			result = append(result, *output)
 		}
 	}
-	
+
 	return result
 }
 
@@ -170,11 +170,11 @@ func (p *EndNodeParser) convertInterfaceMap(m2 map[interface{}]interface{}) map[
 // createDifyOutput creates DifyOutput from output map
 func (p *EndNodeParser) createDifyOutput(outputMap map[string]interface{}) *DifyOutput {
 	output := &DifyOutput{}
-	
+
 	p.setOutputVariable(output, outputMap)
 	p.setOutputValueType(output, outputMap)
 	p.setOutputValueSelector(output, outputMap)
-	
+
 	return output
 }
 

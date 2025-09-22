@@ -10,9 +10,9 @@ import (
 
 // GraphGenerationContext holds context information for graph generation
 type GraphGenerationContext struct {
-	UnifiedDSL       *models.UnifiedDSL
-	NodeIDMapping    map[string]string
-	Graph            interface{} // Generic graph type (could be DifyGraph, IflytekGraph, etc.)
+	UnifiedDSL    *models.UnifiedDSL
+	NodeIDMapping map[string]string
+	Graph         interface{} // Generic graph type (could be DifyGraph, IflytekGraph, etc.)
 }
 
 // GenerateSimpleNodeID generates a simple random 16-digit numeric ID
@@ -30,7 +30,7 @@ func GenerateSimpleNodeID(node models.Node, index int) string {
 // CollectIterationInternalNodeIDs collects all iteration internal node IDs for filtering
 func CollectIterationInternalNodeIDs(nodes []models.Node) map[string]bool {
 	iterationInternalNodeIDs := make(map[string]bool)
-	
+
 	for _, node := range nodes {
 		if node.Type == models.NodeTypeIteration {
 			if iterConfig, ok := node.Config.(*models.IterationConfig); ok {
@@ -40,7 +40,7 @@ func CollectIterationInternalNodeIDs(nodes []models.Node) map[string]bool {
 			}
 		}
 	}
-	
+
 	return iterationInternalNodeIDs
 }
 
@@ -89,11 +89,11 @@ const (
 
 // NodeGenerationContext holds context for node generation process
 type NodeGenerationContext struct {
-	Phase           NodeGenerationPhase
-	IDMapping       map[string]string
-	TitleMapping    map[string]string
-	BranchMapping   map[string]string
-	SkipSubNodes    bool
+	Phase         NodeGenerationPhase
+	IDMapping     map[string]string
+	TitleMapping  map[string]string
+	BranchMapping map[string]string
+	SkipSubNodes  bool
 }
 
 // ReverseIDMapping performs reverse lookup in ID mapping to find original ID
@@ -101,7 +101,7 @@ func ReverseIDMapping(idMapping map[string]string, targetID string) string {
 	if idMapping == nil {
 		return ""
 	}
-	
+
 	for originalID, mappedID := range idMapping {
 		if mappedID == targetID {
 			return originalID
@@ -115,7 +115,7 @@ func CreateVariableReference(originalRef *models.VariableReference, nodeID, outp
 	if nodeID == "" {
 		return originalRef
 	}
-	
+
 	return &models.VariableReference{
 		Type:       originalRef.Type,
 		NodeID:     nodeID,
@@ -129,11 +129,11 @@ func TryRemapNodeID(idMapping map[string]string, nodeID string) (string, bool) {
 	if idMapping == nil {
 		return "", false
 	}
-	
+
 	if mappedID, exists := idMapping[nodeID]; exists {
 		return mappedID, true
 	}
-	
+
 	return "", false
 }
 
@@ -142,12 +142,12 @@ func UpdateVariableSelector(selector []string, nodeIDMapping map[string]string) 
 	if len(selector) < 2 {
 		return selector
 	}
-	
+
 	oldNodeID := selector[0]
 	if newNodeID, found := nodeIDMapping[oldNodeID]; found {
 		return []string{newNodeID, selector[1]}
 	}
-	
+
 	return selector
 }
 

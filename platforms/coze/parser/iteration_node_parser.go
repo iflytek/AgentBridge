@@ -60,7 +60,7 @@ func (p *IterationNodeParser) parseIterationConfig(cozeNode CozeNode) (models.It
 	// Extract loop configuration from inputs
 	if cozeNode.Data.Inputs != nil && cozeNode.Data.Inputs.Loop != nil {
 		loopConfig := p.extractLoopParams(cozeNode.Data.Inputs.Loop)
-		
+
 		// Set iterator configuration
 		config.Iterator = models.IteratorConfig{
 			InputType: p.getStringParam(loopConfig, "loopType", "array"),
@@ -130,7 +130,7 @@ func (p *IterationNodeParser) parseSubWorkflow(blocks []interface{}, iterationID
 		if blockMap, ok := block.(map[string]interface{}); ok {
 			// Create a CozeNode from the block data
 			blockNode := p.convertBlockToCozeNode(blockMap)
-			
+
 			// Parse the block node based on its type - use actual type-specific parsing
 			parsedNode, err := p.parseSpecificBlockType(blockNode, iterationID)
 			if err != nil {
@@ -180,7 +180,7 @@ func (p *IterationNodeParser) parseCodeBlockDetailed(cozeNode CozeNode, iteratio
 	}
 
 	node.Config = codeConfig
-	
+
 	// Parse inputs and outputs from the actual block structure
 	node.Inputs = p.parseCodeBlockInputs(cozeNode, iterationID)
 	node.Outputs = p.parseCodeBlockOutputs(cozeNode)
@@ -192,7 +192,7 @@ func (p *IterationNodeParser) parseCodeBlockDetailed(cozeNode CozeNode, iteratio
 func (p *IterationNodeParser) extractCodeFromBlockData(cozeNode CozeNode, iterationID string) (models.CodeConfig, error) {
 	var code string
 	var language string = "python3" // Default
-	
+
 	// Try to extract code from CodeRunner (similar to main layer logic)
 	if cozeNode.Data.Inputs != nil && cozeNode.Data.Inputs.CodeRunner != nil {
 		if codeRunnerMap, ok := cozeNode.Data.Inputs.CodeRunner.(map[string]interface{}); ok {
@@ -217,7 +217,7 @@ func (p *IterationNodeParser) extractCodeFromBlockData(cozeNode CozeNode, iterat
 			}
 		}
 	}
-	
+
 	// Fallback: extract from direct inputs structure
 	if code == "" && cozeNode.Data.Inputs != nil {
 		if codeField, ok := p.extractFieldFromInputs(cozeNode.Data.Inputs, "code"); ok {
@@ -233,7 +233,7 @@ func (p *IterationNodeParser) extractCodeFromBlockData(cozeNode CozeNode, iterat
 			}
 		}
 	}
-	
+
 	if code == "" {
 		return models.CodeConfig{}, fmt.Errorf("no code found in iteration block data for node: %s", cozeNode.ID)
 	}
@@ -257,7 +257,7 @@ func (p *IterationNodeParser) extractCodeFromBlockData(cozeNode CozeNode, iterat
 // parseCodeBlockInputs parses inputs from code block in iteration
 func (p *IterationNodeParser) parseCodeBlockInputs(cozeNode CozeNode, iterationID string) []models.Input {
 	var inputs []models.Input
-	
+
 	// Use the same input parsing logic as the main layer code node parser
 	// This dynamically extracts inputs from the node's inputParameters
 	if cozeNode.Data.Inputs != nil && cozeNode.Data.Inputs.InputParameters != nil {
@@ -272,17 +272,17 @@ func (p *IterationNodeParser) parseCodeBlockInputs(cozeNode CozeNode, iterationI
 
 			// Parse reference if exists
 			if param.Input.Value.Type == "ref" {
-				// Map main workflow start node references to iteration start node  
+				// Map main workflow start node references to iteration start node
 				mappedNodeID, mappedOutputName := p.mapIterationVariableReferenceWithOutput(
-					param.Input.Value.Content.BlockID, 
-					param.Input.Value.Content.Name, 
+					param.Input.Value.Content.BlockID,
+					param.Input.Value.Content.Name,
 					iterationID,
 				)
-				
+
 				input.Reference = &models.VariableReference{
 					Type:       models.ReferenceTypeNodeOutput,
 					NodeID:     mappedNodeID,
-					OutputName: mappedOutputName,  
+					OutputName: mappedOutputName,
 					DataType:   input.Type,
 				}
 			}
@@ -290,7 +290,7 @@ func (p *IterationNodeParser) parseCodeBlockInputs(cozeNode CozeNode, iterationI
 			inputs = append(inputs, input)
 		}
 	}
-	
+
 	// Fallback: try to extract from CodeRunner structure if InputParameters is not available
 	if len(inputs) == 0 && cozeNode.Data.Inputs != nil && cozeNode.Data.Inputs.CodeRunner != nil {
 		if codeRunnerMap, ok := cozeNode.Data.Inputs.CodeRunner.(map[string]interface{}); ok {
@@ -310,20 +310,19 @@ func (p *IterationNodeParser) parseCodeBlockInputs(cozeNode CozeNode, iterationI
 			}
 		}
 	}
-	
+
 	return inputs
 }
-
 
 // parseCodeBlockInputParam parses a single input parameter from code block
 func (p *IterationNodeParser) parseCodeBlockInputParam(paramMap map[string]interface{}, iterationID string) models.Input {
 	input := models.Input{}
-	
+
 	if name, ok := paramMap["name"].(string); ok {
 		input.Name = name
 		input.Label = name
 	}
-	
+
 	if inputData, ok := paramMap["input"].(map[string]interface{}); ok {
 		// Parse type (check both cases)
 		if inputType, ok := inputData["Type"].(string); ok {
@@ -331,7 +330,7 @@ func (p *IterationNodeParser) parseCodeBlockInputParam(paramMap map[string]inter
 		} else if inputType, ok := inputData["type"].(string); ok {
 			input.Type = p.convertDataType(inputType)
 		}
-		
+
 		// Parse reference if exists (check both cases)
 		var valueMap map[string]interface{}
 		if value, ok := inputData["Value"].(map[string]interface{}); ok {
@@ -339,17 +338,17 @@ func (p *IterationNodeParser) parseCodeBlockInputParam(paramMap map[string]inter
 		} else if value, ok := inputData["value"].(map[string]interface{}); ok {
 			valueMap = value
 		}
-		
+
 		if valueMap != nil {
 			if valueType, ok := valueMap["type"].(string); ok && valueType == "ref" {
 				if content, ok := valueMap["content"].(map[string]interface{}); ok {
 					blockID := p.getStringFromMap(content, "blockID", "")
 					outputName := p.getStringFromMap(content, "name", "")
-					
+
 					// Map main workflow start node references to iteration start node
 					// In Coze iteration, references to main workflow start node should be mapped to iteration start node
 					mappedNodeID, mappedOutputName := p.mapIterationVariableReferenceWithOutput(blockID, outputName, iterationID)
-					
+
 					input.Reference = &models.VariableReference{
 						Type:       models.ReferenceTypeNodeOutput,
 						NodeID:     mappedNodeID,
@@ -360,17 +359,17 @@ func (p *IterationNodeParser) parseCodeBlockInputParam(paramMap map[string]inter
 			}
 		}
 	}
-	
+
 	input.Required = true
 	input.Description = ""
-	
+
 	return input
 }
 
 // parseCodeBlockOutputs parses outputs from code block
 func (p *IterationNodeParser) parseCodeBlockOutputs(cozeNode CozeNode) []models.Output {
 	var outputs []models.Output
-	
+
 	if cozeNode.Data.Outputs != nil {
 		for _, output := range cozeNode.Data.Outputs {
 			outputs = append(outputs, models.Output{
@@ -381,7 +380,7 @@ func (p *IterationNodeParser) parseCodeBlockOutputs(cozeNode CozeNode) []models.
 			})
 		}
 	}
-	
+
 	// Ensure at least one output exists
 	if len(outputs) == 0 {
 		outputs = append(outputs, models.Output{
@@ -391,10 +390,9 @@ func (p *IterationNodeParser) parseCodeBlockOutputs(cozeNode CozeNode) []models.
 			Required:    true,
 		})
 	}
-	
+
 	return outputs
 }
-
 
 // setIterationNodeConfig sets iteration configuration for sub-nodes
 func (p *IterationNodeParser) setIterationNodeConfig(node *models.Node, iterationID string) {
@@ -480,15 +478,15 @@ func (p *IterationNodeParser) parseCozeNodeDataFromBlock(data map[string]interfa
 	// Parse inputs - store the actual inputs data for code extraction
 	if inputs, ok := data["inputs"].(map[string]interface{}); ok {
 		nodeData.Inputs = &CozeNodeInputs{}
-		
+
 		// Initialize CodeRunner structure to store both code and inputParameters
 		nodeData.Inputs.CodeRunner = make(map[string]interface{})
-		
+
 		// Store code field if it exists
 		if codeField, exists := inputs["code"]; exists {
 			nodeData.Inputs.CodeRunner.(map[string]interface{})["code"] = codeField
 		}
-		
+
 		// Check if there's a coderunner field with code inside
 		if coderunner, exists := inputs["coderunner"]; exists {
 			if coderunnerMap, ok := coderunner.(map[string]interface{}); ok {
@@ -502,34 +500,34 @@ func (p *IterationNodeParser) parseCozeNodeDataFromBlock(data map[string]interfa
 				}
 			}
 		}
-		
+
 		// Store language field if it exists
 		if langField, exists := inputs["language"]; exists {
 			nodeData.Inputs.CodeRunner.(map[string]interface{})["language"] = langField
 		}
-		
+
 		// Store inputParameters for input parsing (check both cases)
 		if inputParams, exists := inputs["inputParameters"]; exists {
 			nodeData.Inputs.CodeRunner.(map[string]interface{})["inputParameters"] = inputParams
 		} else if inputParams, exists := inputs["inputparameters"]; exists {
 			nodeData.Inputs.CodeRunner.(map[string]interface{})["inputParameters"] = inputParams
 		}
-		
+
 		// Store LLM parameters for LLM node parsing
 		if llmParam, exists := inputs["llmparam"]; exists {
 			nodeData.Inputs.LLMParam = llmParam
 		}
-		
+
 		// Store all other relevant input fields for different node types
 		nodeData.Inputs.InputParameters = parseInputParametersFromMap(inputs)
-		
+
 		// Type assertion for branches
 		if branches, exists := inputs["branches"]; exists {
 			if branchesArray, ok := branches.([]interface{}); ok {
 				nodeData.Inputs.Branches = branchesArray
 			}
 		}
-		
+
 		// Store other fields as interface{}
 		nodeData.Inputs.IntentDetector = inputs["intentdetector"]
 		nodeData.Inputs.Selector = inputs["selector"]
@@ -552,9 +550,6 @@ func (p *IterationNodeParser) parseCozeNodeMeta(meta map[string]interface{}) Coz
 	return nodeMeta
 }
 
-
-
-
 // extractFieldFromInputs extracts field from block inputs structure
 func (p *IterationNodeParser) extractFieldFromInputs(inputs interface{}, fieldName string) (interface{}, bool) {
 	if inputsMap, ok := inputs.(map[string]interface{}); ok {
@@ -565,9 +560,6 @@ func (p *IterationNodeParser) extractFieldFromInputs(inputs interface{}, fieldNa
 	return nil, false
 }
 
-
-
-
 // convertIterationCodeFormat converts iteration code to iFlytek format
 func (p *IterationNodeParser) convertIterationCodeFormat(code string, inputs []models.Input) (string, error) {
 	if code == "" {
@@ -577,13 +569,13 @@ func (p *IterationNodeParser) convertIterationCodeFormat(code string, inputs []m
 	// Use similar logic to main layer code parser
 	// Step 1: Generate function signature dynamically from inputs
 	signature := p.generateIterationFunctionSignature(inputs)
-	
+
 	// Step 2: Remove Coze-specific async/await and Args handling
 	cleanedCode := p.removeCozeSpecificSyntaxImproved(code)
-	
+
 	// Step 3: Replace parameter access patterns for iteration context
 	convertedCode := p.replaceIterationParameterAccessForSingleInput(cleanedCode, inputs)
-	
+
 	// Step 4: Combine signature with converted body
 	return p.assembleIterationCodeImproved(signature, convertedCode), nil
 }
@@ -592,19 +584,19 @@ func (p *IterationNodeParser) convertIterationCodeFormat(code string, inputs []m
 func (p *IterationNodeParser) removeCozeSpecificSyntaxImproved(code string) string {
 	lines := strings.Split(code, "\n")
 	var cleanedLines []string
-	
+
 	for _, line := range lines {
 		trimmedLine := strings.TrimSpace(line)
-		
+
 		// Skip Coze-specific lines
 		if p.isCozeSpecificLineImproved(trimmedLine) {
 			continue
 		}
-		
+
 		// Keep other lines
 		cleanedLines = append(cleanedLines, line)
 	}
-	
+
 	return strings.Join(cleanedLines, "\n")
 }
 
@@ -620,24 +612,24 @@ func (p *IterationNodeParser) isCozeSpecificLineImproved(line string) bool {
 		"args.text",
 		"args.input_test",
 	}
-	
+
 	// Special case: filter any line containing "async def main" regardless of format
 	if strings.Contains(line, "async def main") {
 		return true
 	}
-	
+
 	// Special case: filter parameter access using args pattern
 	if strings.Contains(line, "args.params") || strings.Contains(line, "args.text") || strings.Contains(line, "args.input_test") {
 		return true
 	}
-	
+
 	// General pattern matching
 	for _, pattern := range cozePatterns {
 		if strings.Contains(line, pattern) {
 			return true
 		}
 	}
-	
+
 	return false
 }
 
@@ -646,33 +638,33 @@ func (p *IterationNodeParser) assembleIterationCodeImproved(signature, body stri
 	lines := strings.Split(body, "\n")
 	var importLines []string
 	var bodyLines []string
-	
+
 	// Separate import statements from other code
 	inFunctionBody := false
 	for _, line := range lines {
 		trimmedLine := strings.TrimSpace(line)
-		
+
 		// Skip empty lines at the beginning
 		if trimmedLine == "" && !inFunctionBody {
 			continue
 		}
-		
+
 		// Check if this is an import statement
 		if strings.HasPrefix(trimmedLine, "import ") || strings.HasPrefix(trimmedLine, "from ") {
 			importLines = append(importLines, trimmedLine)
 			continue
 		}
-		
+
 		// Mark that we've entered function body content
 		if trimmedLine != "" {
 			inFunctionBody = true
 		}
-		
+
 		if inFunctionBody {
 			bodyLines = append(bodyLines, line)
 		}
 	}
-	
+
 	// Ensure proper indentation for function body - use same logic as main code parser
 	var indentedBodyLines []string
 	for _, line := range bodyLines {
@@ -686,26 +678,26 @@ func (p *IterationNodeParser) assembleIterationCodeImproved(signature, body stri
 			indentedBodyLines = append(indentedBodyLines, line)
 		}
 	}
-	
+
 	// Assemble final code: imports first, then function definition with body
 	var result []string
-	
+
 	// Add import statements at the top
 	for _, importLine := range importLines {
 		result = append(result, importLine)
 	}
-	
+
 	// Add empty line after imports if there are any
 	if len(importLines) > 0 {
 		result = append(result, "")
 	}
-	
+
 	// Add function signature
 	result = append(result, signature)
-	
+
 	// Add function body
 	result = append(result, indentedBodyLines...)
-	
+
 	return strings.Join(result, "\n")
 }
 
@@ -721,7 +713,7 @@ func (p *IterationNodeParser) generateIterationFunctionSignature(inputs []models
 		paramType := p.convertUnifiedDataTypeToString(input.Type)
 		params = append(params, fmt.Sprintf("%s: %s", input.Name, paramType))
 	}
-	
+
 	return fmt.Sprintf("def main(%s) -> dict:", strings.Join(params, ", "))
 }
 
@@ -729,21 +721,19 @@ func (p *IterationNodeParser) generateIterationFunctionSignature(inputs []models
 func (p *IterationNodeParser) convertUnifiedDataTypeToString(dataType models.UnifiedDataType) string {
 	typeMap := map[models.UnifiedDataType]string{
 		models.DataTypeString:      "str",
-		models.DataTypeInteger:     "int", 
+		models.DataTypeInteger:     "int",
 		models.DataTypeFloat:       "float",
 		models.DataTypeBoolean:     "bool",
 		models.DataTypeArrayString: "list",
 		models.DataTypeArrayObject: "list",
 		models.DataTypeObject:      "dict",
 	}
-	
+
 	if pyType, exists := typeMap[dataType]; exists {
 		return pyType
 	}
 	return "str"
 }
-
-
 
 // replaceIterationParameterAccessForSingleInput replaces parameter access patterns and adds null handling
 func (p *IterationNodeParser) replaceIterationParameterAccessForSingleInput(code string, inputs []models.Input) string {
@@ -752,33 +742,33 @@ func (p *IterationNodeParser) replaceIterationParameterAccessForSingleInput(code
 	}
 
 	convertedCode := code
-	
+
 	// Replace all parameter access patterns (params.get, args.params.get) with direct variable names
 	// For each input parameter, replace its access patterns with the parameter name
 	for _, input := range inputs {
 		paramName := input.Name
-		
+
 		// Replace str(args.params.get('paramName', ...)) with paramName
 		re := regexp.MustCompile(fmt.Sprintf(`str\((?:args\.)?params\.get\(['"]%s['"], [^)]*\)\)`, regexp.QuoteMeta(paramName)))
 		convertedCode = re.ReplaceAllString(convertedCode, paramName)
-		
+
 		// Replace int(args.params.get('paramName', ...)) with paramName
 		re = regexp.MustCompile(fmt.Sprintf(`int\((?:args\.)?params\.get\(['"]%s['"], [^)]*\)\)`, regexp.QuoteMeta(paramName)))
 		convertedCode = re.ReplaceAllString(convertedCode, paramName)
-		
+
 		// Replace float(args.params.get('paramName', ...)) with paramName
 		re = regexp.MustCompile(fmt.Sprintf(`float\((?:args\.)?params\.get\(['"]%s['"], [^)]*\)\)`, regexp.QuoteMeta(paramName)))
 		convertedCode = re.ReplaceAllString(convertedCode, paramName)
-		
+
 		// Replace args.params.get('paramName', ...) with paramName
 		re = regexp.MustCompile(fmt.Sprintf(`(?:args\.)?params\.get\(['"]%s['"], [^)]*\)`, regexp.QuoteMeta(paramName)))
 		convertedCode = re.ReplaceAllString(convertedCode, paramName)
-		
+
 		// Replace args.params['paramName'] with paramName
 		re = regexp.MustCompile(fmt.Sprintf(`(?:args\.)?params\[['"]%s['"]\]`, regexp.QuoteMeta(paramName)))
 		convertedCode = re.ReplaceAllString(convertedCode, paramName)
 	}
-	
+
 	// Add null handling code at the beginning of the function body
 	// This ensures that parameters can handle None values
 	var nullHandlingLines []string
@@ -787,18 +777,18 @@ func (p *IterationNodeParser) replaceIterationParameterAccessForSingleInput(code
 		nullHandlingLines = append(nullHandlingLines, fmt.Sprintf("    %s = %s or \"\"", input.Name, input.Name))
 	}
 	nullHandlingLines = append(nullHandlingLines, "")
-	
+
 	// Insert null handling after any import statements and before the main function body
 	lines := strings.Split(convertedCode, "\n")
 	var resultLines []string
 	insertedNullHandling := false
-	
+
 	for _, line := range lines {
 		trimmedLine := strings.TrimSpace(line)
-		
+
 		// Add line to results first
 		resultLines = append(resultLines, line)
-		
+
 		// Insert null handling after the function definition line
 		if !insertedNullHandling && strings.Contains(trimmedLine, "def main(") && strings.Contains(trimmedLine, ") -> dict:") {
 			// Insert null handling lines
@@ -808,11 +798,9 @@ func (p *IterationNodeParser) replaceIterationParameterAccessForSingleInput(code
 			insertedNullHandling = true
 		}
 	}
-	
+
 	return strings.Join(resultLines, "\n")
 }
-
-
 
 // generateDefaultIterationCode generates default code for iteration blocks
 func (p *IterationNodeParser) generateDefaultIterationCode(inputs []models.Input) string {
@@ -825,12 +813,12 @@ func (p *IterationNodeParser) generateDefaultIterationCode(inputs []models.Input
 func (p *IterationNodeParser) convertLanguageCode(langCode int) string {
 	languageMap := map[int]string{
 		1: "javascript",
-		2: "python2", 
+		2: "python2",
 		3: "python3",
 		4: "java",
 		5: "go",
 	}
-	
+
 	if language, exists := languageMap[langCode]; exists {
 		return language
 	}
@@ -843,7 +831,7 @@ func (p *IterationNodeParser) parseOutputSelector(outputs []CozeOutput) models.O
 
 	// Always use standard "output" name for iFlytek compatibility
 	// This ensures consistent output mapping regardless of Coze output names
-	selector.NodeID = "" // Will be set by the framework
+	selector.NodeID = ""           // Will be set by the framework
 	selector.OutputName = "output" // Force standard "output" name to match iFlytek template
 
 	return selector
@@ -892,7 +880,7 @@ func (p *IterationNodeParser) parseIterationInputs(cozeNode CozeNode) []models.I
 	if len(inputs) == 0 {
 		// Check if there's a source node that feeds into this iteration
 		sourceNodeRef := p.findIterationInputSource(cozeNode)
-		
+
 		defaultInput := models.Input{
 			Name:        "input",
 			Label:       "input",
@@ -900,12 +888,12 @@ func (p *IterationNodeParser) parseIterationInputs(cozeNode CozeNode) []models.I
 			Required:    true,
 			Description: "Default iteration input parameter",
 		}
-		
+
 		// Set reference to source node if found
 		if sourceNodeRef != nil {
 			defaultInput.Reference = sourceNodeRef
 		}
-		
+
 		inputs = append(inputs, defaultInput)
 	}
 
@@ -935,7 +923,7 @@ func (p *IterationNodeParser) findIterationInputSource(cozeNode CozeNode) *model
 			}
 		}
 	}
-	
+
 	// If no explicit input found, return nil
 	return nil
 }
@@ -949,7 +937,7 @@ func (p *IterationNodeParser) parseIterationOutputs(cozeNode CozeNode) []models.
 			// Force all iteration outputs to use standard "output" name for iFlytek compatibility
 			// This ensures the iteration main node can properly obtain iteration results
 			outputs = append(outputs, models.Output{
-				Name:        "output", // Always use "output" name to match iFlytek template
+				Name:        "output",                   // Always use "output" name to match iFlytek template
 				Type:        models.DataTypeArrayString, // iFlytek iteration outputs use array-string type
 				Description: "",
 				Required:    true,
@@ -960,7 +948,7 @@ func (p *IterationNodeParser) parseIterationOutputs(cozeNode CozeNode) []models.
 	// Ensure at least one output exists with standard name to match iFlytek template
 	if len(outputs) == 0 {
 		outputs = append(outputs, models.Output{
-			Name:        "output", // Use standard "output" name to match iFlytek template
+			Name:        "output",                   // Use standard "output" name to match iFlytek template
 			Type:        models.DataTypeArrayString, // iFlytek iteration outputs use array-string type
 			Description: "Iteration result list",
 			Required:    true,
@@ -979,7 +967,6 @@ func (p *IterationNodeParser) getStringParam(params map[string]interface{}, key 
 	}
 	return defaultValue
 }
-
 
 func (p *IterationNodeParser) getStringFromMap(m map[string]interface{}, key string, defaultValue string) string {
 	if value, exists := m[key]; exists {
@@ -1014,26 +1001,24 @@ func (p *IterationNodeParser) mapIterationVariableReferenceWithOutput(blockID, o
 		// Map to the original iteration ID - let the iFlytek generator handle the final mapping
 		return iterationID, outputName
 	}
-	
+
 	// For other node types, return original values
 	return blockID, outputName
 }
-
 
 // isMainWorkflowStartNode checks if the node ID corresponds to main workflow start node
 func (p *IterationNodeParser) isMainWorkflowStartNode(nodeID string) bool {
 	// Common patterns for main workflow start nodes in Coze
 	commonStartNodeIDs := []string{"100001", "node-start", "start"}
-	
+
 	for _, startID := range commonStartNodeIDs {
 		if nodeID == startID {
 			return true
 		}
 	}
-	
+
 	return false
 }
-
 
 // registerIterationOutputMapping registers output name mappings for iteration nodes
 // This ensures other nodes referencing iteration outputs use the correct standardized names
@@ -1056,42 +1041,42 @@ func (p *IterationNodeParser) parseLLMBlock(cozeNode CozeNode, iterationID strin
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert iteration LLM format: %w", err)
 	}
-	
+
 	// Create main layer LLM parser instance
 	llmParser := NewLLMNodeParser(p.variableRefSystem)
-	
+
 	// Use main layer parsing logic with converted node
 	node, err := llmParser.ParseNode(convertedNode)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse LLM block using main parser: %w", err)
 	}
-	
+
 	// Set iteration-specific configuration
 	p.setIterationNodeConfig(node, iterationID)
-	
+
 	// Process iteration-specific variable references
 	p.processIterationVariableReferences(node, iterationID)
-	
+
 	return node, nil
 }
 
 // parseSelectorBlock parses selector/branch nodes within iteration using main layer selector parser
 func (p *IterationNodeParser) parseSelectorBlock(cozeNode CozeNode, iterationID string) (*models.Node, error) {
-	// Create main layer selector parser instance  
+	// Create main layer selector parser instance
 	selectorParser := NewSelectorNodeParser(p.variableRefSystem)
-	
+
 	// Use main layer parsing logic
 	node, err := selectorParser.ParseNode(cozeNode)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse selector block using main parser: %w", err)
 	}
-	
+
 	// Set iteration-specific configuration
 	p.setIterationNodeConfig(node, iterationID)
-	
+
 	// Process iteration-specific variable references
 	p.processIterationVariableReferences(node, iterationID)
-	
+
 	return node, nil
 }
 
@@ -1099,19 +1084,19 @@ func (p *IterationNodeParser) parseSelectorBlock(cozeNode CozeNode, iterationID 
 func (p *IterationNodeParser) parseClassifierBlock(cozeNode CozeNode, iterationID string) (*models.Node, error) {
 	// Create main layer classifier parser instance
 	classifierParser := NewClassifierNodeParser(p.variableRefSystem)
-	
+
 	// Use main layer parsing logic
 	node, err := classifierParser.ParseNode(cozeNode)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse classifier block using main parser: %w", err)
 	}
-	
+
 	// Set iteration-specific configuration
 	p.setIterationNodeConfig(node, iterationID)
-	
+
 	// Process iteration-specific variable references
 	p.processIterationVariableReferences(node, iterationID)
-	
+
 	return node, nil
 }
 
@@ -1123,15 +1108,15 @@ func (p *IterationNodeParser) processIterationVariableReferences(node *models.No
 			// Map main workflow references to iteration context
 			originalNodeID := node.Inputs[i].Reference.NodeID
 			originalOutputName := node.Inputs[i].Reference.OutputName
-			
+
 			mappedNodeID, mappedOutputName := p.mapIterationVariableReferenceWithOutput(
 				originalNodeID, originalOutputName, iterationID)
-			
+
 			node.Inputs[i].Reference.NodeID = mappedNodeID
 			node.Inputs[i].Reference.OutputName = mappedOutputName
 		}
 	}
-	
+
 	// Additional reference processing can be added here for specific config types
 	switch config := node.Config.(type) {
 	case models.ClassifierConfig:
@@ -1166,19 +1151,19 @@ func (p *IterationNodeParser) registerNodeOutputMapping(nodeID, oldOutputName, n
 func (p *IterationNodeParser) convertIterationLLMFormat(cozeNode CozeNode) (CozeNode, error) {
 	// Make a copy of the original node
 	convertedNode := cozeNode
-	
+
 	// Initialize inputs if nil
 	if convertedNode.Data.Inputs == nil {
 		convertedNode.Data.Inputs = &CozeNodeInputs{}
 	}
-	
+
 	// Check if this LLM node uses array format for llmparam (iteration format)
 	if convertedNode.Data.Inputs.LLMParam != nil {
 		// Try to convert array format to object format
 		if llmParamArray, ok := convertedNode.Data.Inputs.LLMParam.([]interface{}); ok {
 			// Convert array format to object format expected by main layer parser
 			llmParamObject := make(map[string]interface{})
-			
+
 			for _, paramItem := range llmParamArray {
 				if paramMap, ok := paramItem.(map[string]interface{}); ok {
 					paramName := p.getStringFromMap(paramMap, "name", "")
@@ -1223,19 +1208,19 @@ func (p *IterationNodeParser) convertIterationLLMFormat(cozeNode CozeNode) (Coze
 					}
 				}
 			}
-			
+
 			// Replace the array format with object format
 			convertedNode.Data.Inputs.LLMParam = llmParamObject
 		}
 	}
-	
+
 	return convertedNode, nil
 }
 
 // parseInputParametersFromMap parses input parameters from inputs map
 func parseInputParametersFromMap(inputs map[string]interface{}) []CozeNodeInputParam {
 	var inputParams []CozeNodeInputParam
-	
+
 	// Check for inputParameters or inputparameters
 	var paramArray []interface{}
 	if params, exists := inputs["inputParameters"]; exists {
@@ -1247,27 +1232,27 @@ func parseInputParametersFromMap(inputs map[string]interface{}) []CozeNodeInputP
 			paramArray = arr
 		}
 	}
-	
+
 	// Convert to CozeNodeInputParam structs
 	for _, param := range paramArray {
 		if paramMap, ok := param.(map[string]interface{}); ok {
 			inputParam := CozeNodeInputParam{}
-			
+
 			if name, ok := paramMap["name"].(string); ok {
 				inputParam.Name = name
 			}
-			
+
 			if input, ok := paramMap["input"].(map[string]interface{}); ok {
 				inputParam.Input = CozeNodeInput{
 					Type: getStringFromMapHelper(input, "Type", "string"),
 				}
-				
+
 				// Parse Value
 				if value, ok := input["Value"].(map[string]interface{}); ok {
 					inputParam.Input.Value = CozeNodeInputValue{
 						Type: getStringFromMapHelper(value, "type", ""),
 					}
-					
+
 					// Parse Content if exists
 					if content, ok := value["content"].(map[string]interface{}); ok {
 						inputParam.Input.Value.Content = CozeNodeInputContent{
@@ -1276,7 +1261,7 @@ func parseInputParametersFromMap(inputs map[string]interface{}) []CozeNodeInputP
 							Source:  getStringFromMapHelper(content, "source", ""),
 						}
 					}
-					
+
 					// Parse RawMeta if exists
 					if rawMeta, ok := value["rawmeta"].(map[string]interface{}); ok {
 						if typeVal, ok := rawMeta["type"].(int); ok {
@@ -1287,11 +1272,11 @@ func parseInputParametersFromMap(inputs map[string]interface{}) []CozeNodeInputP
 					}
 				}
 			}
-			
+
 			inputParams = append(inputParams, inputParam)
 		}
 	}
-	
+
 	return inputParams
 }
 

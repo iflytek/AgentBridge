@@ -16,11 +16,11 @@ type BranchMappingExtractor interface {
 // IterationNodeGenerator iteration node generator
 type IterationNodeGenerator struct {
 	*BaseNodeGenerator
-	idMapping         map[string]string                  // Dify ID -> iFlytek SparkAgent ID mapping
-	nodeTitleMapping  map[string]string                  // iFlytek SparkAgent ID -> node title mapping
-	outputIDMapping   map[string]map[string]string       // Output ID mapping: nodeID -> outputName -> outputID
+	idMapping           map[string]string                  // Dify ID -> iFlytek SparkAgent ID mapping
+	nodeTitleMapping    map[string]string                  // iFlytek SparkAgent ID -> node title mapping
+	outputIDMapping     map[string]map[string]string       // Output ID mapping: nodeID -> outputName -> outputID
 	conditionGenerators map[string]*ConditionNodeGenerator // Store condition generators for branch mapping extraction
-	branchExtractor   BranchMappingExtractor             // Interface for extracting branch mapping
+	branchExtractor     BranchMappingExtractor             // Interface for extracting branch mapping
 }
 
 func NewIterationNodeGenerator() *IterationNodeGenerator {
@@ -53,11 +53,11 @@ func (g *IterationNodeGenerator) recordOutputIDs(nodeID string, outputs []IFlyte
 	if g.outputIDMapping == nil {
 		g.outputIDMapping = make(map[string]map[string]string)
 	}
-	
+
 	if g.outputIDMapping[nodeID] == nil {
 		g.outputIDMapping[nodeID] = make(map[string]string)
 	}
-	
+
 	for _, output := range outputs {
 		g.outputIDMapping[nodeID][output.Name] = output.ID
 	}
@@ -78,7 +78,7 @@ func (g *IterationNodeGenerator) ExtractConditionBranchMappings(nodes []IFlytekN
 	if g.branchExtractor == nil {
 		return
 	}
-	
+
 	for _, node := range nodes {
 		if strings.HasPrefix(node.ID, "if-else::") {
 			g.branchExtractor.ExtractBranchMapping(node)
@@ -168,25 +168,25 @@ func (g *IterationNodeGenerator) GenerateIterationSubNodesWithIDs(iterationNode 
 	if !ok || iterationConfig == nil {
 		return nil, nil, fmt.Errorf("迭代节点配置类型错误")
 	}
-	
+
 	var subIFlytekNodes []IFlytekNode
-	
+
 	startNode, iterationInputID := g.createIterationStartNode(iterationID, iterationStartNodeID)
 	subIFlytekNodes = append(subIFlytekNodes, startNode)
-	
+
 	childNodes, err := g.generateIterationChildNodes(subNodes, iterationID, iterationCodeNodeID, startNode.ID, iterationInputID)
 	if err != nil {
 		return nil, nil, err
 	}
 	subIFlytekNodes = append(subIFlytekNodes, childNodes...)
-	
+
 	endNode, sourceNode, startNodePtr := g.createIterationEndNode(iterationEndNodeID, iterationID, *iterationConfig, subIFlytekNodes)
 	subIFlytekNodes = append(subIFlytekNodes, endNode)
-	
+
 	g.ExtractConditionBranchMappings(subIFlytekNodes)
-	
+
 	iterationEdges := g.generateIterationInternalEdges(subIFlytekNodes, sourceNode, &endNode, startNodePtr)
-	
+
 	return subIFlytekNodes, iterationEdges, nil
 }
 
@@ -194,7 +194,7 @@ func (g *IterationNodeGenerator) GenerateIterationSubNodesWithIDs(iterationNode 
 func (g *IterationNodeGenerator) createIterationStartNode(iterationID, iterationStartNodeID string) (IFlytekNode, string) {
 	startNodeID := g.determineStartNodeID(iterationID, iterationStartNodeID)
 	iterationInputID := g.generateRandomID()
-	
+
 	startNode := IFlytekNode{
 		ID:               startNodeID,
 		Dragging:         false,
@@ -210,7 +210,7 @@ func (g *IterationNodeGenerator) createIterationStartNode(iterationID, iteration
 		Draggable:        &[]bool{false}[0],
 		Data:             g.createStartNodeData(iterationID, iterationInputID),
 	}
-	
+
 	g.nodeTitleMapping[startNodeID] = "开始"
 	return startNode, iterationInputID
 }
@@ -258,20 +258,20 @@ func (g *IterationNodeGenerator) createStartNodeData(iterationID, iterationInput
 // generateIterationChildNodes generates child nodes inside iteration
 func (g *IterationNodeGenerator) generateIterationChildNodes(subNodes []models.Node, iterationID, iterationCodeNodeID, startNodeID, iterationInputID string) ([]IFlytekNode, error) {
 	var childNodes []IFlytekNode
-	
+
 	for _, subNode := range subNodes {
 		if subNode.Type == models.NodeTypeStart {
 			continue
 		}
-		
+
 		childNode, err := g.generateSingleChildNode(subNode, iterationID, iterationCodeNodeID, startNodeID, iterationInputID)
 		if err != nil {
 			return nil, fmt.Errorf("生成迭代子节点失败 %s: %w", subNode.ID, err)
 		}
-		
+
 		childNodes = append(childNodes, childNode)
 	}
-	
+
 	return childNodes, nil
 }
 
@@ -287,7 +287,7 @@ func (g *IterationNodeGenerator) generateSingleChildNode(subNode models.Node, it
 func (g *IterationNodeGenerator) createIterationEndNode(iterationEndNodeID, iterationID string, iterationConfig models.IterationConfig, subNodes []IFlytekNode) (IFlytekNode, *IFlytekNode, *IFlytekNode) {
 	endNodeID := g.determineEndNodeID(iterationEndNodeID)
 	sourceNode, startNode := g.findIterationSourceNodes(iterationConfig, subNodes)
-	
+
 	endNode := IFlytekNode{
 		ID:               endNodeID,
 		Dragging:         false,
@@ -303,7 +303,7 @@ func (g *IterationNodeGenerator) createIterationEndNode(iterationEndNodeID, iter
 		Draggable:        &[]bool{false}[0],
 		Data:             g.createEndNodeData(iterationID, iterationConfig, sourceNode, startNode),
 	}
-	
+
 	return endNode, sourceNode, startNode
 }
 
@@ -318,33 +318,33 @@ func (g *IterationNodeGenerator) determineEndNodeID(iterationEndNodeID string) s
 // findIterationSourceNodes finds source and start nodes in iteration
 func (g *IterationNodeGenerator) findIterationSourceNodes(iterationConfig models.IterationConfig, subNodes []IFlytekNode) (*IFlytekNode, *IFlytekNode) {
 	var sourceNode, startNode *IFlytekNode
-	
+
 	outputSourceNodeID := iterationConfig.OutputSelector.NodeID
 	if outputSourceNodeID != "" {
 		sourceNode, startNode = g.findNodesByOutputSelector(outputSourceNodeID, subNodes)
 	}
-	
+
 	if sourceNode == nil {
 		sourceNode = g.findLastCodeNode(subNodes)
 	}
-	
+
 	return sourceNode, startNode
 }
 
 // findNodesByOutputSelector finds nodes by output selector
 func (g *IterationNodeGenerator) findNodesByOutputSelector(outputSourceNodeID string, subNodes []IFlytekNode) (*IFlytekNode, *IFlytekNode) {
 	var sourceNode, startNode *IFlytekNode
-	
+
 	for i := range subNodes {
 		if strings.HasPrefix(subNodes[i].ID, "iteration-node-start::") {
 			startNode = &subNodes[i]
 		}
-		
+
 		if g.isOutputSelectorMatch(outputSourceNodeID, subNodes[i].ID) {
 			sourceNode = &subNodes[i]
 		}
 	}
-	
+
 	return sourceNode, startNode
 }
 
@@ -353,7 +353,7 @@ func (g *IterationNodeGenerator) isOutputSelectorMatch(outputSourceNodeID, nodeI
 	if g.idMapping == nil {
 		return false
 	}
-	
+
 	for originalNodeID, mappedNodeID := range g.idMapping {
 		if originalNodeID == outputSourceNodeID && mappedNodeID == nodeID {
 			return true
@@ -455,7 +455,7 @@ func (g *IterationNodeGenerator) generateIterationChildNode(subNode models.Node,
 		Y: baseNode.PositionAbsolute.Y,
 	}
 
-	// If this is a condition node, we need to store branch mapping 
+	// If this is a condition node, we need to store branch mapping
 	// This will be handled by the main generator through callback
 	if subNode.Type == models.NodeTypeCondition {
 		if condGen, ok := generator.(*ConditionNodeGenerator); ok {
@@ -703,13 +703,12 @@ func (g *IterationNodeGenerator) generateIterationEndReferences(sourceNode *IFly
 	return references
 }
 
-
 // findOriginalIterationIDByMapping finds the original Dify iteration node ID through reverse lookup
 func (g *IterationNodeGenerator) findOriginalIterationIDByMapping(iterationID string) string {
 	if g.idMapping == nil {
 		return ""
 	}
-	
+
 	for originalID, mappedID := range g.idMapping {
 		if mappedID == iterationID {
 			return originalID
@@ -723,7 +722,7 @@ func (g *IterationNodeGenerator) resolveIterationStartNodeID(iterationStartNodeI
 	if iterationStartNodeID != "" {
 		return iterationStartNodeID
 	}
-	
+
 	for mappedID := range g.idMapping {
 		if strings.HasPrefix(mappedID, "iteration-node-start::") {
 			return mappedID
@@ -735,17 +734,17 @@ func (g *IterationNodeGenerator) resolveIterationStartNodeID(iterationStartNodeI
 // processSubNodeInputReferences processes all input references of a sub-node
 func (g *IterationNodeGenerator) processSubNodeInputReferences(inputs []models.Input, originalIterationID, iterationID, startNodeID string) []models.Input {
 	var fixedInputs []models.Input
-	
+
 	for _, input := range inputs {
 		fixedInput := input
-		
+
 		if input.Reference != nil {
 			fixedInput.Reference = g.fixIterationReference(input.Reference, originalIterationID, iterationID, startNodeID)
 		}
-		
+
 		fixedInputs = append(fixedInputs, fixedInput)
 	}
-	
+
 	return fixedInputs
 }
 
@@ -754,11 +753,11 @@ func (g *IterationNodeGenerator) fixIterationReference(ref *models.VariableRefer
 	if !g.shouldFixReference(ref, originalIterationID, iterationID) {
 		return ref
 	}
-	
+
 	if startNodeID == "" {
 		return ref
 	}
-	
+
 	return &models.VariableReference{
 		Type:       ref.Type,
 		NodeID:     startNodeID,
@@ -776,15 +775,15 @@ func (g *IterationNodeGenerator) shouldFixReference(ref *models.VariableReferenc
 func (g *IterationNodeGenerator) fixIterationSubNodeReferencesWithID(subNode models.Node, iterationID string, iterationStartNodeID string, iterationInputID string) models.Node {
 	fixedNode := subNode
 	originalIterationID := g.findOriginalIterationID(iterationID)
-	
+
 	fixedNode.Inputs = g.fixSubNodeInputReferences(subNode.Inputs, originalIterationID, iterationID, iterationStartNodeID)
-	
+
 	if fixedNode.Type == models.NodeTypeCondition {
 		if condConfig, ok := common.AsConditionConfig(fixedNode.Config); ok && condConfig != nil {
 			fixedNode.Config = g.fixConditionConfigReferences(*condConfig, originalIterationID, iterationID, iterationStartNodeID)
 		}
 	}
-	
+
 	return fixedNode
 }
 
@@ -796,17 +795,17 @@ func (g *IterationNodeGenerator) findOriginalIterationID(iterationID string) str
 // fixSubNodeInputReferences fixes all input references of a sub-node
 func (g *IterationNodeGenerator) fixSubNodeInputReferences(inputs []models.Input, originalIterationID, iterationID, iterationStartNodeID string) []models.Input {
 	var fixedInputs []models.Input
-	
+
 	for _, input := range inputs {
 		fixedInput := input
-		
+
 		if input.Reference != nil {
 			fixedInput.Reference = g.fixInputVariableReference(input.Reference, originalIterationID, iterationID, iterationStartNodeID)
 		}
-		
+
 		fixedInputs = append(fixedInputs, fixedInput)
 	}
-	
+
 	return fixedInputs
 }
 
@@ -815,15 +814,15 @@ func (g *IterationNodeGenerator) fixInputVariableReference(ref *models.VariableR
 	if g.isIterationItemReference(ref, originalIterationID, iterationID) {
 		return g.createIterationStartReference(ref, iterationStartNodeID)
 	}
-	
+
 	if g.isIterationMainNodeReference(ref, originalIterationID, iterationID) {
 		return g.createIterationStartReference(ref, iterationStartNodeID)
 	}
-	
+
 	if mappedRef := g.tryRemapNodeReference(ref); mappedRef != nil {
 		return mappedRef
 	}
-	
+
 	return ref
 }
 
@@ -852,14 +851,14 @@ func (g *IterationNodeGenerator) tryRemapNodeReference(ref *models.VariableRefer
 
 // fixConditionConfigReferences fixes references in condition configuration
 func (g *IterationNodeGenerator) fixConditionConfigReferences(condConfig models.ConditionConfig, originalIterationID, iterationID, iterationStartNodeID string) models.ConditionConfig {
-	
+
 	var fixedCases []models.ConditionCase
 	for _, caseItem := range condConfig.Cases {
 		fixedCase := caseItem
 		fixedCase.Conditions = g.fixConditionCaseConditions(caseItem.Conditions, originalIterationID, iterationID, iterationStartNodeID)
 		fixedCases = append(fixedCases, fixedCase)
 	}
-	
+
 	condConfig.Cases = fixedCases
 	return condConfig
 }
@@ -867,17 +866,17 @@ func (g *IterationNodeGenerator) fixConditionConfigReferences(condConfig models.
 // fixConditionCaseConditions fixes conditions in a condition case
 func (g *IterationNodeGenerator) fixConditionCaseConditions(conditions []models.Condition, originalIterationID, iterationID, iterationStartNodeID string) []models.Condition {
 	var fixedConditions []models.Condition
-	
+
 	for _, condition := range conditions {
 		fixedCondition := condition
-		
+
 		if len(condition.VariableSelector) >= 2 {
 			fixedCondition.VariableSelector = g.fixVariableSelector(condition.VariableSelector, originalIterationID, iterationID, iterationStartNodeID)
 		}
-		
+
 		fixedConditions = append(fixedConditions, fixedCondition)
 	}
-	
+
 	return fixedConditions
 }
 
@@ -885,19 +884,19 @@ func (g *IterationNodeGenerator) fixConditionCaseConditions(conditions []models.
 func (g *IterationNodeGenerator) fixVariableSelector(selector []string, originalIterationID, iterationID, iterationStartNodeID string) []string {
 	nodeID := selector[0]
 	outputName := selector[1]
-	
+
 	if g.isIterationSelectorItemReference(nodeID, outputName, originalIterationID, iterationID) {
 		return g.createIterationStartSelector(iterationStartNodeID)
 	}
-	
+
 	if g.isIterationSelectorMainReference(nodeID, originalIterationID, iterationID) {
 		return g.createIterationStartSelector(iterationStartNodeID)
 	}
-	
+
 	if mappedSelector := g.tryRemapVariableSelector(nodeID, outputName); mappedSelector != nil {
 		return mappedSelector
 	}
-	
+
 	return selector
 }
 
@@ -937,12 +936,12 @@ func (g *IterationNodeGenerator) fixGeneratedNodeReferences(node IFlytekNode) IF
 func (g *IterationNodeGenerator) fixNodeDataReferences(node IFlytekNode) IFlytekNode {
 	if len(node.Data.References) > 0 {
 		fixedReferences := make([]IFlytekReference, len(node.Data.References))
-		
+
 		for i, ref := range node.Data.References {
 			fixedRef := g.fixIFlytekReference(ref)
 			fixedReferences[i] = fixedRef
 		}
-		
+
 		node.Data.References = fixedReferences
 	}
 	return node
@@ -951,12 +950,12 @@ func (g *IterationNodeGenerator) fixNodeDataReferences(node IFlytekNode) IFlytek
 func (g *IterationNodeGenerator) fixNodeInputReferences(node IFlytekNode) IFlytekNode {
 	if len(node.Data.Inputs) > 0 {
 		fixedInputs := make([]IFlytekInput, len(node.Data.Inputs))
-		
+
 		for i, input := range node.Data.Inputs {
 			fixedInput := g.processInputReference(input)
 			fixedInputs[i] = fixedInput
 		}
-		
+
 		node.Data.Inputs = fixedInputs
 	}
 	return node
@@ -964,7 +963,7 @@ func (g *IterationNodeGenerator) fixNodeInputReferences(node IFlytekNode) IFlyte
 
 func (g *IterationNodeGenerator) processInputReference(input IFlytekInput) IFlytekInput {
 	fixedInput := input
-	
+
 	if input.Schema.Value != nil && input.Schema.Value.Content != nil {
 		if refContent, ok := input.Schema.Value.Content.(*IFlytekRefContent); ok {
 			content := *refContent
@@ -973,7 +972,7 @@ func (g *IterationNodeGenerator) processInputReference(input IFlytekInput) IFlyt
 			fixedInput.Schema.Value.Content = &content
 		}
 	}
-	
+
 	return fixedInput
 }
 
@@ -1014,11 +1013,11 @@ func (g *IterationNodeGenerator) handleOutputNameMismatch(content IFlytekRefCont
 // fixIFlytekReference fixes a single IFlytekReference to use mapped UUIDs
 func (g *IterationNodeGenerator) fixIFlytekReference(ref IFlytekReference) IFlytekReference {
 	fixedRef := ref
-	
+
 	fixedRef.Value = g.fixReferenceValue(ref.Value)
 	fixedRef.Label = g.fixReferenceLabel(fixedRef.Value, ref.Label)
 	fixedRef.Children = g.fixChildrenReferences(ref.Children)
-	
+
 	return fixedRef
 }
 
@@ -1027,15 +1026,15 @@ func (g *IterationNodeGenerator) fixReferenceValue(value string) string {
 	if g.idMapping == nil {
 		return value
 	}
-	
+
 	if mappedID, exists := g.idMapping[value]; exists {
 		return mappedID
 	}
-	
+
 	if value != "" && !strings.Contains(value, "::") {
 		return g.findAlternativeMapping(value)
 	}
-	
+
 	return value
 }
 
@@ -1054,17 +1053,17 @@ func (g *IterationNodeGenerator) fixReferenceLabel(fixedValue, originalLabel str
 	if g.nodeTitleMapping == nil {
 		return originalLabel
 	}
-	
+
 	if title, exists := g.nodeTitleMapping[fixedValue]; exists {
 		return title
 	}
-	
+
 	if originalLabel == "节点" {
 		if title, exists := g.nodeTitleMapping[fixedValue]; exists {
 			return title
 		}
 	}
-	
+
 	return originalLabel
 }
 
@@ -1073,15 +1072,15 @@ func (g *IterationNodeGenerator) fixChildrenReferences(children []IFlytekReferen
 	if len(children) == 0 {
 		return children
 	}
-	
+
 	fixedChildren := make([]IFlytekReference, len(children))
-	
+
 	for i, child := range children {
 		fixedChild := g.fixIFlytekReference(child)
 		fixedChild.References = g.fixReferenceDetails(child.References)
 		fixedChildren[i] = fixedChild
 	}
-	
+
 	return fixedChildren
 }
 
@@ -1090,16 +1089,16 @@ func (g *IterationNodeGenerator) fixReferenceDetails(references []IFlytekRefDeta
 	if len(references) == 0 {
 		return references
 	}
-	
+
 	fixedRefDetails := make([]IFlytekRefDetail, len(references))
-	
+
 	for j, refDetail := range references {
 		fixedRefDetail := refDetail
 		fixedRefDetail.OriginID = g.fixOriginID(refDetail.OriginID)
 		fixedRefDetail.ID = g.fixOutputID(fixedRefDetail.OriginID, refDetail.Value)
 		fixedRefDetails[j] = fixedRefDetail
 	}
-	
+
 	return fixedRefDetails
 }
 
@@ -1108,15 +1107,15 @@ func (g *IterationNodeGenerator) fixOriginID(originID string) string {
 	if g.idMapping == nil {
 		return originID
 	}
-	
+
 	if mappedID, exists := g.idMapping[originID]; exists {
 		return mappedID
 	}
-	
+
 	if originID != "" && !strings.Contains(originID, "::") {
 		return g.findAlternativeMapping(originID)
 	}
-	
+
 	return originID
 }
 
@@ -1125,17 +1124,17 @@ func (g *IterationNodeGenerator) fixOutputID(originNodeID, refValue string) stri
 	if g.outputIDMapping == nil {
 		return ""
 	}
-	
+
 	outputMap, exists := g.outputIDMapping[originNodeID]
 	if !exists {
 		return ""
 	}
-	
+
 	actualOutputID, exists := outputMap[refValue]
 	if exists {
 		return actualOutputID
 	}
-	
+
 	return ""
 }
 
@@ -1186,7 +1185,6 @@ func (g *IterationNodeGenerator) processIterationReferences(inputs []models.Inpu
 	return references
 }
 
-
 // processIterationInputsWithID processes iteration input parameters using specified ID
 func (g *IterationNodeGenerator) processIterationInputsWithID(inputs []models.Input, iterationInputID string) []IFlytekInput {
 	inputParams := []IFlytekInput{}
@@ -1231,7 +1229,6 @@ func (g *IterationNodeGenerator) processIterationInputsWithID(inputs []models.In
 	return inputParams
 }
 
-
 // generateIterationOutputsWithMapping generates iteration outputs with deterministic IDs for mapping
 func (g *IterationNodeGenerator) generateIterationOutputsWithMapping(outputs []models.Output, iterationID string) []IFlytekOutput {
 	outputParams := []IFlytekOutput{}
@@ -1239,7 +1236,7 @@ func (g *IterationNodeGenerator) generateIterationOutputsWithMapping(outputs []m
 	for _, output := range outputs {
 		// Generate deterministic ID for iteration output to ensure consistent mapping
 		deterministicOutputID := g.generateDeterministicIterationOutputID(iterationID, output.Name)
-		
+
 		outputParam := IFlytekOutput{
 			ID:         deterministicOutputID,
 			Name:       output.Name,
@@ -1318,7 +1315,7 @@ func (g *IterationNodeGenerator) convertPosition(pos models.Position) IFlytekPos
 // generateIterationInternalEdges generates iteration internal edges
 func (g *IterationNodeGenerator) generateIterationInternalEdges(subNodes []IFlytekNode, sourceNode *IFlytekNode, endNode *IFlytekNode, startNode *IFlytekNode) []IFlytekEdge {
 	var edges []IFlytekEdge
-	
+
 	// Only create edge from the final processing node (output source) to end node
 	if sourceNode != nil && endNode != nil {
 		edge := IFlytekEdge{

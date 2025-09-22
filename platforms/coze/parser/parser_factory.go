@@ -22,7 +22,7 @@ func NewParserFactory() *ParserFactory {
 	factory.Register("2", func(vrs *models.VariableReferenceSystem) NodeParser {
 		return NewEndNodeParser(vrs)
 	})
-	
+
 	// Register LLM node parser (Phase 2)
 	factory.Register("3", func(vrs *models.VariableReferenceSystem) NodeParser {
 		return NewLLMNodeParser(vrs)
@@ -33,17 +33,17 @@ func NewParserFactory() *ParserFactory {
 	factory.Register("5", func(vrs *models.VariableReferenceSystem) NodeParser {
 		return NewCodeNodeParser(vrs)
 	})
-	
+
 	// Register Classifier node parser (Phase 6)
 	factory.Register("22", func(vrs *models.VariableReferenceSystem) NodeParser {
 		return NewClassifierNodeParser(vrs)
 	})
-	
+
 	// Register Iteration node parser (Phase 7)
 	factory.Register("21", func(vrs *models.VariableReferenceSystem) NodeParser {
 		return NewIterationNodeParser(vrs)
 	})
-	
+
 	// Register Selector node parser (Phase 4)
 	factory.Register("8", func(vrs *models.VariableReferenceSystem) NodeParser {
 		return NewSelectorNodeParser(vrs)
@@ -86,7 +86,7 @@ func (f *ParserFactory) ParseNodeWithFallback(cozeNode CozeNode, variableRefSyst
 	if !supported {
 		return nil, false, nil // Node type not supported, return flag
 	}
-	
+
 	node, err := parser.ParseNode(cozeNode)
 	return node, true, err
 }

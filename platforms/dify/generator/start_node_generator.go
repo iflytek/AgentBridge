@@ -164,7 +164,7 @@ func (g *StartNodeGenerator) shouldUseDefaultAsLabel(defaultValue interface{}, v
 	if defaultValue == nil {
 		return false
 	}
-	
+
 	defaultStr := g.extractStringFromDefault(defaultValue)
 	return defaultStr != "" && defaultStr != variableName
 }
@@ -223,13 +223,13 @@ func (g *StartNodeGenerator) hasConstraintOptions(constraints *models.Constraint
 // extractStringOptions extracts string options from constraint options
 func (g *StartNodeGenerator) extractStringOptions(constraintOptions []interface{}) []string {
 	options := make([]string, 0, len(constraintOptions))
-	
+
 	for _, option := range constraintOptions {
 		if optionStr, ok := option.(string); ok {
 			options = append(options, optionStr)
 		}
 	}
-	
+
 	return options
 }
 
@@ -240,16 +240,16 @@ func (g *StartNodeGenerator) isDifyStartNodeSupportedType(dataType models.Unifie
 	// - number (Dify does not distinguish integer/float, unified as number)
 	// - paragraph (string variant)
 	// - select (boolean UI representation)
-	// - file-list 
+	// - file-list
 
 	switch dataType {
 	case models.DataTypeString:
 		return true
-	case models.DataTypeInteger:  // Map to Dify number type
+	case models.DataTypeInteger: // Map to Dify number type
 		return true
-	case models.DataTypeFloat:    // Map to Dify number type
+	case models.DataTypeFloat: // Map to Dify number type
 		return true
-	case models.DataTypeNumber:   // Maintain backward compatibility
+	case models.DataTypeNumber: // Maintain backward compatibility
 		return true
 	case models.DataTypeBoolean:
 		return true
@@ -272,11 +272,11 @@ func (g *StartNodeGenerator) mapOutputTypeToDify(dataType models.UnifiedDataType
 	switch dataType {
 	case models.DataTypeString:
 		return "text-input"
-	case models.DataTypeInteger:  // Dify uses unified number UI component, no distinction between integer/float
+	case models.DataTypeInteger: // Dify uses unified number UI component, no distinction between integer/float
 		return "number"
-	case models.DataTypeFloat:    // Dify uses unified number UI component, no distinction between integer/float
+	case models.DataTypeFloat: // Dify uses unified number UI component, no distinction between integer/float
 		return "number"
-	case models.DataTypeNumber:   // Maintain backward compatibility
+	case models.DataTypeNumber: // Maintain backward compatibility
 		return "number"
 	case models.DataTypeBoolean:
 		return "select"
@@ -299,7 +299,7 @@ func (g *StartNodeGenerator) restoreVariablesConfig(config map[string]interface{
 	if !exists {
 		return
 	}
-	
+
 	variables := make([]DifyVariable, 0, len(variablesConfig))
 	for _, varConfig := range variablesConfig {
 		if varMap, ok := varConfig.(map[string]interface{}); ok {
@@ -315,10 +315,10 @@ func (g *StartNodeGenerator) buildVariableFromConfig(varMap map[string]interface
 	variable := DifyVariable{
 		Options: []string{},
 	}
-	
+
 	g.setVariableBasicFields(&variable, varMap)
 	g.setVariableOptionsFromConfig(&variable, varMap)
-	
+
 	return variable
 }
 
@@ -347,7 +347,7 @@ func (g *StartNodeGenerator) setVariableOptionsFromConfig(variable *DifyVariable
 	if !ok {
 		return
 	}
-	
+
 	for _, option := range options {
 		if optionStr, ok := option.(string); ok {
 			variable.Options = append(variable.Options, optionStr)

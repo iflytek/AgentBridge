@@ -199,18 +199,18 @@ func (g *LLMNodeGenerator) fixVariableReferences(text string, node models.Node) 
 // buildVariableReplacements builds complete variable replacement mapping
 func (g *LLMNodeGenerator) buildVariableReplacements(text string, node models.Node) map[string]string {
 	replacements := make(map[string]string)
-	
+
 	// First priority: build from direct input references
 	g.addDirectInputReplacements(node, replacements)
-	
+
 	// Second priority: extract from template if no direct references
 	if len(replacements) == 0 {
 		replacements = g.extractVariablesFromTemplate(text, node)
 	}
-	
+
 	// Third priority: handle template variables with source node inference
 	g.addTemplateVariableReplacements(text, node, replacements)
-	
+
 	return replacements
 }
 
@@ -230,12 +230,12 @@ func (g *LLMNodeGenerator) addTemplateVariableReplacements(text string, node mod
 	if len(node.Inputs) == 0 {
 		return
 	}
-	
+
 	sourceNodeID := g.findSourceNodeID(node)
 	if sourceNodeID == "" {
 		return
 	}
-	
+
 	templateVars := g.extractVariableNamesFromTemplate(text)
 	for _, varName := range templateVars {
 		starPattern := fmt.Sprintf("{{%s}}", varName)
@@ -268,10 +268,10 @@ func (g *LLMNodeGenerator) applyReplacements(text string, replacements map[strin
 	for old, new := range replacements {
 		result = strings.ReplaceAll(result, old, new)
 	}
-	
+
 	// Post-process to fix common template syntax issues
 	result = g.fixCommonTemplateSyntaxIssues(result)
-	
+
 	return result
 }
 
@@ -299,26 +299,26 @@ func (g *LLMNodeGenerator) extractVariablesFromTemplate(text string, node models
 		if endIdx == -1 {
 			// Handle incomplete template variables - look for likely end patterns
 			restText := text[startIdx+2:]
-			
+
 			// Find variable name by looking for the next delimiter (space, quote, newline, etc.)
 			var varName string
-			
+
 			// Look for common delimiters that might end a variable name
 			delimiters := []string{" ", "\"", "\n", "\r", "\t", "|", ":", "，", "。"}
 			minIdx := len(restText)
-			
+
 			for _, delim := range delimiters {
 				if idx := strings.Index(restText, delim); idx != -1 && idx < minIdx {
 					minIdx = idx
 				}
 			}
-			
+
 			if minIdx < len(restText) && minIdx > 0 {
 				varName = strings.TrimSpace(restText[:minIdx])
 			} else if len(restText) > 0 {
 				varName = strings.TrimSpace(restText)
 			}
-			
+
 			if varName != "" {
 				sourceNodeID, outputFieldName := g.findSourceNodeAndOutputForVariable(varName, node)
 				if sourceNodeID != "" && outputFieldName != "" {
@@ -327,7 +327,7 @@ func (g *LLMNodeGenerator) extractVariablesFromTemplate(text string, node models
 					quotedIncompletePattern := fmt.Sprintf(`"{{%s"`, varName)
 					quotedDifyPattern := fmt.Sprintf(`"{{#%s.%s#}}"`, sourceNodeID, outputFieldName)
 					replacements[quotedIncompletePattern] = quotedDifyPattern
-					
+
 					// Pattern 2: {{varName  -> {{#nodeId.field#}}
 					incompletePattern := fmt.Sprintf("{{%s", varName)
 					difyPattern := fmt.Sprintf("{{#%s.%s#}}", sourceNodeID, outputFieldName)
@@ -445,13 +445,13 @@ func (g *LLMNodeGenerator) extractVariableNamesFromTemplate(text string) []strin
 		if varInfo == nil {
 			break
 		}
-		
+
 		varName := g.processVariableExtraction(text, varInfo)
 		if varName != "" && !seen[varName] {
 			varNames = append(varNames, varName)
 			seen[varName] = true
 		}
-		
+
 		start = varInfo.nextStart
 	}
 
@@ -460,9 +460,9 @@ func (g *LLMNodeGenerator) extractVariableNamesFromTemplate(text string) []strin
 
 // variablePatternInfo contains information about found variable pattern
 type variablePatternInfo struct {
-	startIdx  int
-	endIdx    int
-	nextStart int
+	startIdx   int
+	endIdx     int
+	nextStart  int
 	hasClosing bool
 }
 
@@ -517,7 +517,7 @@ func (g *LLMNodeGenerator) extractIncompleteVariableName(text string, startIdx i
 	if varEndIdx <= 0 {
 		return ""
 	}
-	
+
 	varName := strings.TrimSpace(remainingText[:varEndIdx])
 	if g.isValidVariableName(varName) {
 		return varName

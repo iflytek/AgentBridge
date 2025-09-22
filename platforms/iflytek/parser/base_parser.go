@@ -87,8 +87,8 @@ func (p *BaseNodeParser) SavePlatformConfig(node *models.Node, iflytekNode IFlyt
 		"selected":             iflytekNode.Selected,
 		"positionAbsolute":     iflytekNode.PositionAbsolute,
 		// Preserve original inputs and outputs data for type mapping
-		"outputs":              iflytekNode.Data["outputs"],
-		"inputs":               iflytekNode.Data["inputs"],
+		"outputs": iflytekNode.Data["outputs"],
+		"inputs":  iflytekNode.Data["inputs"],
 	}
 
 	// Handle special properties for iteration nodes

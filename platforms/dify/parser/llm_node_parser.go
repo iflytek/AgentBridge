@@ -1,9 +1,9 @@
 package parser
 
 import (
-    "ai-agents-transformer/internal/models"
-    "fmt"
-    "regexp"
+	"ai-agents-transformer/internal/models"
+	"fmt"
+	"regexp"
 )
 
 // LLMNodeParser parses Dify LLM nodes.
@@ -194,49 +194,49 @@ func (p *LLMNodeParser) convertDifyTemplateToUnified(difyTemplate string) string
 
 // extractInputsFromTemplate extracts input variables from templates.
 func (p *LLMNodeParser) extractInputsFromTemplate(templates []DifyPrompt, context *DifyContext) []models.Input {
-    // LLM nodes in target platforms (iFlytek/Coze) expect a single primary input
-    // representing the main content stream (e.g., "text"/"input").
-    // Priority:
-    // 1) Use context.variable_selector when provided/enabled.
-    // 2) Otherwise, pick the first variable reference found in templates.
-    // This avoids creating multiple "text" inputs pointing to different sources.
+	// LLM nodes in target platforms (iFlytek/Coze) expect a single primary input
+	// representing the main content stream (e.g., "text"/"input").
+	// Priority:
+	// 1) Use context.variable_selector when provided/enabled.
+	// 2) Otherwise, pick the first variable reference found in templates.
+	// This avoids creating multiple "text" inputs pointing to different sources.
 
-    // 1) Prefer explicit context binding
-    if context != nil && context.Enabled && len(context.VariableSelector) >= 2 {
-        nodeID := context.VariableSelector[0]
-        field := context.VariableSelector[1]
-        return []models.Input{p.buildInput(nodeID, field)}
-    }
+	// 1) Prefer explicit context binding
+	if context != nil && context.Enabled && len(context.VariableSelector) >= 2 {
+		nodeID := context.VariableSelector[0]
+		field := context.VariableSelector[1]
+		return []models.Input{p.buildInput(nodeID, field)}
+	}
 
-    // 2) Fallback: find the first template reference {{#nodeId.field#}}
-    re := regexp.MustCompile(`\{\{#([^#.}]+)\.([^#}]+)#\}\}`)
-    for _, t := range templates {
-        if matches := re.FindAllStringSubmatch(t.Text, -1); len(matches) > 0 {
-            // Use the first captured pair as the primary input
-            if len(matches[0]) >= 3 {
-                nodeID := matches[0][1]
-                field := matches[0][2]
-                return []models.Input{p.buildInput(nodeID, field)}
-            }
-        }
-    }
+	// 2) Fallback: find the first template reference {{#nodeId.field#}}
+	re := regexp.MustCompile(`\{\{#([^#.}]+)\.([^#}]+)#\}\}`)
+	for _, t := range templates {
+		if matches := re.FindAllStringSubmatch(t.Text, -1); len(matches) > 0 {
+			// Use the first captured pair as the primary input
+			if len(matches[0]) >= 3 {
+				nodeID := matches[0][1]
+				field := matches[0][2]
+				return []models.Input{p.buildInput(nodeID, field)}
+			}
+		}
+	}
 
-    // No external bindings detected
-    return nil
+	// No external bindings detected
+	return nil
 }
 
 // buildInput creates a unified input with node output reference, defaulting to string type
 func (p *LLMNodeParser) buildInput(nodeID, field string) models.Input {
-    return models.Input{
-        Name: field,
-        Type: models.DataTypeString,
-        Reference: &models.VariableReference{
-            Type:       models.ReferenceTypeNodeOutput,
-            NodeID:     nodeID,
-            OutputName: field,
-            DataType:   models.DataTypeString,
-        },
-    }
+	return models.Input{
+		Name: field,
+		Type: models.DataTypeString,
+		Reference: &models.VariableReference{
+			Type:       models.ReferenceTypeNodeOutput,
+			NodeID:     nodeID,
+			OutputName: field,
+			DataType:   models.DataTypeString,
+		},
+	}
 }
 
 // getFloatFromParams gets float value from parameter map.

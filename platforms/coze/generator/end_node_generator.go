@@ -1,9 +1,9 @@
 package generator
 
 import (
-    "ai-agents-transformer/internal/models"
-    "fmt"
-    "strings"
+	"ai-agents-transformer/internal/models"
+	"fmt"
+	"strings"
 )
 
 // EndNodeGenerator generates Coze end nodes
@@ -43,23 +43,23 @@ func (g *EndNodeGenerator) GenerateNode(unifiedNode *models.Node) (*CozeNode, er
 				Y: unifiedNode.Position.Y, // Read position dynamically
 			},
 		},
-        Data: &CozeNodeData{
-            Meta: &CozeNodeMetaInfo{
-                Title:       g.getNodeTitle(unifiedNode),       // Get title dynamically
-                Description: g.getNodeDescription(unifiedNode), // Get description dynamically
-                Icon:        g.getNodeIcon(unifiedNode),        // Get icon dynamically
-                Subtitle:    "",
-                MainColor:   "",
-            },
-            Outputs: []CozeNodeOutput{}, // End node has no outputs
-            Inputs:  inputs,
-            Size:    nil,
-        },
-        Blocks:  []interface{}{},
-        Edges:   []interface{}{},
-        Version: "",
-        Size:    nil,
-    }, nil
+		Data: &CozeNodeData{
+			Meta: &CozeNodeMetaInfo{
+				Title:       g.getNodeTitle(unifiedNode),       // Get title dynamically
+				Description: g.getNodeDescription(unifiedNode), // Get description dynamically
+				Icon:        g.getNodeIcon(unifiedNode),        // Get icon dynamically
+				Subtitle:    "",
+				MainColor:   "",
+			},
+			Outputs: []CozeNodeOutput{}, // End node has no outputs
+			Inputs:  inputs,
+			Size:    nil,
+		},
+		Blocks:  []interface{}{},
+		Edges:   []interface{}{},
+		Version: "",
+		Size:    nil,
+	}, nil
 }
 
 // GenerateSchemaNode generates a Coze schema end node
@@ -74,25 +74,25 @@ func (g *EndNodeGenerator) GenerateSchemaNode(unifiedNode *models.Node) (*CozeSc
 	inputs := g.generateSchemaInputs(unifiedNode)
 
 	return &CozeSchemaNode{
-        Data: &CozeSchemaNodeData{
-            NodeMeta: &CozeNodeMetaInfo{
-                Description: g.getNodeDescription(unifiedNode), // Use dynamic retrieval
-                Icon:        g.getNodeIcon(unifiedNode),        // Use dynamic retrieval
-                SubTitle:    "",
-                Title:       g.getNodeTitle(unifiedNode), // Use dynamic retrieval
-            },
-            Inputs:        inputs,
-            TerminatePlan: g.selectTerminatePlan(unifiedNode),
-        },
-        ID: cozeNodeID,
-        Meta: &CozeNodeMeta{
-            Position: &CozePosition{
-                X: unifiedNode.Position.X, // Read position dynamically
-                Y: unifiedNode.Position.Y, // Read position dynamically
-            },
-        },
-        Type: "2",
-    }, nil
+		Data: &CozeSchemaNodeData{
+			NodeMeta: &CozeNodeMetaInfo{
+				Description: g.getNodeDescription(unifiedNode), // Use dynamic retrieval
+				Icon:        g.getNodeIcon(unifiedNode),        // Use dynamic retrieval
+				SubTitle:    "",
+				Title:       g.getNodeTitle(unifiedNode), // Use dynamic retrieval
+			},
+			Inputs:        inputs,
+			TerminatePlan: g.selectTerminatePlan(unifiedNode),
+		},
+		ID: cozeNodeID,
+		Meta: &CozeNodeMeta{
+			Position: &CozePosition{
+				X: unifiedNode.Position.X, // Read position dynamically
+				Y: unifiedNode.Position.Y, // Read position dynamically
+			},
+		},
+		Type: "2",
+	}, nil
 }
 
 // generateInputs generates inputs for the workflow node format
@@ -139,59 +139,59 @@ func (g *EndNodeGenerator) generateInputs(unifiedNode *models.Node) interface{} 
 	}
 
 	// Return the complete inputs structure
-    return map[string]interface{}{
-        "inputparameters": inputParameters, // Maintains lowercase format for nodes section
-        "settingonerror":  nil,
-        "nodebatchinfo":   nil,
-        "llmparam":        nil,
-        "outputemitter": map[string]interface{}{
-            "content": map[string]interface{}{
-                "type": "string",
-                "value": map[string]interface{}{
-                    "type":    "literal",
-                    "content": outputTemplate, // FIXED: Add output template
-                },
-            },
-            "streamingoutput": false,
-        },
-        "exit": map[string]interface{}{
-            "terminateplan": g.selectTerminatePlan(unifiedNode),
-        },
-        "llm":                nil,
-        "loop":               nil,
-        "selector":           nil,
-        "textprocessor":      nil,
-        "subworkflow":        nil,
-        "intentdetector":     nil,
-        "databasenode":       nil,
-        "httprequestnode":    nil,
-        "knowledge":          nil,
-        "coderunner":         nil,
-        "pluginapiparam":     nil,
-        "variableaggregator": nil,
-        "variableassigner":   nil,
-        "qa":                 nil,
-        "batch":              nil,
-        "comment":            nil,
-        "inputreceiver":      nil,
-    }
+	return map[string]interface{}{
+		"inputparameters": inputParameters, // Maintains lowercase format for nodes section
+		"settingonerror":  nil,
+		"nodebatchinfo":   nil,
+		"llmparam":        nil,
+		"outputemitter": map[string]interface{}{
+			"content": map[string]interface{}{
+				"type": "string",
+				"value": map[string]interface{}{
+					"type":    "literal",
+					"content": outputTemplate, // FIXED: Add output template
+				},
+			},
+			"streamingoutput": false,
+		},
+		"exit": map[string]interface{}{
+			"terminateplan": g.selectTerminatePlan(unifiedNode),
+		},
+		"llm":                nil,
+		"loop":               nil,
+		"selector":           nil,
+		"textprocessor":      nil,
+		"subworkflow":        nil,
+		"intentdetector":     nil,
+		"databasenode":       nil,
+		"httprequestnode":    nil,
+		"knowledge":          nil,
+		"coderunner":         nil,
+		"pluginapiparam":     nil,
+		"variableaggregator": nil,
+		"variableassigner":   nil,
+		"qa":                 nil,
+		"batch":              nil,
+		"comment":            nil,
+		"inputreceiver":      nil,
+	}
 }
 
 // selectTerminatePlan selects end node terminate plan by output mode
 func (g *EndNodeGenerator) selectTerminatePlan(unifiedNode *models.Node) string {
-    if unifiedNode == nil {
-        return "useAnswerContent"
-    }
-    if cfg, ok := unifiedNode.Config.(models.EndConfig); ok {
-        if strings.EqualFold(cfg.OutputMode, "variables") {
-            return "returnVariables"
-        }
-    } else if cfgPtr, ok := unifiedNode.Config.(*models.EndConfig); ok && cfgPtr != nil {
-        if strings.EqualFold(cfgPtr.OutputMode, "variables") {
-            return "returnVariables"
-        }
-    }
-    return "useAnswerContent"
+	if unifiedNode == nil {
+		return "useAnswerContent"
+	}
+	if cfg, ok := unifiedNode.Config.(models.EndConfig); ok {
+		if strings.EqualFold(cfg.OutputMode, "variables") {
+			return "returnVariables"
+		}
+	} else if cfgPtr, ok := unifiedNode.Config.(*models.EndConfig); ok && cfgPtr != nil {
+		if strings.EqualFold(cfgPtr.OutputMode, "variables") {
+			return "returnVariables"
+		}
+	}
+	return "useAnswerContent"
 }
 
 // generateSchemaInputs generates inputs for the schema node format
@@ -226,8 +226,6 @@ func (g *EndNodeGenerator) generateSchemaInputs(unifiedNode *models.Node) *CozeN
 		InputParameters: inputParameters,
 	}
 }
-
-
 
 // mapUnifiedTypeToCoze maps unified data types to Coze types
 func (g *EndNodeGenerator) mapUnifiedTypeToCoze(unifiedType models.UnifiedDataType) string {
@@ -272,7 +270,7 @@ func (g *EndNodeGenerator) ValidateNode(unifiedNode *models.Node) error {
 		return fmt.Errorf("end node must have a valid ID")
 	}
 
-    return nil
+	return nil
 }
 
 // getNodeTitle retrieves node title dynamically
@@ -322,7 +320,7 @@ func (g *EndNodeGenerator) mapOutputFieldNameForCoze(nodeID, outputName string) 
 		// iFlytek classifier outputs "class_name", but Coze uses "classificationId"
 		return "classificationId"
 	}
-	
+
 	// Default: return original name if no mapping needed
 	return outputName
 }

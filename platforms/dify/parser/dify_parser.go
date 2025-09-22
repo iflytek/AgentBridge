@@ -168,7 +168,7 @@ func (p *DifyParser) parseNodes(difyNodes []DifyNode, unifiedDSL *models.Unified
 			// Convert unsupported nodes to code node placeholders
 			fmt.Printf("⚠️  Converting unsupported node type '%s' (ID: %s) to code node placeholder\n",
 				difyNode.Data.Type, difyNode.ID)
-			
+
 			node, err = p.convertUnsupportedNodeToCodeNode(difyNode)
 			if err != nil {
 				return fmt.Errorf("failed to convert unsupported node %s: %w", difyNode.ID, err)
@@ -393,23 +393,23 @@ func (p *DifyParser) setClassifierNodeIteration(node *models.Node, iterationID s
 func (p *DifyParser) convertUnsupportedNodeToCodeNode(difyNode DifyNode) (*models.Node, error) {
 	// Get node title for type description
 	nodeTitle := p.extractNodeTitle(difyNode)
-	
+
 	// Use code node parser to create code node
 	codeParser := NewCodeNodeParser(p.variableRefSystem)
-	
+
 	// Create modified node with code node type
 	modifiedNode := difyNode
 	modifiedNode.Data.Type = "code"
-	
+
 	modifiedNode.Data.Title = fmt.Sprintf("暂不兼容的节点-%s（请根据需求手动实现）", nodeTitle)
-	
+
 	// Set default code configuration
 	modifiedNode.Data.Code = fmt.Sprintf(`# 抱歉！当前兼容性工具不支持转换此类节点: %s
 
 # 请根据业务需求手动补充实现逻辑
 `, difyNode.Data.Type)
 	modifiedNode.Data.CodeLanguage = "python3"
-	
+
 	// Create default output if none exist to maintain connections
 	if modifiedNode.Data.Outputs == nil {
 		modifiedNode.Data.Outputs = map[string]interface{}{
@@ -419,7 +419,7 @@ func (p *DifyParser) convertUnsupportedNodeToCodeNode(difyNode DifyNode) (*model
 			},
 		}
 	}
-	
+
 	// Parse using code node parser
 	return codeParser.ParseNode(modifiedNode)
 }
@@ -446,7 +446,7 @@ func (p *DifyParser) nodeExistsInDSL(nodeID string, unifiedDSL *models.UnifiedDS
 func (p *DifyParser) printConversionSummary(unifiedDSL *models.UnifiedDSL) {
 	totalNodes := len(unifiedDSL.Workflow.Nodes)
 	fmt.Printf("✅ Conversion Summary: All %d nodes processed successfully\n", totalNodes)
-	
+
 	// Count nodes converted to code placeholders by checking titles
 	convertedCount := 0
 	for _, node := range unifiedDSL.Workflow.Nodes {
@@ -454,10 +454,9 @@ func (p *DifyParser) printConversionSummary(unifiedDSL *models.UnifiedDSL) {
 			convertedCount++
 		}
 	}
-	
+
 	if convertedCount > 0 {
 		fmt.Printf("ℹ️  %d unsupported nodes were converted to code node placeholders\n", convertedCount)
 		fmt.Printf("ℹ️  Please manually adjust these placeholder nodes as needed\n")
 	}
 }
-

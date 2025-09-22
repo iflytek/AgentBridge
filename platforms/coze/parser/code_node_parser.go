@@ -118,12 +118,12 @@ func (p *CodeNodeParser) extractLanguageFromRunner(codeRunner map[string]interfa
 func (p *CodeNodeParser) convertLanguageCode(langCode int) string {
 	languageMap := map[int]string{
 		1: "javascript",
-		2: "python2", 
+		2: "python2",
 		3: "python3",
 		4: "java",
 		5: "go",
 	}
-	
+
 	if language, exists := languageMap[langCode]; exists {
 		return language
 	}
@@ -138,13 +138,13 @@ func (p *CodeNodeParser) convertCozeCodeToSparkFormat(cozeCode string, inputs []
 
 	// Step 1: Generate function signature dynamically from inputs
 	sparkFunctionSignature := p.generateSparkFunctionSignature(inputs)
-	
+
 	// Step 2: Remove Coze-specific async/await and Args handling
 	cleanedCode := p.removeCozeSpecificSyntax(cozeCode)
-	
+
 	// Step 3: Replace parameter access patterns dynamically
 	convertedCode := p.replaceParameterAccess(cleanedCode, inputs)
-	
+
 	// Step 4: Combine signature with converted body
 	return p.assembleSparkCode(sparkFunctionSignature, convertedCode), nil
 }
@@ -175,7 +175,7 @@ func (p *CodeNodeParser) convertUnifiedDataTypeToString(dataType models.UnifiedD
 		models.DataTypeArrayObject: "list",
 		models.DataTypeObject:      "dict",
 	}
-	
+
 	if pyType, exists := typeMap[dataType]; exists {
 		return pyType
 	}
@@ -186,19 +186,19 @@ func (p *CodeNodeParser) convertUnifiedDataTypeToString(dataType models.UnifiedD
 func (p *CodeNodeParser) removeCozeSpecificSyntax(code string) string {
 	lines := strings.Split(code, "\n")
 	var cleanedLines []string
-	
+
 	for _, line := range lines {
 		trimmedLine := strings.TrimSpace(line)
-		
+
 		// Skip Coze-specific lines
 		if p.isCozeSpecificLine(trimmedLine) {
 			continue
 		}
-		
+
 		// Keep other lines
 		cleanedLines = append(cleanedLines, line)
 	}
-	
+
 	return strings.Join(cleanedLines, "\n")
 }
 
@@ -206,7 +206,7 @@ func (p *CodeNodeParser) removeCozeSpecificSyntax(code string) string {
 func (p *CodeNodeParser) isCozeSpecificLine(line string) bool {
 	cozePatterns := []string{
 		"async def main(args: Args)",
-		"def main(args: Args)", 
+		"def main(args: Args)",
 		"params = args.params",
 		"from typing import",
 		"import typing",
@@ -214,30 +214,30 @@ func (p *CodeNodeParser) isCozeSpecificLine(line string) bool {
 		"args.text",
 		"args.input_test",
 	}
-	
+
 	// Special case: filter any line containing "async def main" regardless of format
 	if strings.Contains(line, "async def main") {
 		return true
 	}
-	
+
 	// Special case: filter parameter access using args pattern
 	if strings.Contains(line, "args.params") || strings.Contains(line, "args.text") || strings.Contains(line, "args.input_test") {
 		return true
 	}
-	
+
 	for _, pattern := range cozePatterns {
 		if strings.Contains(line, pattern) {
 			return true
 		}
 	}
-	
+
 	return false
 }
 
 // replaceParameterAccess dynamically replaces parameter access patterns.
 func (p *CodeNodeParser) replaceParameterAccess(code string, inputs []models.Input) string {
 	convertedCode := code
-	
+
 	// Build replacement map from inputs
 	for _, input := range inputs {
 		// Replace patterns like: str(params.get('paramName', '')) -> paramName
@@ -248,13 +248,13 @@ func (p *CodeNodeParser) replaceParameterAccess(code string, inputs []models.Inp
 			fmt.Sprintf(`bool\(params\.get\(['"]%s['"], False\)\)`, input.Name),
 			fmt.Sprintf(`params\.get\(['"]%s['"], [^)]+\)`, input.Name),
 		}
-		
+
 		for _, pattern := range patterns {
 			re := regexp.MustCompile(pattern)
 			convertedCode = re.ReplaceAllString(convertedCode, input.Name)
 		}
 	}
-	
+
 	return convertedCode
 }
 
@@ -263,33 +263,33 @@ func (p *CodeNodeParser) assembleSparkCode(signature, body string) string {
 	lines := strings.Split(body, "\n")
 	var importLines []string
 	var bodyLines []string
-	
+
 	// Separate import statements from other code
 	inFunctionBody := false
 	for _, line := range lines {
 		trimmedLine := strings.TrimSpace(line)
-		
+
 		// Skip empty lines at the beginning
 		if trimmedLine == "" && !inFunctionBody {
 			continue
 		}
-		
+
 		// Check if this is an import statement
 		if strings.HasPrefix(trimmedLine, "import ") || strings.HasPrefix(trimmedLine, "from ") {
 			importLines = append(importLines, trimmedLine)
 			continue
 		}
-		
+
 		// Mark that we've entered function body content
 		if trimmedLine != "" {
 			inFunctionBody = true
 		}
-		
+
 		if inFunctionBody {
 			bodyLines = append(bodyLines, line)
 		}
 	}
-	
+
 	// Ensure proper indentation for function body
 	var indentedBodyLines []string
 	for _, line := range bodyLines {
@@ -301,26 +301,26 @@ func (p *CodeNodeParser) assembleSparkCode(signature, body string) string {
 			indentedBodyLines = append(indentedBodyLines, line)
 		}
 	}
-	
+
 	// Assemble final code: imports first, then function definition with body
 	var result []string
-	
+
 	// Add import statements at the top
 	for _, importLine := range importLines {
 		result = append(result, importLine)
 	}
-	
+
 	// Add empty line after imports if there are any
 	if len(importLines) > 0 {
 		result = append(result, "")
 	}
-	
+
 	// Add function signature
 	result = append(result, signature)
-	
+
 	// Add function body
 	result = append(result, indentedBodyLines...)
-	
+
 	return strings.Join(result, "\n")
 }
 

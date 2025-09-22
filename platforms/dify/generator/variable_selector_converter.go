@@ -184,23 +184,15 @@ func (c *VariableSelectorConverter) parseVariableContent(varContent string) []st
 	return []string{varContent}
 }
 
-
-
-
-
-
-
-
-
 // updateVariableSelectorsByType updates variable selectors based on node type
 func (c *VariableSelectorConverter) updateVariableSelectorsByType(node *DifyNode, unifiedNode models.Node) error {
 	updaters := c.getNodeTypeUpdaters()
-	
+
 	updater, exists := updaters[unifiedNode.Type]
 	if !exists {
 		return nil
 	}
-	
+
 	return updater(node, unifiedNode)
 }
 

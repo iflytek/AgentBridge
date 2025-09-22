@@ -256,7 +256,6 @@ func (g *ClassifierNodeGenerator) mapProviderToDify(iflytekProvider string) stri
 	return "langgenius/openai_api_compatible/openai_api_compatible"
 }
 
-
 // generateVisionConfig generates vision configuration
 func (g *ClassifierNodeGenerator) generateVisionConfig(classifierConfig models.ClassifierConfig) map[string]interface{} {
 	// Get vision configuration from unified DSL config, if not available use reasonable defaults
@@ -267,11 +266,10 @@ func (g *ClassifierNodeGenerator) generateVisionConfig(classifierConfig models.C
 	return visionConfig
 }
 
-
 // restoreDifyPlatformConfig restores Dify platform-specific configuration
 func (g *ClassifierNodeGenerator) restoreDifyPlatformConfig(config map[string]interface{}, node *DifyNode) {
 	g.ensureNodeConfig(node)
-	
+
 	g.restoreDirectConfigs(config, node)
 	g.restoreStringArrayConfigs(config, node)
 	g.restoreNodeMetadata(config, node)
@@ -285,7 +283,7 @@ func (g *ClassifierNodeGenerator) ensureNodeConfig(node *DifyNode) {
 
 func (g *ClassifierNodeGenerator) restoreDirectConfigs(config map[string]interface{}, node *DifyNode) {
 	directConfigs := []string{"classes", "instructions", "model", "vision"}
-	
+
 	for _, key := range directConfigs {
 		if value, exists := config[key]; exists {
 			node.Data.Config[key] = value

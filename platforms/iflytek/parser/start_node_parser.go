@@ -149,7 +149,7 @@ func (p *StartNodeParser) parseVariableDefault(variable *models.Variable, schema
 	}
 
 	variable.Default = defaultValue
-	
+
 	// If default is a non-empty string, use it as a more meaningful label
 	if defaultStr, ok := defaultValue.(string); ok && defaultStr != "" && defaultStr != variable.Name {
 		variable.Label = defaultStr
@@ -171,7 +171,7 @@ func (p *StartNodeParser) parseVariableCustomType(variable *models.Variable, out
 	}
 
 	variable.CustomParameterType = customType
-	
+
 	// Adjust data type based on custom type
 	if customType == "xfyun-file" {
 		variable.Type = string(models.DataTypeString)

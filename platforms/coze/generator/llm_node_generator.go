@@ -1,9 +1,9 @@
 package generator
 
 import (
-    "ai-agents-transformer/internal/models"
-    "ai-agents-transformer/platforms/common"
-    "fmt"
+	"ai-agents-transformer/internal/models"
+	"ai-agents-transformer/platforms/common"
+	"fmt"
 )
 
 // LLMNodeGenerator generates Coze LLM nodes
@@ -36,10 +36,10 @@ func (g *LLMNodeGenerator) GenerateNode(unifiedNode *models.Node) (*CozeNode, er
 	}
 
 	cozeNodeID := g.idGenerator.MapToCozeNodeID(unifiedNode.ID)
-	
+
 	// Generate input parameters from unified node inputs
 	inputParams := g.generateInputParameters(unifiedNode)
-	
+
 	// Generate LLM parameters from unified node config
 	llmParams, err := g.generateLLMParameters(unifiedNode)
 	if err != nil {
@@ -51,8 +51,8 @@ func (g *LLMNodeGenerator) GenerateNode(unifiedNode *models.Node) (*CozeNode, er
 
 	// Creates LLM node input structure with only essential fields (matching Coze iteration block format)
 	llmInputs := map[string]interface{}{
-		"inputParameters": inputParams,    // ✅ Essential: input parameters with correct camelCase
-		"llmParam":        llmParams,      // ✅ Essential: LLM configuration parameters with correct camelCase
+		"inputParameters": inputParams,   // ✅ Essential: input parameters with correct camelCase
+		"llmParam":        llmParams,     // ✅ Essential: LLM configuration parameters with correct camelCase
 		"settingOnError":  errorSettings, // ✅ Essential: error handling settings with correct camelCase
 	}
 
@@ -104,7 +104,7 @@ func (g *LLMNodeGenerator) GenerateSchemaNode(unifiedNode *models.Node) (*CozeSc
 
 	for _, input := range unifiedNode.Inputs {
 		cozeType := g.mapDataTypeToCozeType(input.Type)
-		
+
 		if input.Reference != nil && input.Reference.Type == models.ReferenceTypeNodeOutput {
 			// Variable reference input for schema - schema uses rawMeta with uppercase M
 			schemaInput := CozeInputParameter{
@@ -131,7 +131,7 @@ func (g *LLMNodeGenerator) GenerateSchemaNode(unifiedNode *models.Node) (*CozeSc
 	// Creates complete input structure for schema node with all required configurations
 	schemaInputs := &CozeSchemaNodeInputs{
 		InputParameters: schemaInputParams,
-		LLMParam:        llmParams,  // Adds essential LLM parameter configuration for schema
+		LLMParam:        llmParams,     // Adds essential LLM parameter configuration for schema
 		SettingOnError:  errorSettings, // Adds error handling configuration for schema
 	}
 
@@ -141,7 +141,7 @@ func (g *LLMNodeGenerator) GenerateSchemaNode(unifiedNode *models.Node) (*CozeSc
 				Title:       g.getNodeTitle(unifiedNode),
 				Description: g.getNodeDescription(unifiedNode),
 				Icon:        g.getNodeIcon(unifiedNode),
-				SubTitle:    "大模型",  // Uses correct field name for subtitle
+				SubTitle:    "大模型", // Uses correct field name for subtitle
 				MainColor:   "#5C62FF",
 			},
 			Inputs:  schemaInputs,
@@ -166,7 +166,7 @@ func (g *LLMNodeGenerator) generateInputParameters(unifiedNode *models.Node) []i
 
 	for _, input := range unifiedNode.Inputs {
 		cozeType := g.mapDataTypeToCozeType(input.Type)
-		
+
 		if input.Reference != nil && input.Reference.Type == models.ReferenceTypeNodeOutput {
 			// Creates complete variable reference structure for nodes section
 			inputParam := map[string]interface{}{
@@ -344,7 +344,7 @@ func (g *LLMNodeGenerator) generateLLMParameters(unifiedNode *models.Node) ([]ma
 	}
 	// Converts English commas to Chinese commas for Coze format compatibility
 	prompt = g.convertCommasToChineseFormat(prompt)
-	
+
 	llmParams = append(llmParams, map[string]interface{}{
 		"name": "prompt",
 		"input": map[string]interface{}{
@@ -419,7 +419,7 @@ func (g *LLMNodeGenerator) mapOutputFieldNameForCoze(nodeID, outputName string) 
 		// iFlytek classifier outputs "class_name", but Coze uses "classificationId"
 		return "classificationId"
 	}
-	
+
 	// Default: return original name if no mapping needed
 	return outputName
 }
@@ -436,8 +436,8 @@ func (g *LLMNodeGenerator) generateErrorSettings(unifiedNode *models.Node) map[s
 // generateSchemaErrorSettings generates error handling settings for schema node
 func (g *LLMNodeGenerator) generateSchemaErrorSettings(unifiedNode *models.Node) map[string]interface{} {
 	return map[string]interface{}{
-		"processType": 1,     // Schema section uses camelCase naming convention
-		"retryTimes":  0,     // Schema section uses camelCase naming convention
+		"processType": 1,      // Schema section uses camelCase naming convention
+		"retryTimes":  0,      // Schema section uses camelCase naming convention
 		"timeoutMs":   180000, // Schema section uses camelCase naming convention
 	}
 }
@@ -445,7 +445,7 @@ func (g *LLMNodeGenerator) generateSchemaErrorSettings(unifiedNode *models.Node)
 // generateOutputs generates outputs for LLM node
 func (g *LLMNodeGenerator) generateOutputs(unifiedNode *models.Node) []CozeNodeOutput {
 	var outputs []CozeNodeOutput
-	
+
 	// Generate outputs completely based on unified DSL definition - NO hardcoded defaults
 	for _, output := range unifiedNode.Outputs {
 		outputs = append(outputs, CozeNodeOutput{
@@ -458,7 +458,7 @@ func (g *LLMNodeGenerator) generateOutputs(unifiedNode *models.Node) []CozeNodeO
 	return outputs
 }
 
-// generateSchemaOutputs generates outputs for schema node 
+// generateSchemaOutputs generates outputs for schema node
 func (g *LLMNodeGenerator) generateSchemaOutputs(unifiedNode *models.Node) []CozeNodeOutput {
 	return g.generateOutputs(unifiedNode)
 }
@@ -548,12 +548,12 @@ func (g *LLMNodeGenerator) mapDataTypeToRawMetaType(dataType models.UnifiedDataT
 func (g *LLMNodeGenerator) mapSparkDomainToCozeModel(llmConfig models.LLMConfig) string {
 	// Creates mapping table from Spark domain to Coze model names
 	domainToModelMap := map[string]string{
-		"4.0Ultra":     "Doubao-Seed-1.6",
-		"generalv3.5":  "Doubao-Seed-1.6", 
-		"generalv3":    "Doubao-Seed-1.6",
-		"generalv2":    "Doubao-Seed-1.6",
-		"general":      "Doubao-Seed-1.6",
-		"spark":        "Doubao-Seed-1.6", // Default Spark model mapping
+		"4.0Ultra":    "Doubao-Seed-1.6",
+		"generalv3.5": "Doubao-Seed-1.6",
+		"generalv3":   "Doubao-Seed-1.6",
+		"generalv2":   "Doubao-Seed-1.6",
+		"general":     "Doubao-Seed-1.6",
+		"spark":       "Doubao-Seed-1.6", // Default Spark model mapping
 	}
 
 	// Gets model information from LLM configuration
@@ -568,7 +568,7 @@ func (g *LLMNodeGenerator) mapSparkDomainToCozeModel(llmConfig models.LLMConfig)
 	if modelName, exists := domainToModelMap[modelKey]; exists {
 		return modelName
 	}
-	
+
 	return "Doubao-Seed-1.6" // Default model fallback
 }
 
@@ -578,7 +578,7 @@ func (g *LLMNodeGenerator) convertCommasToChineseFormat(text string) string {
 	// Example: {{name}},{{birth_year}} → {{name}}，{{birth_year}}
 	result := ""
 	inBraces := 0
-	
+
 	for i, char := range text {
 		if char == '{' {
 			inBraces++
@@ -595,6 +595,6 @@ func (g *LLMNodeGenerator) convertCommasToChineseFormat(text string) string {
 		}
 		result += string(char)
 	}
-	
+
 	return result
 }

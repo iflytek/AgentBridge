@@ -1,9 +1,9 @@
 package parser
 
 import (
+	"ai-agents-transformer/internal/models"
 	"fmt"
 	"strings"
-	"ai-agents-transformer/internal/models"
 )
 
 // IFlytekEdge represents iFlytek SparkAgent edge structure.

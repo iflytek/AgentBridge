@@ -1,8 +1,8 @@
 package generator
 
 import (
-	"fmt"
 	"ai-agents-transformer/internal/models"
+	"fmt"
 )
 
 // NodeGeneratorFactory creates iFlytek SparkAgent node generators
@@ -90,7 +90,7 @@ func (f *NodeGeneratorFactory) GetGenerator(nodeType models.NodeType) (NodeGener
 		classifierGen.SetIDMapping(f.idMapping)
 		return classifierGen, nil
 	}
-	
+
 	generator, exists := f.generators[nodeType]
 	if !exists {
 		return nil, fmt.Errorf("unsupported node type: %s", nodeType)

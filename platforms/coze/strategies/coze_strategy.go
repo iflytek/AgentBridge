@@ -21,7 +21,7 @@ func NewCozeStrategy() services.PlatformStrategy {
 	strategy := &CozeStrategy{
 		validator: common.NewUnifiedDSLValidator(),
 	}
-	
+
 	return strategy
 }
 
@@ -34,13 +34,13 @@ func (s *CozeStrategy) GetPlatformType() models.PlatformType {
 // Supports Coze → iFlytek conversion (implemented by colleague)
 func (s *CozeStrategy) CreateParser() (interfaces.DSLParser, error) {
 	parser := cozeParser.NewCozeParser()
-	
+
 	// Check for verbose flag from environment or command line
 	// This is a temporary solution to pass verbose flag to parser
 	if os.Getenv("AI_AGENT_VERBOSE") == "true" {
 		parser.SetVerbose(true)
 	}
-	
+
 	return parser, nil
 }
 

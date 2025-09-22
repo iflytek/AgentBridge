@@ -599,11 +599,11 @@ func (vrs *VariableReferenceSystem) RegisterOutputMapping(nodeID, oldOutputName,
 	if vrs.OutputMappings == nil {
 		vrs.OutputMappings = make(map[string]map[string]string)
 	}
-	
+
 	if vrs.OutputMappings[nodeID] == nil {
 		vrs.OutputMappings[nodeID] = make(map[string]string)
 	}
-	
+
 	vrs.OutputMappings[nodeID][oldOutputName] = newOutputName
 }
 

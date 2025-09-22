@@ -133,7 +133,7 @@ func (p *IFlytekParser) parseUIConfig(flowMeta IFlytekFlowMeta) (*models.UIConfi
 	}
 
 	uiConfig := &models.UIConfig{}
-	
+
 	p.parsePrologueConfig(advancedConfig, uiConfig)
 	p.parseIconConfig(flowMeta, uiConfig)
 
@@ -161,12 +161,12 @@ func (p *IFlytekParser) parsePrologueConfig(advancedConfig map[string]interface{
 	if !exists {
 		return
 	}
-	
+
 	prologue, ok := prologueInterface.(map[string]interface{})
 	if !ok {
 		return
 	}
-	
+
 	p.parseOpeningStatement(prologue, uiConfig)
 	p.parseSuggestedQuestions(prologue, uiConfig)
 }
@@ -176,7 +176,7 @@ func (p *IFlytekParser) parseOpeningStatement(prologue map[string]interface{}, u
 	if !ok || !enabled {
 		return
 	}
-	
+
 	statement, ok := prologue["statement"].(string)
 	if ok && statement != "" {
 		uiConfig.OpeningStatement = statement
@@ -188,12 +188,12 @@ func (p *IFlytekParser) parseSuggestedQuestions(prologue map[string]interface{},
 	if !exists {
 		return
 	}
-	
+
 	inputExampleArray, ok := inputExampleInterface.([]interface{})
 	if !ok {
 		return
 	}
-	
+
 	suggestedQuestions := p.extractSuggestedQuestions(inputExampleArray)
 	if len(suggestedQuestions) > 0 {
 		uiConfig.SuggestedQuestions = suggestedQuestions
@@ -220,10 +220,10 @@ func (p *IFlytekParser) parseIconConfig(flowMeta IFlytekFlowMeta, uiConfig *mode
 }
 
 func (p *IFlytekParser) isUIConfigEmpty(uiConfig *models.UIConfig) bool {
-	return uiConfig.OpeningStatement == "" && 
-		   len(uiConfig.SuggestedQuestions) == 0 &&
-		   uiConfig.Icon == "" && 
-		   uiConfig.IconBackground == ""
+	return uiConfig.OpeningStatement == "" &&
+		len(uiConfig.SuggestedQuestions) == 0 &&
+		uiConfig.Icon == "" &&
+		uiConfig.IconBackground == ""
 }
 
 // parseNodes parses nodes.
@@ -280,7 +280,7 @@ func (p *IFlytekParser) parseIndividualNode(iflytekNode IFlytekNode) (*models.No
 		// Convert unsupported nodes to code node placeholders
 		fmt.Printf("⚠️  Converting unsupported node type '%s' (ID: %s) to code node placeholder\n",
 			iflytekNode.Type, iflytekNode.ID)
-		
+
 		return p.convertUnsupportedNodeToCodeNode(iflytekNode)
 	}
 
@@ -294,20 +294,20 @@ func (p *IFlytekParser) parseIndividualNode(iflytekNode IFlytekNode) (*models.No
 func (p *IFlytekParser) convertUnsupportedNodeToCodeNode(iflytekNode IFlytekNode) (*models.Node, error) {
 	// Get node label for type description
 	nodeLabel := p.extractNodeLabel(iflytekNode)
-	
+
 	// Use code node parser to create code node
 	codeParser := NewCodeNodeParser(p.variableRefSystem)
-	
+
 	// Create modified node with code node type
 	modifiedNode := iflytekNode
 	modifiedNode.Type = IFlytekNodeTypeCode // "code"
-	
+
 	// Modify node title
 	if modifiedNode.Data == nil {
 		modifiedNode.Data = make(map[string]interface{})
 	}
 	modifiedNode.Data["label"] = fmt.Sprintf("暂不兼容的节点-%s（请根据需求手动实现）", nodeLabel)
-	
+
 	// Set default code configuration
 	if modifiedNode.Data["nodeParam"] == nil {
 		modifiedNode.Data["nodeParam"] = make(map[string]interface{})
@@ -317,7 +317,7 @@ func (p *IFlytekParser) convertUnsupportedNodeToCodeNode(iflytekNode IFlytekNode
 
 # 请根据业务需求手动补充实现逻辑
 `, iflytekNode.Type)
-	
+
 	// Create default output if none exist to maintain connections
 	if _, hasOutputs := modifiedNode.Data["outputs"]; !hasOutputs {
 		modifiedNode.Data["outputs"] = []interface{}{
@@ -331,7 +331,7 @@ func (p *IFlytekParser) convertUnsupportedNodeToCodeNode(iflytekNode IFlytekNode
 			},
 		}
 	}
-	
+
 	// Parse using code node parser
 	return codeParser.ParseNode(modifiedNode)
 }
@@ -527,11 +527,11 @@ func (p *IFlytekParser) extractIterationInternalEdges(iterationID string, childN
 // collectAllValidNodeIDs collects all valid node IDs from unified DSL, including iteration internal nodes
 func (p *IFlytekParser) collectAllValidNodeIDs(unifiedDSL *models.UnifiedDSL) map[string]bool {
 	existingNodeIDs := make(map[string]bool)
-	
+
 	// Add main workflow nodes
 	for _, node := range unifiedDSL.Workflow.Nodes {
 		existingNodeIDs[node.ID] = true
-		
+
 		// If this is an iteration node, also add its internal nodes
 		if node.Type == models.NodeTypeIteration {
 			if iterConfig, ok := node.Config.(*models.IterationConfig); ok {
@@ -541,7 +541,7 @@ func (p *IFlytekParser) collectAllValidNodeIDs(unifiedDSL *models.UnifiedDSL) ma
 			}
 		}
 	}
-	
+
 	return existingNodeIDs
 }
 
@@ -675,7 +675,7 @@ func convertNodesToPointers(nodes []models.Node) []*models.Node {
 func (p *IFlytekParser) printConversionSummary(unifiedDSL *models.UnifiedDSL) {
 	totalNodes := len(unifiedDSL.Workflow.Nodes)
 	fmt.Printf("✅ Conversion Summary: All %d nodes processed successfully\n", totalNodes)
-	
+
 	// Count nodes converted to code placeholders by checking titles
 	convertedCount := 0
 	for _, node := range unifiedDSL.Workflow.Nodes {
@@ -683,7 +683,7 @@ func (p *IFlytekParser) printConversionSummary(unifiedDSL *models.UnifiedDSL) {
 			convertedCount++
 		}
 	}
-	
+
 	if convertedCount > 0 {
 		fmt.Printf("ℹ️  %d unsupported nodes were converted to code node placeholders\n", convertedCount)
 		fmt.Printf("ℹ️  Please manually adjust these placeholder nodes as needed\n")

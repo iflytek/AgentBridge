@@ -35,7 +35,7 @@ func (g *EdgeGenerator) GenerateEdgesWithIDMapping(edges []models.Edge, nodes []
 	difyEdges := make([]DifyEdge, 0, len(edges))
 
 	for i, edge := range edges {
-		
+
 		// Skip edges connecting to iteration end nodes (these are not generated in Dify)
 		if g.isIterationEndNode(edge.Target, nodes) {
 			// Skip edge to iteration end node
@@ -136,7 +136,6 @@ func (g *EdgeGenerator) generateEdgeWithIDMapping(edge models.Edge, nodes []mode
 
 	return difyEdge, nil
 }
-
 
 // getNodeTypeByID gets the node type based on the node ID
 func (g *EdgeGenerator) getNodeTypeByID(nodeID string, nodes []models.Node) string {
@@ -560,7 +559,7 @@ func (g *EdgeGenerator) generateSemanticClassID(class models.ClassifierClass, fa
 	if class.IsDefault {
 		return "default"
 	}
-	
+
 	// Generate semantic ID based on class name, ensuring uniqueness
 	if class.Name != "" {
 		// Convert to safe ID format: remove spaces, convert to lowercase
@@ -570,7 +569,7 @@ func (g *EdgeGenerator) generateSemanticClassID(class models.ClassifierClass, fa
 			return safeID
 		}
 	}
-	
+
 	// Fallback to numeric ID if name processing fails
 	return fmt.Sprintf("%d", fallbackIndex)
 }
@@ -581,18 +580,18 @@ func (g *EdgeGenerator) isIterationEndNode(nodeID string, nodes []models.Node) b
 	if strings.Contains(nodeID, "iteration-node-end") {
 		return true
 	}
-	
+
 	// Find the actual node
 	targetNode := g.findNodeByID(nodeID, nodes)
 	if targetNode == nil {
 		return false
 	}
-	
+
 	// Only filter out end nodes that are INSIDE an iteration (have an iteration parent)
 	if targetNode.Type == models.NodeTypeEnd {
 		// Check if this end node has an iteration parent
 		return g.hasIterationParent(nodeID, nodes)
 	}
-	
+
 	return false
 }

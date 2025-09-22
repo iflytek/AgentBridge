@@ -1,11 +1,11 @@
 package generator
 
 import (
-    "ai-agents-transformer/internal/models"
-    "ai-agents-transformer/platforms/common"
-    "fmt"
-    "regexp"
-    "strings"
+	"ai-agents-transformer/internal/models"
+	"ai-agents-transformer/platforms/common"
+	"fmt"
+	"regexp"
+	"strings"
 )
 
 // IterationNodeGenerator generates Coze iteration nodes
@@ -58,10 +58,10 @@ func (g *IterationNodeGenerator) ValidateNode(unifiedNode *models.Node) error {
 		return fmt.Errorf("node config is nil")
 	}
 
-    iterationConfig, ok := common.AsIterationConfig(unifiedNode.Config)
-    if !ok || iterationConfig == nil {
-        return fmt.Errorf("invalid config type: expected IterationConfig")
-    }
+	iterationConfig, ok := common.AsIterationConfig(unifiedNode.Config)
+	if !ok || iterationConfig == nil {
+		return fmt.Errorf("invalid config type: expected IterationConfig")
+	}
 
 	if iterationConfig.Iterator.SourceNode == "" {
 		return fmt.Errorf("iteration source node is empty")
@@ -81,11 +81,11 @@ func (g *IterationNodeGenerator) GenerateNode(unifiedNode *models.Node) (*CozeNo
 	// Set current iteration node ID for edge generator use
 	g.idGenerator.SetCurrentIterationNodeID(cozeNodeID)
 
-    // Extract iteration configuration
-    iterationConfig, ok := common.AsIterationConfig(unifiedNode.Config)
-    if !ok || iterationConfig == nil {
-        return nil, fmt.Errorf("invalid iteration config type for node %s", unifiedNode.ID)
-    }
+	// Extract iteration configuration
+	iterationConfig, ok := common.AsIterationConfig(unifiedNode.Config)
+	if !ok || iterationConfig == nil {
+		return nil, fmt.Errorf("invalid iteration config type for node %s", unifiedNode.ID)
+	}
 
 	// Generate sub-blocks
 	blocks, err := g.generateSubBlocks(iterationConfig.SubWorkflow.Nodes)
@@ -109,10 +109,10 @@ func (g *IterationNodeGenerator) GenerateNode(unifiedNode *models.Node) (*CozeNo
 
 	// Correct input structure based on Coze official example
 	inputs := map[string]interface{}{
-		"loopType":           "array",                                  // Top level loop type
-		"loopCount":          g.generateLoopCountConfig(iterationConfig), // Top level loop count
+		"loopType":           "array",                                       // Top level loop type
+		"loopCount":          g.generateLoopCountConfig(iterationConfig),    // Top level loop count
 		"variableParameters": g.generateVariableParameters(iterationConfig), // Variable parameters
-		"inputParameters":    inputParams,                             // Input parameters
+		"inputParameters":    inputParams,                                   // Input parameters
 		// All other fields are nil to maintain Coze compatibility
 		"settingOnError":     nil,
 		"nodeBatchInfo":      nil,
@@ -180,11 +180,11 @@ func (g *IterationNodeGenerator) GenerateSchemaNode(unifiedNode *models.Node) (*
 	// FIXED: Set current iteration node ID for edge generation
 	g.idGenerator.SetCurrentIterationNodeID(cozeNodeID)
 
-    // Extract iteration configuration
-    iterationConfig, ok := common.AsIterationConfig(unifiedNode.Config)
-    if !ok || iterationConfig == nil {
-        return nil, fmt.Errorf("invalid iteration config type for node %s", unifiedNode.ID)
-    }
+	// Extract iteration configuration
+	iterationConfig, ok := common.AsIterationConfig(unifiedNode.Config)
+	if !ok || iterationConfig == nil {
+		return nil, fmt.Errorf("invalid iteration config type for node %s", unifiedNode.ID)
+	}
 
 	// Generate sub-blocks (same as in GenerateNode)
 	blocks, err := g.generateSubBlocks(iterationConfig.SubWorkflow.Nodes)
@@ -269,7 +269,7 @@ func (g *IterationNodeGenerator) generateSubBlocks(subNodes []models.Node) ([]in
 
 // generateBlockNode generates a CozeBlockNode with correct field ordering and structure
 func (g *IterationNodeGenerator) generateBlockNode(subNode *models.Node) (*CozeBlockNode, error) {
-	
+
 	// Generate original Coze node to get data
 	nodeGenerator, err := g.nodeFactory.GetNodeGenerator(subNode.Type)
 	if err != nil {
@@ -291,7 +291,7 @@ func (g *IterationNodeGenerator) generateBlockNode(subNode *models.Node) (*CozeB
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate node %s: %v", subNode.ID, err)
 	}
-	
+
 	// Special handling for condition nodes to ensure correct YAML serialization
 	if subNode.Type == models.NodeTypeCondition {
 		return g.generateConditionBlockNode(subNode, cozeNode)
@@ -302,10 +302,10 @@ func (g *IterationNodeGenerator) generateBlockNode(subNode *models.Node) (*CozeB
 	blockNode := &CozeBlockNode{
 		// ✅ data field at the front, contains: inputs -> nodeMeta -> outputs -> version
 		Data: &CozeBlockNodeData{
-			Inputs:   cozeNode.Data.Inputs,   // ✅ inputs first
-			NodeMeta: cozeNode.Data.Meta,     // ✅ nodeMeta second (converted from Data.Meta)
-			Outputs:  cozeNode.Data.Outputs,  // ✅ outputs third
-			Version:  cozeNode.Version,       // ✅ version last
+			Inputs:   cozeNode.Data.Inputs,  // ✅ inputs first
+			NodeMeta: cozeNode.Data.Meta,    // ✅ nodeMeta second (converted from Data.Meta)
+			Outputs:  cozeNode.Data.Outputs, // ✅ outputs third
+			Version:  cozeNode.Version,      // ✅ version last
 		},
 		// ✅ id field after data
 		ID: cozeNode.ID,
@@ -314,7 +314,6 @@ func (g *IterationNodeGenerator) generateBlockNode(subNode *models.Node) (*CozeB
 		// ✅ type field at the end
 		Type: cozeNode.Type,
 	}
-	
 
 	return blockNode, nil
 }
@@ -323,17 +322,17 @@ func (g *IterationNodeGenerator) generateBlockNode(subNode *models.Node) (*CozeB
 func (g *IterationNodeGenerator) generateConditionBlockNode(subNode *models.Node, cozeNode *CozeNode) (*CozeBlockNode, error) {
 	// CRITICAL: Condition nodes inside iteration need to use schema format, not nodes format
 	// This way they can be correctly identified by coze platform and establish branch connections
-	
+
 	// Get condition node configuration
 	conditionConfig, ok := subNode.Config.(*models.ConditionConfig)
 	if !ok {
 		return nil, fmt.Errorf("invalid condition config type")
 	}
-	
+
 	// Use condition node generator to create schema format branches
 	conditionGenerator := NewConditionNodeGenerator()
 	conditionGenerator.SetIDGenerator(g.idGenerator)
-	
+
 	// Generate schema format branches (simplified format, no extra fields)
 	branches := make([]map[string]interface{}, 0)
 	for _, caseItem := range conditionConfig.Cases {
@@ -341,7 +340,7 @@ func (g *IterationNodeGenerator) generateConditionBlockNode(subNode *models.Node
 		if len(caseItem.Conditions) == 0 {
 			continue
 		}
-		
+
 		// Use schema format to generate branch
 		branch, err := conditionGenerator.GenerateSchemaBranch(caseItem, subNode)
 		if err != nil {
@@ -349,12 +348,12 @@ func (g *IterationNodeGenerator) generateConditionBlockNode(subNode *models.Node
 		}
 		branches = append(branches, branch)
 	}
-	
+
 	// Create simplified selector structure (schema format)
 	conditionInputs := map[string]interface{}{
 		"branches": branches, // Directly use simplified schema format branches
 	}
-	
+
 	// Create CozeBlockNode with correct format, using simplified schema format
 	blockNode := &CozeBlockNode{
 		Data: &CozeBlockNodeData{
@@ -367,10 +366,9 @@ func (g *IterationNodeGenerator) generateConditionBlockNode(subNode *models.Node
 		Meta: cozeNode.Meta,
 		Type: cozeNode.Type,
 	}
-	
+
 	return blockNode, nil
 }
-
 
 // generateInternalEdges generates internal edges based on Coze loop architecture
 func (g *IterationNodeGenerator) generateInternalEdges(subEdges []models.Edge, iterationConfig *models.IterationConfig) ([]interface{}, error) {
@@ -414,7 +412,7 @@ func (g *IterationNodeGenerator) buildHandleMappings(subEdges []models.Edge, ite
 
 	// Get classifier node configuration for dynamic multi-branch mapping
 	classifierBranchMappings := g.buildDynamicClassifierBranchMappings(iterationConfig)
-	
+
 	// Track indices for different types of handles separately
 	conditionBranchIndex := 0
 
@@ -457,7 +455,7 @@ func (g *IterationNodeGenerator) buildHandleMappings(subEdges []models.Edge, ite
 }
 
 // mapConditionBranchToCozePort dynamically maps condition branches to ports based on Coze source calcPortId rules
-// Rules: 1st branch="true", 2nd="true_1", Nth="true_{N-1}", default="false" 
+// Rules: 1st branch="true", 2nd="true_1", Nth="true_{N-1}", default="false"
 func (g *IterationNodeGenerator) mapConditionBranchToCozePort(handle string, subEdges []models.Edge, iterationConfig *models.IterationConfig, branchIndex int) string {
 	// 1. Find condition node configuration
 	var conditionConfig *models.ConditionConfig
@@ -469,20 +467,20 @@ func (g *IterationNodeGenerator) mapConditionBranchToCozePort(handle string, sub
 			}
 		}
 	}
-	
+
 	if conditionConfig == nil {
 		return "default"
 	}
-	
+
 	// 2. Collect all non-default branches (level != 999) and sort by level
 	type BranchInfo struct {
 		CaseID string
 		Level  int
 	}
-	
+
 	var nonDefaultBranches []BranchInfo
 	var isDefaultBranch bool
-	
+
 	for _, caseItem := range conditionConfig.Cases {
 		if caseItem.CaseID == handle {
 			if caseItem.Level == 999 {
@@ -490,7 +488,7 @@ func (g *IterationNodeGenerator) mapConditionBranchToCozePort(handle string, sub
 				break
 			}
 		}
-		
+
 		// Collect all non-default branches
 		if caseItem.Level != 999 {
 			nonDefaultBranches = append(nonDefaultBranches, BranchInfo{
@@ -499,12 +497,12 @@ func (g *IterationNodeGenerator) mapConditionBranchToCozePort(handle string, sub
 			})
 		}
 	}
-	
+
 	// Return false port for default branches
 	if isDefaultBranch {
 		return "false"
 	}
-	
+
 	// Sort non-default branches by level in ascending order
 	for i := 0; i < len(nonDefaultBranches)-1; i++ {
 		for j := i + 1; j < len(nonDefaultBranches); j++ {
@@ -513,7 +511,7 @@ func (g *IterationNodeGenerator) mapConditionBranchToCozePort(handle string, sub
 			}
 		}
 	}
-	
+
 	// Generate port IDs based on Coze calcPortId rules
 	// index=0 -> "true", index=1 -> "true_1", index=N -> "true_N"
 	for index, branch := range nonDefaultBranches {
@@ -525,7 +523,7 @@ func (g *IterationNodeGenerator) mapConditionBranchToCozePort(handle string, sub
 			}
 		}
 	}
-	
+
 	// Fallback logic
 	return "default"
 }
@@ -601,19 +599,10 @@ func (g *IterationNodeGenerator) addCozeLoopPortConnections(edges *[]interface{}
 	}
 }
 
-
-
 // isIterationInternalNode checks if a node ID represents an iteration internal node (start/end)
 func (g *IterationNodeGenerator) isIterationInternalNode(nodeID string) bool {
 	return strings.Contains(nodeID, "iteration-node-start") || strings.Contains(nodeID, "iteration-node-end")
 }
-
-
-
-
-
-
-
 
 // generateLoopCountConfig generates loop count configuration matching Coze format
 func (g *IterationNodeGenerator) generateLoopCountConfig(iterConfig *models.IterationConfig) map[string]interface{} {
@@ -692,11 +681,6 @@ func (g *IterationNodeGenerator) generateInputParameters(unifiedNode *models.Nod
 	return inputParams
 }
 
-
-
-
-
-
 // generateNodeMeta generates node metadata matching exact Coze format
 func (g *IterationNodeGenerator) generateNodeMeta(unifiedNode *models.Node) map[string]interface{} {
 	title := unifiedNode.Title
@@ -720,19 +704,19 @@ func (g *IterationNodeGenerator) generateNodeMeta(unifiedNode *models.Node) map[
 
 // getLastProcessingNodeID gets the ID of the last actual processing node in the iteration
 func (g *IterationNodeGenerator) getLastProcessingNodeID(unifiedNode *models.Node) string {
-    iterationConfig, ok := common.AsIterationConfig(unifiedNode.Config)
-    if !ok || iterationConfig == nil {
-        return g.idGenerator.MapToCozeNodeID(unifiedNode.ID)
-    }
+	iterationConfig, ok := common.AsIterationConfig(unifiedNode.Config)
+	if !ok || iterationConfig == nil {
+		return g.idGenerator.MapToCozeNodeID(unifiedNode.ID)
+	}
 
 	// CRITICAL: Need to analyze edge connections to find the real last processing node
 	// Cannot simply search from back to front, because node order does not represent execution order
-	
+
 	// 1. Build internal node indegree mapping (find nodes with no subsequent connections)
 	internalNodeIDs := make(map[string]bool)
 	outgoingEdges := make(map[string][]models.Edge)
 	incomingEdges := make(map[string][]models.Edge)
-	
+
 	// Collect all internal processing nodes (skip start and end nodes)
 	for _, subNode := range iterationConfig.SubWorkflow.Nodes {
 		if subNode.Type != models.NodeTypeStart && subNode.Type != models.NodeTypeEnd {
@@ -741,7 +725,7 @@ func (g *IterationNodeGenerator) getLastProcessingNodeID(unifiedNode *models.Nod
 			incomingEdges[subNode.ID] = []models.Edge{}
 		}
 	}
-	
+
 	// Analyze edge connection relationships
 	for _, edge := range iterationConfig.SubWorkflow.Edges {
 		// Only consider connections between internal processing nodes
@@ -750,7 +734,7 @@ func (g *IterationNodeGenerator) getLastProcessingNodeID(unifiedNode *models.Nod
 			incomingEdges[edge.Target] = append(incomingEdges[edge.Target], edge)
 		}
 	}
-	
+
 	// 2. Find nodes that do not output to other internal nodes (terminal nodes)
 	var terminalNodes []string
 	for nodeID := range internalNodeIDs {
@@ -765,7 +749,7 @@ func (g *IterationNodeGenerator) getLastProcessingNodeID(unifiedNode *models.Nod
 			terminalNodes = append(terminalNodes, nodeID)
 		}
 	}
-	
+
 	// 3. If there are multiple terminal nodes, choose code node as final output node
 	for _, nodeID := range terminalNodes {
 		for _, subNode := range iterationConfig.SubWorkflow.Nodes {
@@ -774,12 +758,12 @@ func (g *IterationNodeGenerator) getLastProcessingNodeID(unifiedNode *models.Nod
 			}
 		}
 	}
-	
+
 	// 4. If there are no code nodes, choose the first terminal node
 	if len(terminalNodes) > 0 {
 		return g.idGenerator.MapToCozeNodeID(terminalNodes[0])
 	}
-	
+
 	// 5. Fallback logic: search from back to front for first non-start/end node
 	for i := len(iterationConfig.SubWorkflow.Nodes) - 1; i >= 0; i-- {
 		subNode := iterationConfig.SubWorkflow.Nodes[i]
@@ -794,31 +778,31 @@ func (g *IterationNodeGenerator) getLastProcessingNodeID(unifiedNode *models.Nod
 
 // getLastProcessingNodeOutputName gets output field name of final processing node - completely dynamic version without hardcoding
 func (g *IterationNodeGenerator) getLastProcessingNodeOutputName(unifiedNode *models.Node, lastProcessingNodeID string) string {
-    iterationConfig, ok := common.AsIterationConfig(unifiedNode.Config)
-    if !ok || iterationConfig == nil {
-        return "result"
-    }
-	
+	iterationConfig, ok := common.AsIterationConfig(unifiedNode.Config)
+	if !ok || iterationConfig == nil {
+		return "result"
+	}
+
 	// CRITICAL: Find corresponding unified DSL node, get its actual output definition
 	for _, subNode := range iterationConfig.SubWorkflow.Nodes {
 		cozeNodeID := g.idGenerator.MapToCozeNodeID(subNode.ID)
 		if cozeNodeID == lastProcessingNodeID {
-			
+
 			// 1. Prioritize using explicitly defined output field names in unified DSL
 			if len(subNode.Outputs) > 0 && subNode.Outputs[0].Name != "" {
 				return subNode.Outputs[0].Name
 			}
-			
+
 			// 2. If no explicit output definition, try to get from iteration node's output selector configuration
 			if iterationConfig.OutputSelector.NodeID == subNode.ID && iterationConfig.OutputSelector.OutputName != "" {
 				return iterationConfig.OutputSelector.OutputName
 			}
-			
+
 			// 3. Dynamically analyze node configuration, infer main output field
 			return g.inferMainOutputFieldName(subNode)
 		}
 	}
-	
+
 	// 4. If none found, use generic fallback value
 	return "result"
 }
@@ -826,9 +810,9 @@ func (g *IterationNodeGenerator) getLastProcessingNodeOutputName(unifiedNode *mo
 // inferMainOutputFieldName dynamically infers main output field name based on node configuration
 func (g *IterationNodeGenerator) inferMainOutputFieldName(node models.Node) string {
 	switch node.Type {
-    case models.NodeTypeCode:
-        // Code node: analyze return statements in code to infer output fields
-        if codeConfig, ok := common.AsCodeConfig(node.Config); ok && codeConfig != nil {
+	case models.NodeTypeCode:
+		// Code node: analyze return statements in code to infer output fields
+		if codeConfig, ok := common.AsCodeConfig(node.Config); ok && codeConfig != nil {
 			// Simple regex matching to find field names in return statements
 			// Example: return {"integrated_result": result} or return {"output": data}
 			outputField := g.extractOutputFieldFromCode(codeConfig.Code)
@@ -836,26 +820,26 @@ func (g *IterationNodeGenerator) inferMainOutputFieldName(node models.Node) stri
 				return outputField
 			}
 		}
-		
-    case models.NodeTypeLLM:
-        // LLM node: check prompt template to infer output usage
-        if llmConfig, ok := common.AsLLMConfig(node.Config); ok && llmConfig != nil {
+
+	case models.NodeTypeLLM:
+		// LLM node: check prompt template to infer output usage
+		if llmConfig, ok := common.AsLLMConfig(node.Config); ok && llmConfig != nil {
 			// Analyze system prompt to infer output type
 			outputField := g.inferLLMOutputField(llmConfig.Prompt.SystemTemplate)
 			if outputField != "" {
 				return outputField
 			}
 		}
-		
+
 	case models.NodeTypeClassifier:
 		// Classifier node: use standard classification output field
 		return "classificationId"
-		
+
 	case models.NodeTypeCondition:
 		// Condition node: usually no data output, but if there is, use result
 		return "result"
 	}
-	
+
 	// Final generic fallback: examine node title or description, infer possible output field name
 	return g.inferOutputFromNodeMeta(node)
 }
@@ -864,13 +848,13 @@ func (g *IterationNodeGenerator) inferMainOutputFieldName(node models.Node) stri
 func (g *IterationNodeGenerator) extractOutputFieldFromCode(code string) string {
 	// Simple string matching, looking for fields in return statements
 	// Implement a simple pattern matching here
-	
+
 	// Match return {"field_name": ...} pattern
 	returnPattern := `return\s*\{\s*"([^"]+)"`
 	if matches := regexp.MustCompile(returnPattern).FindStringSubmatch(code); len(matches) > 1 {
 		return matches[1]
 	}
-	
+
 	// If not found, return empty string for upper layer to continue trying other methods
 	return ""
 }
@@ -879,19 +863,19 @@ func (g *IterationNodeGenerator) extractOutputFieldFromCode(code string) string 
 func (g *IterationNodeGenerator) inferLLMOutputField(systemPrompt string) string {
 	// Infer output field name based on prompt content
 	// This is a heuristic method that can be extended based on actual situations
-	
+
 	if strings.Contains(systemPrompt, "指导") || strings.Contains(systemPrompt, "guidance") {
 		return "guidance"
 	}
-	
+
 	if strings.Contains(systemPrompt, "分析") || strings.Contains(systemPrompt, "analysis") {
 		return "analysis"
 	}
-	
+
 	if strings.Contains(systemPrompt, "建议") || strings.Contains(systemPrompt, "suggestion") {
 		return "suggestion"
 	}
-	
+
 	// Default return empty, let upper layer continue processing
 	return ""
 }
@@ -900,23 +884,23 @@ func (g *IterationNodeGenerator) inferLLMOutputField(systemPrompt string) string
 func (g *IterationNodeGenerator) inferOutputFromNodeMeta(node models.Node) string {
 	// Analyze node title, infer possible output field
 	title := strings.ToLower(node.Title)
-	
+
 	if strings.Contains(title, "整合") || strings.Contains(title, "集成") {
 		return "integrated_result"
 	}
-	
+
 	if strings.Contains(title, "处理") || strings.Contains(title, "process") {
 		return "processed_result"
 	}
-	
+
 	if strings.Contains(title, "分析") || strings.Contains(title, "analysis") {
 		return "analysis_result"
 	}
-	
+
 	if strings.Contains(title, "生成") || strings.Contains(title, "generate") {
 		return "generated_content"
 	}
-	
+
 	// Final fallback to generic field name
 	return "result"
 }
@@ -949,7 +933,7 @@ func (g *IterationNodeGenerator) generateIterationOutputs(unifiedNode *models.No
 			},
 			"value": map[string]interface{}{
 				"content": map[string]interface{}{
-					"blockID": lastProcessingNodeID,                                        // Reference actual last processing node
+					"blockID": lastProcessingNodeID,                                                 // Reference actual last processing node
 					"name":    g.getLastProcessingNodeOutputName(unifiedNode, lastProcessingNodeID), // CRITICAL: Dynamically get actual output field name of final node
 					"source":  "block-output",
 				},
@@ -965,10 +949,6 @@ func (g *IterationNodeGenerator) generateIterationOutputs(unifiedNode *models.No
 
 	return outputs
 }
-
-
-
-
 
 // mapUnifiedTypeToCozeSchemaType maps unified data type to Coze schema type string
 func (g *IterationNodeGenerator) mapUnifiedTypeToCozeSchemaType(unifiedType models.UnifiedDataType) string {
@@ -991,12 +971,6 @@ func (g *IterationNodeGenerator) mapUnifiedTypeToCozeSchemaType(unifiedType mode
 		return "string"
 	}
 }
-
-
-
-
-
-
 
 // generateSchemaIterationInputs generates schema iteration inputs
 func (g *IterationNodeGenerator) generateSchemaIterationInputs(unifiedNode *models.Node, iterConfig *models.IterationConfig) map[string]interface{} {
@@ -1080,8 +1054,6 @@ func (g *IterationNodeGenerator) generateSchemaErrorSettings() map[string]interf
 	}
 }
 
-
-
 // getNodeTitle returns node title with uniqueness
 func (g *IterationNodeGenerator) getNodeTitle(unifiedNode *models.Node) string {
 	if unifiedNode.Title != "" {
@@ -1118,11 +1090,11 @@ func (g *IterationNodeGenerator) mapOutputFieldNameForCoze(nodeID, outputName st
 // buildDynamicClassifierBranchMappings builds truly dynamic branch mappings based on original iFlytek DSL edge definitions
 func (g *IterationNodeGenerator) buildDynamicClassifierBranchMappings(iterationConfig *models.IterationConfig) map[string]string {
 	mappings := make(map[string]string)
-	
+
 	// Step 1: Build mapping table from intent ID to intent information
 	intentIDToInfo := make(map[string]models.ClassifierClass)
 	classifierNodeIDs := make(map[string]bool)
-	
+
 	for _, node := range iterationConfig.SubWorkflow.Nodes {
 		if node.Type == models.NodeTypeClassifier {
 			classifierNodeIDs[node.ID] = true
@@ -1135,7 +1107,7 @@ func (g *IterationNodeGenerator) buildDynamicClassifierBranchMappings(iterationC
 			}
 		}
 	}
-	
+
 	// Collect intent IDs from classifier output edges from edge definitions, maintaining original order in edge definitions
 	intentIDsInOrder := []string{}
 	for _, edge := range iterationConfig.SubWorkflow.Edges {
@@ -1153,18 +1125,18 @@ func (g *IterationNodeGenerator) buildDynamicClassifierBranchMappings(iterationC
 			}
 		}
 	}
-	
+
 	// Step 3: Map based on actual intent information
 	branchIndex := 0
 	for _, intentID := range intentIDsInOrder {
 		if intentInfo, exists := intentIDToInfo[intentID]; exists {
 			// Judge whether it is default intent based on actual name and description
 			isDefault := (intentInfo.Name == "default" && strings.Contains(intentInfo.Description, "默认")) ||
-			             strings.Contains(intentInfo.Description, "默认意图") ||
-			             strings.Contains(strings.ToLower(intentInfo.Name), "default") ||
-			             strings.Contains(strings.ToLower(intentInfo.Name), "其他") ||
-			             strings.Contains(strings.ToLower(intentInfo.Name), "fallback")
-			
+				strings.Contains(intentInfo.Description, "默认意图") ||
+				strings.Contains(strings.ToLower(intentInfo.Name), "default") ||
+				strings.Contains(strings.ToLower(intentInfo.Name), "其他") ||
+				strings.Contains(strings.ToLower(intentInfo.Name), "fallback")
+
 			if isDefault {
 				mappings[intentID] = "default"
 			} else {
@@ -1177,12 +1149,6 @@ func (g *IterationNodeGenerator) buildDynamicClassifierBranchMappings(iterationC
 			branchIndex++
 		}
 	}
-	
+
 	return mappings
 }
-
-
-
-
-
-

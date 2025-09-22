@@ -1,8 +1,8 @@
 package parser
 
 import (
-	"fmt"
 	"ai-agents-transformer/internal/models"
+	"fmt"
 )
 
 // EndNodeParser parses end nodes.
@@ -50,7 +50,7 @@ func (p *EndNodeParser) ParseNode(iflytekNode IFlytekNode) (*models.Node, error)
 			return nil, fmt.Errorf("failed to parse end node inputs: %w", err)
 		}
 		node.Inputs = nodeInputs
-		
+
 		// Generate configuration based on parsed inputs
 		config, err := p.parseEndConfig(iflytekNode.Data, nodeInputs)
 		if err != nil {

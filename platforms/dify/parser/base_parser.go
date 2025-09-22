@@ -259,4 +259,3 @@ func (p *BaseNodeParser) convertDataType(difyType string) models.UnifiedDataType
 		return models.DataTypeString // Default to string type
 	}
 }
-

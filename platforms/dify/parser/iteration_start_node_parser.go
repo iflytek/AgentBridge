@@ -15,8 +15,6 @@ func NewIterationStartNodeParser(variableRefSystem *models.VariableReferenceSyst
 	}
 }
 
-
-
 // ParseNode parses iteration start node.
 func (p *IterationStartNodeParser) ParseNode(difyNode DifyNode) (*models.Node, error) {
 	// Extract basic information

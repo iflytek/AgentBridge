@@ -66,8 +66,8 @@ type CozeNode struct {
 
 // CozeBlockNode represents a node inside iteration blocks with correct field ordering
 type CozeBlockNode struct {
-	Data *CozeBlockNodeData `yaml:"data" json:"data"`   // ✅ data first
-	ID   string             `yaml:"id" json:"id"`     // ✅ id after data  
+	Data *CozeBlockNodeData `yaml:"data" json:"data"` // ✅ data first
+	ID   string             `yaml:"id" json:"id"`     // ✅ id after data
 	Meta *CozeNodeMeta      `yaml:"meta" json:"meta"` // ✅ meta after id
 	Type string             `yaml:"type" json:"type"` // ✅ type last
 }
@@ -75,7 +75,7 @@ type CozeBlockNode struct {
 // CozeBlockNodeData represents data for iteration block nodes with correct structure
 type CozeBlockNodeData struct {
 	Inputs   interface{}       `yaml:"inputs" json:"inputs"`     // ✅ inputs first
-	NodeMeta *CozeNodeMetaInfo `yaml:"nodeMeta" json:"nodeMeta"` // ✅ nodeMeta second  
+	NodeMeta *CozeNodeMetaInfo `yaml:"nodeMeta" json:"nodeMeta"` // ✅ nodeMeta second
 	Outputs  interface{}       `yaml:"outputs" json:"outputs"`   // ✅ outputs third
 	Version  string            `yaml:"version" json:"version"`   // ✅ version last (inside data)
 }
@@ -177,17 +177,17 @@ type CozeBlockInputParameter struct {
 
 // CozeBlockInputValue represents input value for block nodes
 type CozeBlockInputValue struct {
-	Type    string               `yaml:"type" json:"type"`
-	Value   *CozeBlockInputRef   `yaml:"value" json:"value"`
-	RawMeta *CozeRawMeta        `yaml:"rawMeta,omitempty" json:"rawMeta,omitempty"`
+	Type    string             `yaml:"type" json:"type"`
+	Value   *CozeBlockInputRef `yaml:"value" json:"value"`
+	RawMeta *CozeRawMeta       `yaml:"rawMeta,omitempty" json:"rawMeta,omitempty"`
 }
 
 // CozeBlockInputRef represents input reference for block nodes
 type CozeBlockInputRef struct {
-	Content  *CozeRefContent `yaml:"content,omitempty" json:"content,omitempty"`
-	RawMeta  *CozeRawMeta    `yaml:"rawMeta,omitempty" json:"rawMeta,omitempty"`
-	Type     string          `yaml:"type" json:"type"`
-	Literal  interface{}     `yaml:"content,omitempty" json:"content,omitempty"` // For literal values
+	Content *CozeRefContent `yaml:"content,omitempty" json:"content,omitempty"`
+	RawMeta *CozeRawMeta    `yaml:"rawMeta,omitempty" json:"rawMeta,omitempty"`
+	Type    string          `yaml:"type" json:"type"`
+	Literal interface{}     `yaml:"content,omitempty" json:"content,omitempty"` // For literal values
 }
 
 // CozeBlockSettingOnError represents error settings for block nodes
@@ -267,7 +267,6 @@ func GetCozeRawMetaType(dataType string) int {
 	}
 	return 1 // default to string
 }
-
 
 // CozeLLMConfig represents LLM node configuration
 type CozeLLMConfig struct {
@@ -361,7 +360,6 @@ type CozeIntentInputs struct {
 	Mode               string                 `yaml:"mode,omitempty" json:"mode,omitempty"`
 	SettingOnError     CozeSettingOnError     `yaml:"settingOnError" json:"settingOnError"`
 }
-
 
 // CozeSettingOnError represents error handling settings
 type CozeSettingOnError struct {

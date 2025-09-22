@@ -138,12 +138,12 @@ func (p *BaseNodeParser) parseInputs(cozeNode CozeNode) []models.Input {
 			if param.Input.Value.Type == "ref" {
 				blockID := param.Input.Value.Content.BlockID
 				outputName := param.Input.Value.Content.Name
-				
+
 				// Apply output name mapping if available
 				if p.variableRefSystem != nil {
 					outputName = p.variableRefSystem.ResolveOutputName(blockID, outputName)
 				}
-				
+
 				input.Reference = &models.VariableReference{
 					Type:       models.ReferenceTypeNodeOutput,
 					NodeID:     blockID,
@@ -167,7 +167,7 @@ func (p *BaseNodeParser) parseOutputs(cozeNode CozeNode) []models.Output {
 	for _, output := range cozeNode.Data.Outputs {
 		// Determine the correct data type based on Coze output structure
 		var outputType models.UnifiedDataType
-		
+
 		// Check if output has schema information for list types
 		if output.Type == "list" && output.Schema != nil {
 			// For list types, convert based on schema element type
@@ -182,7 +182,7 @@ func (p *BaseNodeParser) parseOutputs(cozeNode CozeNode) []models.Output {
 					}
 				}
 			}
-			
+
 			switch schemaType {
 			case "string":
 				outputType = models.DataTypeArrayString
@@ -199,7 +199,7 @@ func (p *BaseNodeParser) parseOutputs(cozeNode CozeNode) []models.Output {
 			// For non-list types, use normal conversion
 			outputType = p.convertDataType(output.Type)
 		}
-		
+
 		modelOutput := models.Output{
 			Name:        output.Name,
 			Label:       output.Name,

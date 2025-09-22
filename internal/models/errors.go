@@ -57,12 +57,12 @@ func (e *ParseError) Error() string {
 // ConversionError represents a conversion error between platforms.
 type ConversionError struct {
 	// Core error information
-	Code           string    `json:"code"`
-	Message        string    `json:"message"`
-	SourceLocation *Location `json:"source_location,omitempty"`
-	Suggestions    []string  `json:"suggestions,omitempty"`
+	Code           string        `json:"code"`
+	Message        string        `json:"message"`
+	SourceLocation *Location     `json:"source_location,omitempty"`
+	Suggestions    []string      `json:"suggestions,omitempty"`
 	Severity       ErrorSeverity `json:"severity,omitempty"`
-	
+
 	// Platform-specific information (preserved for compatibility)
 	SourcePlatform   string `json:"source_platform"`
 	TargetPlatform   string `json:"target_platform"`

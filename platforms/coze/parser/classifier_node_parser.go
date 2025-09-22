@@ -104,7 +104,7 @@ func (p *ClassifierNodeParser) parseClassifierOutputs(cozeNode CozeNode) []model
 			Description: "Classification result ID",
 		},
 	}
-	
+
 	return outputs
 }
 
@@ -260,7 +260,7 @@ func (p *ClassifierNodeParser) extractNestedContent(content interface{}) string 
 	if strContent, ok := content.(string); ok {
 		return strContent
 	}
-	
+
 	// Handle nested map structure: map[type:string value:map[content:actual_text type:literal]]
 	if contentMap, ok := content.(map[string]interface{}); ok {
 		// Check if there's a "value" field
@@ -274,7 +274,7 @@ func (p *ClassifierNodeParser) extractNestedContent(content interface{}) string 
 				}
 			}
 		}
-		
+
 		// Check if there's a direct "content" field
 		if directContent, hasContent := contentMap["content"]; hasContent {
 			if contentStr, ok := directContent.(string); ok {
@@ -282,7 +282,7 @@ func (p *ClassifierNodeParser) extractNestedContent(content interface{}) string 
 			}
 		}
 	}
-	
+
 	// Fallback to string representation if no nested content found
 	return fmt.Sprintf("%v", content)
 }

@@ -10,9 +10,9 @@ import (
 // ConditionNodeGenerator handles condition branch node generation
 type ConditionNodeGenerator struct {
 	*BaseNodeGenerator
-	idMapping        map[string]string // Dify ID to iFlytek SparkAgent ID mapping
-	nodeTitleMapping map[string]string // iFlytek SparkAgent ID to node title mapping
-	branchIDMapping  map[string]string // Dify case ID to iFlytek branch_one_of ID mapping
+	idMapping        map[string]string  // Dify ID to iFlytek SparkAgent ID mapping
+	nodeTitleMapping map[string]string  // iFlytek SparkAgent ID to node title mapping
+	branchIDMapping  map[string]string  // Dify case ID to iFlytek branch_one_of ID mapping
 	unifiedDSL       *models.UnifiedDSL // Full DSL context for type inference
 }
 
@@ -309,7 +309,7 @@ func (g *ConditionNodeGenerator) saveBranchIDMappings(caseID, branchID string, l
 	// Save mapping by level for backward compatibility
 	levelKey := fmt.Sprintf("%d", level)
 	g.branchIDMapping[levelKey] = branchID
-	
+
 	// Save special mappings for Coze sourcePortID format (dynamic mapping)
 	if level == 999 {
 		// Default branch maps to "false"
@@ -571,14 +571,14 @@ func (g *ConditionNodeGenerator) getNodeDisplayLabel(nodeID string) string {
 			return title
 		}
 	}
-	
+
 	// If DSL is available, get the actual node title
 	if g.unifiedDSL != nil {
 		if sourceNode := g.findSourceNodeByMappedID(nodeID); sourceNode != nil {
 			return sourceNode.Title
 		}
 	}
-	
+
 	// Fallback: use base generator's logic
 	return g.determineLabelByID(nodeID, g.nodeTitleMapping)
 }
@@ -621,14 +621,14 @@ func (g *ConditionNodeGenerator) SetBranchIDMapping(mapping map[string]string) {
 func (g *ConditionNodeGenerator) inferDataTypeFromOutput(sourceOutput, mappedNodeID string) string {
 	// Use unified data type mapping system
 	mapping := models.GetDefaultDataTypeMapping()
-	
+
 	// Try to get actual data type from source node if DSL is available
 	if g.unifiedDSL != nil {
 		if actualType := g.getActualOutputType(sourceOutput, mappedNodeID); actualType != "" {
 			return actualType
 		}
 	}
-	
+
 	// Fallback to pattern-based inference if DSL not available or output not found
 	unifiedType := g.getUnifiedTypeFromOutput(sourceOutput)
 	return mapping.ToIFlytekType(unifiedType)
@@ -641,7 +641,7 @@ func (g *ConditionNodeGenerator) getActualOutputType(sourceOutput, mappedNodeID 
 	if sourceNode == nil {
 		return ""
 	}
-	
+
 	// Look for the output in the source node
 	for _, output := range sourceNode.Outputs {
 		if output.Name == sourceOutput {
@@ -650,7 +650,7 @@ func (g *ConditionNodeGenerator) getActualOutputType(sourceOutput, mappedNodeID 
 			return mapping.ToIFlytekType(output.Type)
 		}
 	}
-	
+
 	return ""
 }
 
@@ -661,7 +661,7 @@ func (g *ConditionNodeGenerator) findSourceNodeByMappedID(mappedNodeID string) *
 	if sourceNode != nil {
 		return sourceNode
 	}
-	
+
 	// If not found, try reverse ID mapping lookup
 	if g.idMapping != nil {
 		for originalID, mappedID := range g.idMapping {
@@ -670,7 +670,7 @@ func (g *ConditionNodeGenerator) findSourceNodeByMappedID(mappedNodeID string) *
 			}
 		}
 	}
-	
+
 	return nil
 }
 
@@ -681,10 +681,10 @@ func (g *ConditionNodeGenerator) generateConditionReferences(node models.Node) [
 	if !ok || condConfig == nil {
 		return []IFlytekReference{}
 	}
-	
+
 	// Collect all variable references from conditions
 	nodeGroups := g.collectVariableReferencesFromConditions(condConfig.Cases)
-	
+
 	// Generate references for each node group
 	return g.generateReferencesFromConditionGroups(nodeGroups)
 }
@@ -692,16 +692,16 @@ func (g *ConditionNodeGenerator) generateConditionReferences(node models.Node) [
 // collectVariableReferencesFromConditions collects variable references from condition cases
 func (g *ConditionNodeGenerator) collectVariableReferencesFromConditions(cases []models.ConditionCase) map[string][]string {
 	nodeGroups := make(map[string][]string)
-	
+
 	for _, caseItem := range cases {
 		for _, condition := range caseItem.Conditions {
 			if len(condition.VariableSelector) >= 2 {
 				sourceNodeID := condition.VariableSelector[0]
 				sourceOutput := condition.VariableSelector[1]
-				
+
 				// Map the node ID
 				mappedNodeID := g.getMappedNodeID(sourceNodeID)
-				
+
 				// Add to node groups, avoid duplicates
 				if !g.contains(nodeGroups[mappedNodeID], sourceOutput) {
 					nodeGroups[mappedNodeID] = append(nodeGroups[mappedNodeID], sourceOutput)
@@ -709,7 +709,7 @@ func (g *ConditionNodeGenerator) collectVariableReferencesFromConditions(cases [
 			}
 		}
 	}
-	
+
 	return nodeGroups
 }
 
@@ -726,19 +726,19 @@ func (g *ConditionNodeGenerator) contains(slice []string, item string) bool {
 // generateReferencesFromConditionGroups generates references from condition variable groups
 func (g *ConditionNodeGenerator) generateReferencesFromConditionGroups(nodeGroups map[string][]string) []IFlytekReference {
 	var references []IFlytekReference
-	
+
 	for nodeID, outputNames := range nodeGroups {
 		reference := g.createReferenceForConditionGroup(nodeID, outputNames)
 		references = append(references, reference)
 	}
-	
+
 	return references
 }
 
 // createReferenceForConditionGroup creates reference structure for a condition node group
 func (g *ConditionNodeGenerator) createReferenceForConditionGroup(nodeID string, outputNames []string) IFlytekReference {
 	refDetails := g.createRefDetailsFromOutputNames(nodeID, outputNames)
-	
+
 	return IFlytekReference{
 		Children: []IFlytekReference{
 			{
@@ -756,12 +756,12 @@ func (g *ConditionNodeGenerator) createReferenceForConditionGroup(nodeID string,
 // createRefDetailsFromOutputNames creates reference details from output names
 func (g *ConditionNodeGenerator) createRefDetailsFromOutputNames(nodeID string, outputNames []string) []IFlytekRefDetail {
 	var refDetails []IFlytekRefDetail
-	
+
 	for _, outputName := range outputNames {
 		refDetail := g.createRefDetailFromOutputName(nodeID, outputName)
 		refDetails = append(refDetails, refDetail)
 	}
-	
+
 	return refDetails
 }
 
@@ -769,7 +769,7 @@ func (g *ConditionNodeGenerator) createRefDetailsFromOutputNames(nodeID string, 
 func (g *ConditionNodeGenerator) createRefDetailFromOutputName(nodeID, outputName string) IFlytekRefDetail {
 	// Get actual data type from DSL if available
 	dataType := g.getActualOutputDataType(nodeID, outputName)
-	
+
 	return IFlytekRefDetail{
 		OriginID: nodeID,
 		ID:       g.generateRefID(),
@@ -792,7 +792,7 @@ func (g *ConditionNodeGenerator) getActualOutputDataType(nodeID, outputName stri
 			}
 		}
 	}
-	
+
 	// Fallback to string type
 	return "string"
 }

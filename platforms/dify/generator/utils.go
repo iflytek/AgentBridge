@@ -26,11 +26,11 @@ func generateShortID(length int) string {
 	if _, err := rand.Read(bytes); err != nil {
 		return fmt.Sprintf("%d", time.Now().UnixNano()%10000)
 	}
-	
+
 	result := fmt.Sprintf("%x", bytes)
 	if len(result) > length {
 		result = result[:length]
 	}
-	
+
 	return result
 }

@@ -1,9 +1,9 @@
 package generator
 
 import (
-    "ai-agents-transformer/internal/models"
-    "ai-agents-transformer/platforms/common"
-    "fmt"
+	"ai-agents-transformer/internal/models"
+	"ai-agents-transformer/platforms/common"
+	"fmt"
 )
 
 // ConditionNodeGenerator generates Coze condition nodes (selectors)
@@ -34,10 +34,10 @@ func (g *ConditionNodeGenerator) ValidateNode(unifiedNode *models.Node) error {
 		return fmt.Errorf("expected condition node, got %s", unifiedNode.Type)
 	}
 
-    conditionConfig, ok := common.AsConditionConfig(unifiedNode.Config)
-    if !ok || conditionConfig == nil {
-        return fmt.Errorf("invalid condition node config type: %T", unifiedNode.Config)
-    }
+	conditionConfig, ok := common.AsConditionConfig(unifiedNode.Config)
+	if !ok || conditionConfig == nil {
+		return fmt.Errorf("invalid condition node config type: %T", unifiedNode.Config)
+	}
 
 	if len(conditionConfig.Cases) == 0 {
 		return fmt.Errorf("condition node must have at least one case")
@@ -53,7 +53,7 @@ func (g *ConditionNodeGenerator) GenerateNode(unifiedNode *models.Node) (*CozeNo
 	}
 
 	cozeNodeID := g.idGenerator.MapToCozeNodeID(unifiedNode.ID)
-	
+
 	// Create condition node data structure
 	conditionInputs := g.generateConditionInputs(unifiedNode)
 
@@ -95,7 +95,7 @@ func (g *ConditionNodeGenerator) GenerateSchemaNode(unifiedNode *models.Node) (*
 	}
 
 	cozeNodeID := g.idGenerator.MapToCozeNodeID(unifiedNode.ID)
-	
+
 	// Generate branches from condition cases
 	branches, err := g.generateBranches(unifiedNode)
 	if err != nil {
@@ -130,8 +130,8 @@ func (g *ConditionNodeGenerator) GenerateSchemaNode(unifiedNode *models.Node) (*
 
 // generateConditionInputs generates condition inputs for nodes section
 func (g *ConditionNodeGenerator) generateConditionInputs(unifiedNode *models.Node) map[string]interface{} {
-    conditionConfig, _ := common.AsConditionConfig(unifiedNode.Config)
-	
+	conditionConfig, _ := common.AsConditionConfig(unifiedNode.Config)
+
 	// Generate selector branches, excluding empty condition branches (default cases with level=999)
 	branches := make([]map[string]interface{}, 0)
 	for _, caseItem := range conditionConfig.Cases {
@@ -139,20 +139,20 @@ func (g *ConditionNodeGenerator) generateConditionInputs(unifiedNode *models.Nod
 		if len(caseItem.Conditions) == 0 {
 			continue
 		}
-		
+
 		branch := g.generateSelectorBranch(caseItem, unifiedNode)
 		branches = append(branches, branch)
 	}
 
 	return map[string]interface{}{
-		"inputparameters":  []interface{}{},
-		"settingonerror":   nil,
-		"nodebatchinfo":    nil,
-		"llmparam":         nil,
-		"outputemitter":    nil,
-		"exit":             nil,
-		"llm":              nil,
-		"loop":             nil,
+		"inputparameters": []interface{}{},
+		"settingonerror":  nil,
+		"nodebatchinfo":   nil,
+		"llmparam":        nil,
+		"outputemitter":   nil,
+		"exit":            nil,
+		"llm":             nil,
+		"loop":            nil,
 		"selector": map[string]interface{}{
 			"branches": branches,
 		},
@@ -175,7 +175,7 @@ func (g *ConditionNodeGenerator) generateConditionInputs(unifiedNode *models.Nod
 
 // generateBranches generates branches for schema section
 func (g *ConditionNodeGenerator) generateBranches(unifiedNode *models.Node) ([]map[string]interface{}, error) {
-    conditionConfig, _ := common.AsConditionConfig(unifiedNode.Config)
+	conditionConfig, _ := common.AsConditionConfig(unifiedNode.Config)
 	branches := make([]map[string]interface{}, 0)
 
 	// Add condition branches, excluding empty condition branches (default cases with level=999)
@@ -199,7 +199,7 @@ func (g *ConditionNodeGenerator) generateBranches(unifiedNode *models.Node) ([]m
 func (g *ConditionNodeGenerator) generateSelectorBranch(caseItem models.ConditionCase, unifiedNode *models.Node) map[string]interface{} {
 	// Convert logical operator
 	logic := g.mapLogicalOperator(caseItem.LogicalOperator)
-	
+
 	// Generate conditions
 	conditions := make([]map[string]interface{}, 0)
 	for _, condition := range caseItem.Conditions {
@@ -219,7 +219,7 @@ func (g *ConditionNodeGenerator) generateSelectorBranch(caseItem models.Conditio
 func (g *ConditionNodeGenerator) GenerateSchemaBranch(caseItem models.ConditionCase, unifiedNode *models.Node) (map[string]interface{}, error) {
 	// Convert logical operator
 	logic := g.mapLogicalOperator(caseItem.LogicalOperator)
-	
+
 	// Generate conditions
 	conditions := make([]map[string]interface{}, 0)
 	for _, condition := range caseItem.Conditions {
@@ -242,27 +242,27 @@ func (g *ConditionNodeGenerator) GenerateSchemaBranch(caseItem models.ConditionC
 func (g *ConditionNodeGenerator) generateSelectorCondition(condition models.Condition, unifiedNode *models.Node) map[string]interface{} {
 	// Map comparison operator
 	operator := g.mapComparisonOperator(condition.ComparisonOperator)
-	
+
 	// Generate left operand (variable reference)
 	leftOperand := g.generateVariableReference(condition.VariableSelector, unifiedNode, condition.VarType)
-	
+
 	// Generate right operand (literal value)
 	rightOperand := g.generateLiteralValue(condition.Value, condition.VarType)
 
 	return map[string]interface{}{
 		"operator": operator,
 		"left": map[string]interface{}{
-			"name": "",
-			"input": leftOperand,
-			"left": nil,
-			"right": nil,
+			"name":      "",
+			"input":     leftOperand,
+			"left":      nil,
+			"right":     nil,
 			"variables": []interface{}{},
 		},
 		"right": map[string]interface{}{
-			"name": "",
-			"input": rightOperand,
-			"left": nil,
-			"right": nil,
+			"name":      "",
+			"input":     rightOperand,
+			"left":      nil,
+			"right":     nil,
 			"variables": []interface{}{},
 		},
 	}
@@ -272,10 +272,10 @@ func (g *ConditionNodeGenerator) generateSelectorCondition(condition models.Cond
 func (g *ConditionNodeGenerator) generateSchemaCondition(condition models.Condition, unifiedNode *models.Node) (map[string]interface{}, error) {
 	// Map comparison operator
 	operator := g.mapComparisonOperator(condition.ComparisonOperator)
-	
+
 	// Generate left operand (variable reference)
 	leftOperand := g.generateSchemaVariableReference(condition.VariableSelector, unifiedNode, condition.VarType)
-	
+
 	// Generate right operand (literal value)
 	rightOperand := g.generateSchemaLiteralValue(condition.Value, condition.VarType)
 
@@ -307,23 +307,23 @@ func (g *ConditionNodeGenerator) mapLogicalOperator(logicalOperator string) int 
 func (g *ConditionNodeGenerator) mapComparisonOperator(compareOperator string) int {
 	switch compareOperator {
 	case "is", "equals":
-		return 1  // Equal
+		return 1 // Equal
 	case "is_not", "not_equals":
-		return 2  // NotEqual
+		return 2 // NotEqual
 	case "length_gt":
-		return 3  // LengthGt
+		return 3 // LengthGt
 	case "length_gte":
-		return 4  // LengthGtEqual  
+		return 4 // LengthGtEqual
 	case "length_lt":
-		return 5  // LengthLt
+		return 5 // LengthLt
 	case "length_lte":
-		return 6  // LengthLtEqual
+		return 6 // LengthLtEqual
 	case "contains", "start_with":
-		return 7  // Contains (iFlytek start_with maps to Coze Contains)
+		return 7 // Contains (iFlytek start_with maps to Coze Contains)
 	case "not_contains":
-		return 8  // NotContains
+		return 8 // NotContains
 	case "empty", "is_empty":
-		return 9  // Null
+		return 9 // Null
 	case "not_empty", "is_not_empty":
 		return 10 // NotNull (fixed: unified DSL uses is_not_empty)
 	case "true":
@@ -339,7 +339,7 @@ func (g *ConditionNodeGenerator) mapComparisonOperator(compareOperator string) i
 	case "le", "<=", "less_equal":
 		return 16 // LtEqual
 	default:
-		return 1  // Default to Equal
+		return 1 // Default to Equal
 	}
 }
 
@@ -352,7 +352,7 @@ func (g *ConditionNodeGenerator) generateVariableReference(variableSelector []st
 
 	sourceNodeID := variableSelector[0]
 	fieldName := variableSelector[1]
-	
+
 	// Map source node ID to Coze format
 	cozeSourceNodeID := g.idGenerator.MapToCozeNodeID(sourceNodeID)
 
@@ -379,7 +379,7 @@ func (g *ConditionNodeGenerator) generateSchemaVariableReference(variableSelecto
 
 	sourceNodeID := variableSelector[0]
 	fieldName := variableSelector[1]
-	
+
 	// Map source node ID to Coze format
 	cozeSourceNodeID := g.idGenerator.MapToCozeNodeID(sourceNodeID)
 

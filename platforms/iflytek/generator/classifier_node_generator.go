@@ -186,7 +186,7 @@ func (g *ClassifierNodeGenerator) cleanVariableReferences(text string) string {
 	if text == "" {
 		return ""
 	}
-	
+
 	// Use regex to remove all Dify variable references: {{#...#}}
 	re := regexp.MustCompile(`\{\{#[^}]*#\}\}`)
 	return re.ReplaceAllString(text, "")
@@ -197,7 +197,7 @@ func (g *ClassifierNodeGenerator) unifyVariableReferencesToQuery(instructions st
 	if instructions == "" {
 		return ""
 	}
-	
+
 	// Replace all Dify variable references with {{Query}}
 	re := regexp.MustCompile(`\{\{#[^}]*#\}\}`)
 	return re.ReplaceAllString(instructions, "{{Query}}")

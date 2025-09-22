@@ -107,7 +107,7 @@ func (p *StartNodeParser) generateOutputDescription(cozeOutput CozeOutput) strin
 	if cozeOutput.Name == "AGENT_USER_INPUT" {
 		return "User input content"
 	}
-	
+
 	// Generate appropriate description based on type
 	switch cozeOutput.Type {
 	case "string":

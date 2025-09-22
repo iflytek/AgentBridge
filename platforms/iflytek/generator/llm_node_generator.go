@@ -136,7 +136,7 @@ func (g *LLMNodeGenerator) generateNodeParam(config models.LLMConfig) map[string
 		"rounds":    1,
 	}
 
-	// System template  
+	// System template
 	if config.Prompt.SystemTemplate != "" {
 		nodeParam["systemTemplate"] = g.convertTemplateFormat(config.Prompt.SystemTemplate)
 	} else {

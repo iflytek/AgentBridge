@@ -1,8 +1,8 @@
 package parser
 
 import (
-	"fmt"
 	"ai-agents-transformer/internal/models"
+	"fmt"
 )
 
 // iFlytek node type constants
@@ -112,7 +112,7 @@ func (f *ParserFactory) ParseNodeWithFallback(iflytekNode IFlytekNode, variableR
 	if !supported {
 		return nil, false, nil // Node type not supported, return flag
 	}
-	
+
 	node, err := parser.ParseNode(iflytekNode)
 	return node, true, err
 }

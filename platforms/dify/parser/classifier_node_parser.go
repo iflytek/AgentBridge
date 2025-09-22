@@ -1,8 +1,8 @@
 package parser
 
 import (
-	"fmt"
 	"ai-agents-transformer/internal/models"
+	"fmt"
 )
 
 // ClassifierNodeParser parses Dify classifier nodes.
@@ -74,7 +74,7 @@ func (p *ClassifierNodeParser) parseClassifierConfig(data DifyNodeData) (models.
 		if difyClass.Name == "其他分类" {
 			continue
 		}
-		
+
 		class := models.ClassifierClass{
 			ID:   difyClass.ID,
 			Name: difyClass.Name,
@@ -141,5 +141,3 @@ func (p *ClassifierNodeParser) parseInputs(data DifyNodeData) ([]models.Input, e
 
 	return inputs, nil
 }
-
-

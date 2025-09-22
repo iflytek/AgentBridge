@@ -1,9 +1,9 @@
 package generator
 
 import (
-	"fmt"
 	"ai-agents-transformer/internal/models"
 	"ai-agents-transformer/platforms/common"
+	"fmt"
 )
 
 // EndNodeGenerator handles end node generation

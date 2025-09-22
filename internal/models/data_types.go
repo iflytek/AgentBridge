@@ -11,18 +11,18 @@ import (
 type UnifiedDataType string
 
 const (
-	DataTypeString         UnifiedDataType = "string"         // Text or string data
-	DataTypeInteger        UnifiedDataType = "integer"        // Integer numeric values
-	DataTypeFloat          UnifiedDataType = "float"          // Floating-point numeric values
-	DataTypeNumber         UnifiedDataType = "number"         // Generic numeric values (backward compatibility)
-	DataTypeBoolean        UnifiedDataType = "boolean"        // Boolean true/false values
-	DataTypeArrayString    UnifiedDataType = "array[string]"  // Array of strings
-	DataTypeArrayInteger   UnifiedDataType = "array[integer]" // Array of integers
-	DataTypeArrayFloat     UnifiedDataType = "array[float]"   // Array of floats
-	DataTypeArrayNumber    UnifiedDataType = "array[number]"  // Array of numbers (backward compatibility)
-	DataTypeArrayBoolean   UnifiedDataType = "array[boolean]" // Array of booleans
-	DataTypeArrayObject    UnifiedDataType = "array[object]"  // Array of objects
-	DataTypeObject         UnifiedDataType = "object"         // Complex object/map structure
+	DataTypeString       UnifiedDataType = "string"         // Text or string data
+	DataTypeInteger      UnifiedDataType = "integer"        // Integer numeric values
+	DataTypeFloat        UnifiedDataType = "float"          // Floating-point numeric values
+	DataTypeNumber       UnifiedDataType = "number"         // Generic numeric values (backward compatibility)
+	DataTypeBoolean      UnifiedDataType = "boolean"        // Boolean true/false values
+	DataTypeArrayString  UnifiedDataType = "array[string]"  // Array of strings
+	DataTypeArrayInteger UnifiedDataType = "array[integer]" // Array of integers
+	DataTypeArrayFloat   UnifiedDataType = "array[float]"   // Array of floats
+	DataTypeArrayNumber  UnifiedDataType = "array[number]"  // Array of numbers (backward compatibility)
+	DataTypeArrayBoolean UnifiedDataType = "array[boolean]" // Array of booleans
+	DataTypeArrayObject  UnifiedDataType = "array[object]"  // Array of objects
+	DataTypeObject       UnifiedDataType = "object"         // Complex object/map structure
 )
 
 // DataTypeMapping defines cross-platform type mapping and alias resolution.
@@ -44,47 +44,47 @@ func GetDefaultDataTypeMapping() *DataTypeMapping {
 			DataTypeArrayString, DataTypeArrayInteger, DataTypeArrayFloat, DataTypeArrayNumber, DataTypeArrayBoolean, DataTypeArrayObject, DataTypeObject,
 		},
 		IFlytekMapping: map[UnifiedDataType]string{
-			DataTypeString:         "string",
-			DataTypeInteger:        "integer",         // iFlytek integer maps to unified integer
-			DataTypeFloat:          "number",          // iFlytek number maps to unified float
-			DataTypeNumber:         "integer",         // Backward compatibility: generic number -> integer
-			DataTypeBoolean:        "boolean",
-			DataTypeArrayString:    "array-string",
-			DataTypeArrayInteger:   "array-integer",   // iFlytek supports integer arrays
-			DataTypeArrayFloat:     "array-number",    // iFlytek uses number for float arrays
-			DataTypeArrayNumber:    "array-number",    // Backward compatibility
-			DataTypeArrayBoolean:   "array-boolean",   // iFlytek supports boolean arrays
-			DataTypeArrayObject:    "array-object",
-			DataTypeObject:         "object",
+			DataTypeString:       "string",
+			DataTypeInteger:      "integer", // iFlytek integer maps to unified integer
+			DataTypeFloat:        "number",  // iFlytek number maps to unified float
+			DataTypeNumber:       "integer", // Backward compatibility: generic number -> integer
+			DataTypeBoolean:      "boolean",
+			DataTypeArrayString:  "array-string",
+			DataTypeArrayInteger: "array-integer", // iFlytek supports integer arrays
+			DataTypeArrayFloat:   "array-number",  // iFlytek uses number for float arrays
+			DataTypeArrayNumber:  "array-number",  // Backward compatibility
+			DataTypeArrayBoolean: "array-boolean", // iFlytek supports boolean arrays
+			DataTypeArrayObject:  "array-object",
+			DataTypeObject:       "object",
 		},
 		DifyMapping: map[UnifiedDataType]string{
-			DataTypeString:         "string",
-			DataTypeInteger:        "number",          // Dify uses number for both integer and float
-			DataTypeFloat:          "number",          // Dify uses number for both integer and float  
-			DataTypeNumber:         "number",          // Backward compatibility
-			DataTypeBoolean:        "boolean",
-			DataTypeArrayString:    "array[string]",
-			DataTypeArrayInteger:   "array[number]",   // Dify uses number for integers in arrays
-			DataTypeArrayFloat:     "array[number]",   // Dify uses number for floats in arrays
-			DataTypeArrayNumber:    "array[number]",   // Backward compatibility
-			DataTypeArrayBoolean:   "array[boolean]",  // Dify supports boolean arrays
-			DataTypeArrayObject:    "array[object]",
-			DataTypeObject:         "object",
+			DataTypeString:       "string",
+			DataTypeInteger:      "number", // Dify uses number for both integer and float
+			DataTypeFloat:        "number", // Dify uses number for both integer and float
+			DataTypeNumber:       "number", // Backward compatibility
+			DataTypeBoolean:      "boolean",
+			DataTypeArrayString:  "array[string]",
+			DataTypeArrayInteger: "array[number]",  // Dify uses number for integers in arrays
+			DataTypeArrayFloat:   "array[number]",  // Dify uses number for floats in arrays
+			DataTypeArrayNumber:  "array[number]",  // Backward compatibility
+			DataTypeArrayBoolean: "array[boolean]", // Dify supports boolean arrays
+			DataTypeArrayObject:  "array[object]",
+			DataTypeObject:       "object",
 		},
 		// Coze platform type mapping
 		CozeMapping: map[UnifiedDataType]string{
-			DataTypeString:         "string",
-			DataTypeInteger:        "integer",         // Coze supports precise integer type
-			DataTypeFloat:          "float",           // Coze supports precise float type
-			DataTypeNumber:         "float",           // Backward compatibility: generic number -> float
-			DataTypeBoolean:        "boolean",
-			DataTypeArrayString:    "array[string]",
-			DataTypeArrayInteger:   "array[integer]",  // Coze supports precise integer arrays
-			DataTypeArrayFloat:     "array[float]",    // Coze supports precise float arrays
-			DataTypeArrayNumber:    "array[number]",   // Backward compatibility for generic number arrays
-			DataTypeArrayBoolean:   "array[boolean]",  // Coze supports boolean arrays
-			DataTypeArrayObject:    "array[object]",
-			DataTypeObject:         "object",
+			DataTypeString:       "string",
+			DataTypeInteger:      "integer", // Coze supports precise integer type
+			DataTypeFloat:        "float",   // Coze supports precise float type
+			DataTypeNumber:       "float",   // Backward compatibility: generic number -> float
+			DataTypeBoolean:      "boolean",
+			DataTypeArrayString:  "array[string]",
+			DataTypeArrayInteger: "array[integer]", // Coze supports precise integer arrays
+			DataTypeArrayFloat:   "array[float]",   // Coze supports precise float arrays
+			DataTypeArrayNumber:  "array[number]",  // Backward compatibility for generic number arrays
+			DataTypeArrayBoolean: "array[boolean]", // Coze supports boolean arrays
+			DataTypeArrayObject:  "array[object]",
+			DataTypeObject:       "object",
 		},
 		// iFlytek platform type aliases for backward compatibility
 		IFlytekAliases: map[string]string{
@@ -137,7 +137,7 @@ func (dtm *DataTypeMapping) FromIFlytekType(iflytekType string) UnifiedDataType 
 	case "boolean":
 		return DataTypeBoolean
 	}
-	
+
 	// Check for alias mappings for other type names
 	if canonical, exists := dtm.IFlytekAliases[iflytekType]; exists {
 		// Recursively resolve aliases
@@ -364,19 +364,19 @@ func convertToObject(value interface{}) (map[string]interface{}, error) {
 
 // Utility functions for type checking
 
-func IsNumericType(dataType UnifiedDataType) bool { 
+func IsNumericType(dataType UnifiedDataType) bool {
 	return dataType == DataTypeNumber || dataType == DataTypeInteger || dataType == DataTypeFloat
 }
-func IsStringType(dataType UnifiedDataType) bool  { return dataType == DataTypeString }
+func IsStringType(dataType UnifiedDataType) bool { return dataType == DataTypeString }
 func IsArrayType(dataType UnifiedDataType) bool {
-	return dataType == DataTypeArrayString || dataType == DataTypeArrayInteger || 
-		   dataType == DataTypeArrayFloat || dataType == DataTypeArrayNumber || 
-		   dataType == DataTypeArrayBoolean || dataType == DataTypeArrayObject
+	return dataType == DataTypeArrayString || dataType == DataTypeArrayInteger ||
+		dataType == DataTypeArrayFloat || dataType == DataTypeArrayNumber ||
+		dataType == DataTypeArrayBoolean || dataType == DataTypeArrayObject
 }
 func IsObjectType(dataType UnifiedDataType) bool { return dataType == DataTypeObject }
 func IsPrimitiveType(dataType UnifiedDataType) bool {
-	return dataType == DataTypeString || dataType == DataTypeNumber || 
-		   dataType == DataTypeInteger || dataType == DataTypeFloat || dataType == DataTypeBoolean
+	return dataType == DataTypeString || dataType == DataTypeNumber ||
+		dataType == DataTypeInteger || dataType == DataTypeFloat || dataType == DataTypeBoolean
 }
 
 // GetTypeCategory returns the general category of a data type.

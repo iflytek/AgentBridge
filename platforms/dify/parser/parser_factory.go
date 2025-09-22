@@ -1,8 +1,8 @@
 package parser
 
 import (
-	"fmt"
 	"ai-agents-transformer/internal/models"
+	"fmt"
 )
 
 // ParserFactory creates Dify node parsers.
@@ -82,7 +82,7 @@ func (f *ParserFactory) ParseNodeWithFallback(difyNode DifyNode, variableRefSyst
 	if !supported {
 		return nil, false, nil // Node type not supported, return flag
 	}
-	
+
 	node, err := parser.ParseNode(difyNode)
 	return node, true, err
 }

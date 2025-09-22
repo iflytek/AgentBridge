@@ -2,19 +2,19 @@ package parser
 
 // CozeDSL represents the root structure of Coze DSL
 type CozeDSL struct {
-	WorkflowID     string       `yaml:"workflowid" json:"workflowid"`
-	Name           string       `yaml:"name" json:"name"`
-	Description    string       `yaml:"description" json:"description"`
-	Version        string       `yaml:"version" json:"version"`
-	CreateTime     int64        `yaml:"createtime" json:"createtime"`
-	UpdateTime     int64        `yaml:"updatetime" json:"updatetime"`
-	Schema         CozeSchema   `yaml:"schema" json:"schema"`
-	Nodes          []CozeNode   `yaml:"nodes" json:"nodes"`
+	WorkflowID     string         `yaml:"workflowid" json:"workflowid"`
+	Name           string         `yaml:"name" json:"name"`
+	Description    string         `yaml:"description" json:"description"`
+	Version        string         `yaml:"version" json:"version"`
+	CreateTime     int64          `yaml:"createtime" json:"createtime"`
+	UpdateTime     int64          `yaml:"updatetime" json:"updatetime"`
+	Schema         CozeSchema     `yaml:"schema" json:"schema"`
+	Nodes          []CozeNode     `yaml:"nodes" json:"nodes"`
 	Edges          []CozeRootEdge `yaml:"edges" json:"edges"`
-	Metadata       CozeMetadata `yaml:"metadata" json:"metadata"`
-	Dependencies   []CozeDep    `yaml:"dependencies" json:"dependencies"`
-	ExportFormat   string       `yaml:"exportformat" json:"exportformat"`
-	SerializedData string       `yaml:"serializeddata" json:"serializeddata"`
+	Metadata       CozeMetadata   `yaml:"metadata" json:"metadata"`
+	Dependencies   []CozeDep      `yaml:"dependencies" json:"dependencies"`
+	ExportFormat   string         `yaml:"exportformat" json:"exportformat"`
+	SerializedData string         `yaml:"serializeddata" json:"serializeddata"`
 }
 
 // CozeSchema contains schema information
@@ -143,7 +143,7 @@ type CozeDataMeta struct {
 type CozeNodeInputs struct {
 	InputParameters    []CozeNodeInputParam `yaml:"inputParameters,omitempty" json:"inputParameters,omitempty"`
 	InputParametersAlt []CozeNodeInputParam `yaml:"inputparameters,omitempty" json:"inputparameters,omitempty"` // Alternative lowercase version
-	Branches           []interface{}        `yaml:"branches,omitempty" json:"branches,omitempty"` // For selector nodes
+	Branches           []interface{}        `yaml:"branches,omitempty" json:"branches,omitempty"`               // For selector nodes
 	SettingOnError     interface{}          `yaml:"settingonerror" json:"settingonerror"`
 	NodeBatchInfo      interface{}          `yaml:"nodebatchinfo" json:"nodebatchinfo"`
 	LLMParam           interface{}          `yaml:"llmparam" json:"llmparam"`
@@ -217,9 +217,9 @@ type CozeOutput struct {
 
 // CozeOutputSchema represents output schema information - support flexible schema formats
 type CozeOutputSchema struct {
-	Type   string                 `yaml:"type,omitempty" json:"type,omitempty"`
-	Schema interface{}            `yaml:"schema,omitempty" json:"schema,omitempty"` // Flexible schema support
-	Name   string                 `yaml:"name,omitempty" json:"name,omitempty"`
+	Type   string      `yaml:"type,omitempty" json:"type,omitempty"`
+	Schema interface{} `yaml:"schema,omitempty" json:"schema,omitempty"` // Flexible schema support
+	Name   string      `yaml:"name,omitempty" json:"name,omitempty"`
 }
 
 // CozeEdge represents connection between nodes (schema format)

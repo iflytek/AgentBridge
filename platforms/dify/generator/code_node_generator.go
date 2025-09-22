@@ -114,7 +114,6 @@ func (g *CodeNodeGenerator) generateCodeVariables(inputs []models.Input) []map[s
 	return variables
 }
 
-
 // generateDefaultCode generates default code
 func (g *CodeNodeGenerator) generateDefaultCode(node models.Node) string {
 	defaultCode := `def main(arg1: str) -> dict:

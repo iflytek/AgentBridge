@@ -54,11 +54,11 @@ func (g *DifyGenerator) Generate(unifiedDSL *models.UnifiedDSL) ([]byte, error) 
 		return nil, fmt.Errorf("failed to generate workflow framework: %w", err)
 	}
 
-    // Apply a final pass to update all node references using the complete ID mapping
-    g.finalizeNodeReferences(difyDSL, nodeIDMapping)
+	// Apply a final pass to update all node references using the complete ID mapping
+	g.finalizeNodeReferences(difyDSL, nodeIDMapping)
 
-    // Serialize to YAML
-    yamlData, err := yaml.Marshal(difyDSL)
+	// Serialize to YAML
+	yamlData, err := yaml.Marshal(difyDSL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal to YAML: %w", err)
 	}
@@ -83,23 +83,23 @@ func (g *DifyGenerator) Generate(unifiedDSL *models.UnifiedDSL) ([]byte, error) 
 // It updates iteration selectors, start node id, iteration child parent/iteration ids,
 // variable selectors in code/condition/classifier/end nodes, and template references.
 func (g *DifyGenerator) finalizeNodeReferences(difyDSL *DifyRootStructure, nodeIDMapping map[string]string) {
-    if difyDSL == nil {
-        return
-    }
+	if difyDSL == nil {
+		return
+	}
 
-    // Update nodes
-    for i := range difyDSL.Workflow.Graph.Nodes {
-        // Reuse existing updater which covers:
-        // - context.variable_selector
-        // - prompt_template references
-        // - if-else cases variable_selector
-        // - code variables value_selector
-        // - end node outputs value_selector
-        // - classifier query_variable_selector and instruction references
-        // - iteration iterator_selector/output_selector/start_node_id
-        // - iteration child node parentId / iteration_id
-        _ = g.updateVariableSelectorsWithNewIDs(&difyDSL.Workflow.Graph.Nodes[i], models.Node{}, nodeIDMapping)
-    }
+	// Update nodes
+	for i := range difyDSL.Workflow.Graph.Nodes {
+		// Reuse existing updater which covers:
+		// - context.variable_selector
+		// - prompt_template references
+		// - if-else cases variable_selector
+		// - code variables value_selector
+		// - end node outputs value_selector
+		// - classifier query_variable_selector and instruction references
+		// - iteration iterator_selector/output_selector/start_node_id
+		// - iteration child node parentId / iteration_id
+		_ = g.updateVariableSelectorsWithNewIDs(&difyDSL.Workflow.Graph.Nodes[i], models.Node{}, nodeIDMapping)
+	}
 }
 
 // Validate validates if the unified DSL meets Dify platform requirements
@@ -275,17 +275,17 @@ func (g *DifyGenerator) generateFeatures(unifiedDSL *models.UnifiedDSL) DifyFeat
 func (g *DifyGenerator) generateGraphFramework(unifiedDSL *models.UnifiedDSL) (DifyGraph, map[string]string, error) {
 	// Initialize graph context and mappings
 	graph, nodeIDMapping := g.initializeGraphContext(unifiedDSL)
-	
+
 	// Generate all nodes for the workflow
 	if err := g.generateNodesForWorkflow(unifiedDSL, &graph, nodeIDMapping); err != nil {
 		return DifyGraph{}, nil, err
 	}
-	
+
 	// Generate all edges for the workflow
 	if err := g.generateEdgesForWorkflow(unifiedDSL, &graph, nodeIDMapping); err != nil {
 		return DifyGraph{}, nil, err
 	}
-	
+
 	return graph, nodeIDMapping, nil
 }
 
@@ -295,15 +295,15 @@ func (g *DifyGenerator) initializeGraphContext(unifiedDSL *models.UnifiedDSL) (D
 		Edges: make([]DifyEdge, 0, len(unifiedDSL.Workflow.Edges)),
 		Nodes: make([]DifyNode, 0, len(unifiedDSL.Workflow.Nodes)),
 	}
-	
+
 	nodeIDMapping := make(map[string]string)
-	
+
 	// Set node mapping for variable selector converter
 	g.variableSelectorConverter.SetNodeMapping(unifiedDSL.Workflow.Nodes)
-	
+
 	// Set node mapping for node generator factory (for variable reference resolution)
 	g.nodeGeneratorFactory.SetNodeMapping(unifiedDSL.Workflow.Nodes)
-	
+
 	return graph, nodeIDMapping
 }
 
@@ -382,18 +382,18 @@ func (g *DifyGenerator) processGeneratedNodes(difyNodes []DifyNode, originalNode
 	for j, difyNode := range difyNodes {
 		simpleID := g.generateNodeID(originalNode, index, j, nodeIDMapping)
 		difyNode.ID = simpleID
-		
+
 		if err := g.updateNodeMappings(originalNode, difyNode, simpleID, j, nodeIDMapping); err != nil {
 			return err
 		}
-		
+
 		if err := g.updateVariableSelectorsWithNewIDs(&difyNode, originalNode, nodeIDMapping); err != nil {
 			return fmt.Errorf("failed to update variable selectors for node %s: %w", originalNode.ID, err)
 		}
-		
+
 		g.setDefaultPositionIfNeeded(&difyNode, index)
 		g.updateIterationStartNode(&difyNode, originalNode, graph)
-		
+
 		graph.Nodes = append(graph.Nodes, difyNode)
 	}
 	return nil
@@ -407,7 +407,7 @@ func (g *DifyGenerator) generateNodeID(originalNode models.Node, index, nodeInde
 		nodeIDMapping[originalNode.ID] = simpleID
 		return simpleID
 	}
-	
+
 	// Child nodes use special ID logic
 	if originalNode.Type == models.NodeTypeIteration {
 		mainNodeID := nodeIDMapping[originalNode.ID]
@@ -419,7 +419,7 @@ func (g *DifyGenerator) generateNodeID(originalNode models.Node, index, nodeInde
 			return common.GenerateSimpleNodeID(originalNode, index*1000+nodeIndex)
 		}
 	}
-	
+
 	return common.GenerateSimpleNodeID(originalNode, index*1000+nodeIndex)
 }
 
@@ -430,12 +430,12 @@ func (g *DifyGenerator) updateNodeMappings(originalNode models.Node, difyNode Di
 			g.updateIterationNodeMappings(iterConfig, difyNode, simpleID, nodeIndex, nodeIDMapping)
 		}
 	}
-	
+
 	// If child node has original ID, also add to mapping
 	if difyNode.ID != "" {
 		nodeIDMapping[difyNode.ID] = simpleID
 	}
-	
+
 	return nil
 }
 
@@ -449,7 +449,7 @@ func (g *DifyGenerator) updateIterationNodeMappings(iterConfig *models.Iteration
 		// Calculate index in internal processing nodes
 		internalNodeIndex := 0
 		targetIndex := nodeIndex - 2
-		
+
 		for _, subNode := range iterConfig.SubWorkflow.Nodes {
 			if subNode.Type != models.NodeTypeStart && subNode.Type != models.NodeTypeEnd {
 				if internalNodeIndex == targetIndex {
@@ -489,19 +489,19 @@ func (g *DifyGenerator) updateIterationStartNode(difyNode *DifyNode, originalNod
 func (g *DifyGenerator) generateEdgesForWorkflow(unifiedDSL *models.UnifiedDSL, graph *DifyGraph, nodeIDMapping map[string]string) error {
 	// Collect iteration internal node IDs for filtering
 	iterationInternalNodeIDs := common.CollectIterationInternalNodeIDs(unifiedDSL.Workflow.Nodes)
-	
+
 	// Collect all edges and nodes from main workflow and iterations
 	allEdges, allNodes := common.CollectAllEdgesAndNodes(unifiedDSL, iterationInternalNodeIDs)
-	
+
 	// Set node mapping for iteration sub-workflow nodes
 	g.setSubWorkflowNodeMappings(unifiedDSL.Workflow.Nodes)
-	
+
 	// Use connection generator to generate connections
 	difyEdges, err := g.edgeGenerator.GenerateEdgesWithIDMapping(allEdges, allNodes, nodeIDMapping)
 	if err != nil {
 		return fmt.Errorf("failed to generate edges: %w", err)
 	}
-	
+
 	graph.Edges = difyEdges
 	return nil
 }
@@ -516,7 +516,6 @@ func (g *DifyGenerator) setSubWorkflowNodeMappings(nodes []models.Node) {
 		}
 	}
 }
-
 
 // updateVariableSelectorsWithNewIDs updates node IDs in variable selectors
 func (g *DifyGenerator) updateVariableSelectorsWithNewIDs(difyNode *DifyNode, originalNode models.Node, nodeIDMapping map[string]string) error {
@@ -537,12 +536,12 @@ func (g *DifyGenerator) updateContextVariableSelector(difyNode *DifyNode, nodeID
 	if difyNode.Data.Context == nil {
 		return
 	}
-	
+
 	variableSelector, exists := difyNode.Data.Context["variable_selector"].([]string)
 	if !exists || len(variableSelector) < 2 {
 		return
 	}
-	
+
 	oldNodeID := variableSelector[0]
 	if newNodeID, found := nodeIDMapping[oldNodeID]; found {
 		difyNode.Data.Context["variable_selector"] = []string{newNodeID, variableSelector[1]}
@@ -554,13 +553,13 @@ func (g *DifyGenerator) updatePromptTemplateReferences(difyNode *DifyNode, nodeI
 	if difyNode.Data.PromptTemplate == nil {
 		return
 	}
-	
+
 	for _, template := range difyNode.Data.PromptTemplate {
 		text, exists := template["text"].(string)
 		if !exists {
 			continue
 		}
-		
+
 		updatedText := g.replaceTemplateNodeReferences(text, nodeIDMapping)
 		template["text"] = updatedText
 	}
@@ -576,13 +575,13 @@ func (g *DifyGenerator) updateCaseConditionSelectors(difyNode *DifyNode, nodeIDM
 	if difyNode.Data.Cases == nil {
 		return
 	}
-	
+
 	for _, caseItem := range difyNode.Data.Cases {
 		conditions, exists := caseItem["conditions"].([]map[string]interface{})
 		if !exists {
 			continue
 		}
-		
+
 		for _, condition := range conditions {
 			g.updateConditionVariableSelector(condition, nodeIDMapping)
 		}
@@ -595,7 +594,7 @@ func (g *DifyGenerator) updateConditionVariableSelector(condition map[string]int
 	if !exists {
 		return
 	}
-	
+
 	updatedSelector := common.UpdateVariableSelector(variableSelector, nodeIDMapping)
 	condition["variable_selector"] = updatedSelector
 }
@@ -606,7 +605,7 @@ func (g *DifyGenerator) updateCodeVariableSelectors(difyNode *DifyNode, nodeIDMa
 	if !ok {
 		return
 	}
-	
+
 	for _, variable := range variables {
 		g.updateVariableValueSelector(variable, nodeIDMapping)
 	}
@@ -618,7 +617,7 @@ func (g *DifyGenerator) updateVariableValueSelector(variable map[string]interfac
 	if !exists {
 		return
 	}
-	
+
 	updatedSelector := common.UpdateVariableSelector(valueSelector, nodeIDMapping)
 	variable["value_selector"] = updatedSelector
 }
@@ -650,13 +649,13 @@ func (g *DifyGenerator) updateClassifierQuerySelector(difyNode *DifyNode, nodeID
 	if len(difyNode.Data.QueryVariableSelector) < 2 {
 		return
 	}
-	
+
 	oldNodeID := difyNode.Data.QueryVariableSelector[0]
 	newNodeID, found := nodeIDMapping[oldNodeID]
 	if !found {
 		return
 	}
-	
+
 	difyNode.Data.QueryVariableSelector[0] = newNodeID
 	g.updateInstructionNodeReferences(difyNode, oldNodeID, newNodeID)
 }
@@ -666,7 +665,7 @@ func (g *DifyGenerator) updateInstructionNodeReferences(difyNode *DifyNode, oldN
 	if difyNode.Data.Instruction == "" {
 		return
 	}
-	
+
 	oldPattern := fmt.Sprintf("{{#%s.", oldNodeID)
 	newPattern := fmt.Sprintf("{{#%s.", newNodeID)
 	difyNode.Data.Instruction = strings.ReplaceAll(difyNode.Data.Instruction, oldPattern, newPattern)
@@ -794,7 +793,7 @@ func (g *DifyGenerator) ensureClassifierRequiredFields(yamlString string) string
 
 	yamlString = g.ensureInstructionsField(yamlString)
 	yamlString = g.ensureTopicsField(yamlString)
-	
+
 	return yamlString
 }
 
@@ -826,13 +825,13 @@ func (g *DifyGenerator) ensureTopicsField(yamlString string) string {
 // addTopicsFieldToClassifier adds topics field after query_variable_selector
 func (g *DifyGenerator) addTopicsFieldToClassifier(yamlString string) string {
 	lines := strings.Split(yamlString, "\n")
-	
+
 	for i, line := range lines {
 		if g.isQueryVariableSelectorLine(line, lines, i) {
 			return g.insertTopicsField(lines, i)
 		}
 	}
-	
+
 	return yamlString
 }
 

@@ -1,8 +1,8 @@
 package parser
 
 import (
-	"fmt"
 	"ai-agents-transformer/internal/models"
+	"fmt"
 )
 
 // ConditionNodeParser parses Dify conditional branch nodes.
@@ -152,22 +152,22 @@ func (p *ConditionNodeParser) getOperatorMapping(operator string) string {
 // getOperatorMappingTable returns the operator mapping table
 func (p *ConditionNodeParser) getOperatorMappingTable() map[string]string {
 	return map[string]string{
-		"contains":                    "contains",
-		"not contains":               "not_contains",
-		"start with":                 "starts_with",
-		"end with":                   "ends_with",
-		"is":                         "equals",
-		"is not":                     "not_equals",
-		"empty":                      "is_empty",
-		"not empty":                  "is_not_empty",
-		"greater than":               "gt",
-		"gt":                         "gt",
-		"greater than or equal":      "gte",
-		"gte":                        "gte",
-		"less than":                  "lt",
-		"lt":                         "lt",
-		"less than or equal":         "lte",
-		"lte":                        "lte",
+		"contains":              "contains",
+		"not contains":          "not_contains",
+		"start with":            "starts_with",
+		"end with":              "ends_with",
+		"is":                    "equals",
+		"is not":                "not_equals",
+		"empty":                 "is_empty",
+		"not empty":             "is_not_empty",
+		"greater than":          "gt",
+		"gt":                    "gt",
+		"greater than or equal": "gte",
+		"gte":                   "gte",
+		"less than":             "lt",
+		"lt":                    "lt",
+		"less than or equal":    "lte",
+		"lte":                   "lte",
 	}
 }
 

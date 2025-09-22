@@ -50,7 +50,7 @@ func (g *IterationNodeGenerator) GenerateNode(node models.Node) (DifyNode, error
 // SetNodeMapping sets node mapping for variable selector converter and internal nodeMapping
 func (g *IterationNodeGenerator) SetNodeMapping(nodes []models.Node) {
 	g.variableSelectorConverter.SetNodeMapping(nodes)
-	
+
 	// Build internal node mapping for field name resolution
 	if g.nodeMapping == nil {
 		g.nodeMapping = make(map[string]models.Node)
@@ -179,7 +179,6 @@ func (g *IterationNodeGenerator) setFallbackOutputSelector(mainNode *DifyNode, i
 
 }
 
-
 // generateIterationStartNode generates iteration start node
 func (g *IterationNodeGenerator) generateIterationStartNode(parentNode models.Node, parentID string) DifyNode {
 	startNodeID := fmt.Sprintf("%sstart", parentID)
@@ -229,12 +228,12 @@ func (g *IterationNodeGenerator) generateInternalNode(subNode models.Node, paren
 // createBaseInternalNode creates the base internal node using factory
 func (g *IterationNodeGenerator) createBaseInternalNode(subNode models.Node, parentID string, subWorkflowNodes []models.Node) (DifyNode, error) {
 	factory := g.configureNodeFactory(parentID, subWorkflowNodes)
-	
+
 	baseNode, err := factory.GenerateNode(subNode)
 	if err != nil {
 		return DifyNode{}, fmt.Errorf("failed to generate base internal node: %w", err)
 	}
-	
+
 	return baseNode, nil
 }
 
@@ -242,14 +241,14 @@ func (g *IterationNodeGenerator) createBaseInternalNode(subNode models.Node, par
 func (g *IterationNodeGenerator) configureNodeFactory(parentID string, subWorkflowNodes []models.Node) *NodeGeneratorFactory {
 	factory := NewNodeGeneratorFactory()
 	factory.SetNodeMapping(subWorkflowNodes)
-	
+
 	// Set iteration context for condition nodes
 	if condGen, err := factory.GetGenerator(models.NodeTypeCondition); err == nil {
 		if conditionGen, ok := condGen.(*ConditionNodeGenerator); ok {
 			conditionGen.variableSelectorConverter.SetIterationContext(parentID)
 		}
 	}
-	
+
 	return factory
 }
 
@@ -276,7 +275,7 @@ func (g *IterationNodeGenerator) setInternalNodeLayout(baseNode *DifyNode) {
 // getNodeLayoutConfig returns position and dimensions for different node types
 func (g *IterationNodeGenerator) getNodeLayoutConfig(nodeType string) (DifyPosition, struct{ Width, Height int }) {
 	baseX, baseY := 204.0, 60.0
-	
+
 	switch nodeType {
 	case "question-classifier":
 		return DifyPosition{X: baseX, Y: baseY}, struct{ Width, Height int }{148, 44}
@@ -428,7 +427,7 @@ func (g *IterationNodeGenerator) configureLLMNodeVariables(difyNode *DifyNode, v
 	// LLM nodes in Dify should NOT have variables configuration
 	// Variables are referenced through prompt template only, not through variables field
 	difyNode.Data.Variables = []interface{}{} // Always empty for LLM nodes
-	
+
 	// LLM nodes should have disabled context with empty variable_selector
 	g.setCorrectLLMContext(difyNode)
 }
@@ -439,14 +438,10 @@ func (g *IterationNodeGenerator) setCorrectLLMContext(difyNode *DifyNode) {
 	if difyNode.Data.Context == nil {
 		difyNode.Data.Context = make(map[string]interface{})
 	}
-	
+
 	difyNode.Data.Context["enabled"] = false
 	difyNode.Data.Context["variable_selector"] = []interface{}{}
 }
-
-
-
-
 
 // fixLLMPromptTemplateReferences fixes variable references in prompt template
 func (g *IterationNodeGenerator) fixLLMPromptTemplateReferences(difyNode *DifyNode, parentID string) {
@@ -535,19 +530,19 @@ func (g *IterationNodeGenerator) processConditionInputVariables(difyNode *DifyNo
 // buildConditionVariables builds variables array from input definitions
 func (g *IterationNodeGenerator) buildConditionVariables(originalNode models.Node, parentID string) []map[string]interface{} {
 	var variables []map[string]interface{}
-	
+
 	for _, input := range originalNode.Inputs {
 		variable := g.createConditionVariable(input, parentID)
 		variables = append(variables, variable)
 	}
-	
+
 	return variables
 }
 
 // createConditionVariable creates a single condition variable
 func (g *IterationNodeGenerator) createConditionVariable(input models.Input, parentID string) map[string]interface{} {
 	valueSelector, valueType := g.resolveConditionVariableReference(input, parentID)
-	
+
 	return map[string]interface{}{
 		"value_selector": valueSelector,
 		"value_type":     valueType,
@@ -561,7 +556,7 @@ func (g *IterationNodeGenerator) resolveConditionVariableReference(input models.
 		actualNodeID, outputFieldName := g.inferNodeIDAndOutputFieldName(input.Reference.NodeID, input.Reference.OutputName, parentID)
 		return []string{actualNodeID, outputFieldName}, g.mapToValueType(string(input.Type))
 	}
-	
+
 	// Default to referencing iterator's item
 	return []string{parentID, "item"}, "string"
 }
@@ -571,7 +566,7 @@ func (g *IterationNodeGenerator) fixConditionCaseReferences(difyNode *DifyNode, 
 	if len(difyNode.Data.Cases) == 0 {
 		return
 	}
-	
+
 	for _, caseMap := range difyNode.Data.Cases {
 		g.fixCaseConditions(caseMap, parentID)
 	}
@@ -583,7 +578,7 @@ func (g *IterationNodeGenerator) fixCaseConditions(caseMap map[string]interface{
 	if !ok {
 		return
 	}
-	
+
 	for _, condition := range conditions {
 		g.fixConditionVariableSelector(condition, parentID)
 	}
@@ -595,13 +590,13 @@ func (g *IterationNodeGenerator) fixConditionVariableSelector(condition map[stri
 	if !ok || len(variableSelector) < 2 {
 		return
 	}
-	
+
 	nodeID, nodeOk := variableSelector[0].(string)
 	field, fieldOk := variableSelector[1].(string)
 	if !nodeOk || !fieldOk {
 		return
 	}
-	
+
 	actualNodeID, outputFieldName := g.inferNodeIDAndOutputFieldName(nodeID, field, parentID)
 	variableSelector[0] = actualNodeID
 	variableSelector[1] = outputFieldName
@@ -691,7 +686,7 @@ func (g *IterationNodeGenerator) processIterationConfig(data *DifyNodeData, node
 	if !ok {
 		return
 	}
-	
+
 	g.setIterationInputType(data, iterConfig)
 	g.setIterationExecutionConfig(data)
 	g.setIterationSelector(data, iterConfig)
@@ -702,7 +697,7 @@ func (g *IterationNodeGenerator) setIterationInputType(data *DifyNodeData, iterC
 	if iterConfig.Iterator.InputType == "" {
 		return
 	}
-	
+
 	switch iterConfig.Iterator.InputType {
 	case "array", "array[string]":
 		data.IteratorInputType = "array[string]"
@@ -733,18 +728,18 @@ func (g *IterationNodeGenerator) inferIterationFromInputs(data *DifyNodeData, no
 	if len(node.Inputs) == 0 || len(data.IteratorSelector) > 0 {
 		return
 	}
-	
+
 	firstInput := node.Inputs[0]
 	if firstInput.Reference == nil || firstInput.Reference.NodeID == "" {
 		return
 	}
-	
+
 	sourceOutput := firstInput.Reference.OutputName
 	if sourceOutput == "" {
 		sourceOutput = firstInput.Name
 	}
 	data.IteratorSelector = []string{firstInput.Reference.NodeID, sourceOutput}
-	
+
 	mapping := models.GetDefaultDataTypeMapping()
 	data.IteratorInputType = mapping.ToDifyType(firstInput.Type)
 }
@@ -754,7 +749,7 @@ func (g *IterationNodeGenerator) inferIterationFromOutputs(data *DifyNodeData, n
 	if len(node.Outputs) == 0 {
 		return
 	}
-	
+
 	firstOutput := node.Outputs[0]
 	mapping := models.GetDefaultDataTypeMapping()
 	data.OutputType = mapping.ToDifyType(firstOutput.Type)
@@ -767,14 +762,14 @@ func (g *IterationNodeGenerator) setIterationStartNodeID(data *DifyNodeData, nod
 		data.StartNodeID = iterConfig.SubWorkflow.StartNodeID
 		return
 	}
-	
+
 	data.StartNodeID = node.ID + "start"
 }
 
 // restoreDifyPlatformConfig restores Dify platform-specific configuration
 func (g *IterationNodeGenerator) restoreDifyPlatformConfig(config map[string]interface{}, node *DifyNode) {
 	g.ensureIterationNodeConfig(node)
-	
+
 	g.restoreIterationDirectConfigs(config, node)
 	g.restoreIterationArrayConfigs(config, node)
 	g.restoreIterationNodeMetadata(config, node)
@@ -795,7 +790,7 @@ func (g *IterationNodeGenerator) restoreIterationDirectConfigs(config map[string
 		"iterator_input_type": "",
 		"output_type":         "",
 	}
-	
+
 	for key := range directConfigs {
 		if value, exists := config[key]; exists {
 			node.Data.Config[key] = value
@@ -1101,11 +1096,11 @@ func (g *IterationNodeGenerator) mapToValueType(unifiedType string) string {
 	switch unifiedType {
 	case "string":
 		return "string"
-	case "integer":       // Support integer type
+	case "integer": // Support integer type
 		return "number"
-	case "float":         // Support float type  
+	case "float": // Support float type
 		return "number"
-	case "number":        // Maintain backward compatibility
+	case "number": // Maintain backward compatibility
 		return "number"
 	case "boolean":
 		return "boolean"
@@ -1209,12 +1204,12 @@ func (g *IterationNodeGenerator) mapToDifyFieldName(originalFieldName, nodeID st
 			return originalFieldName
 		}
 	}
-	
+
 	// If node mapping fails, try to infer from node ID patterns
 	if strings.Contains(nodeID, "llm") || strings.Contains(nodeID, "spark-llm") {
 		return "text"
 	}
-	
+
 	// Default: return original field name
 	return originalFieldName
 }
@@ -1312,13 +1307,13 @@ func (g *IterationNodeGenerator) fixIterationVariableReferences(text string, par
 
 	inputRe := regexp.MustCompile(`\{\{#\d+\.input#\}\}`)
 	text = inputRe.ReplaceAllString(text, "{{#"+parentID+".item#}}")
-	
+
 	stepsRe := regexp.MustCompile(`\{\{#\d+\.steps#\}\}`)
 	text = stepsRe.ReplaceAllString(text, "{{#"+parentID+".item#}}")
 
 	startInputPattern := regexp.MustCompile(`\{\{#` + regexp.QuoteMeta(parentID) + `start\.input#\}\}`)
 	text = startInputPattern.ReplaceAllString(text, "{{#"+parentID+".item#}}")
-	
+
 	startStepsPattern := regexp.MustCompile(`\{\{#` + regexp.QuoteMeta(parentID) + `start\.steps#\}\}`)
 	text = startStepsPattern.ReplaceAllString(text, "{{#"+parentID+".item#}}")
 
@@ -1333,7 +1328,7 @@ func (g *IterationNodeGenerator) fixIterationVariableReferences(text string, par
 		}
 		return match
 	})
-	
+
 	anyStartStepsPattern := regexp.MustCompile(`\{\{#(\d+)start\.steps#\}\}`)
 	text = anyStartStepsPattern.ReplaceAllStringFunc(text, func(match string) string {
 		// Extract iteration ID (remove start suffix)
@@ -1348,19 +1343,19 @@ func (g *IterationNodeGenerator) fixIterationVariableReferences(text string, par
 	// For example: {{#iteration-node-start::uuid.input#}} -> {{#parentID.item#}}
 	uuidStartInputPattern := regexp.MustCompile(`\{\{#iteration-node-start::[^#]*\.input#\}\}`)
 	text = uuidStartInputPattern.ReplaceAllString(text, "{{#"+parentID+".item#}}")
-	
+
 	uuidStartStepsPattern := regexp.MustCompile(`\{\{#iteration-node-start::[^#]*\.steps#\}\}`)
 	text = uuidStartStepsPattern.ReplaceAllString(text, "{{#"+parentID+".item#}}")
 
 	genericStartInputPattern := regexp.MustCompile(`\{\{#[^}]*start[^}]*\.input#\}\}`)
 	text = genericStartInputPattern.ReplaceAllString(text, "{{#"+parentID+".item#}}")
-	
+
 	genericStartStepsPattern := regexp.MustCompile(`\{\{#[^}]*start[^}]*\.steps#\}\}`)
 	text = genericStartStepsPattern.ReplaceAllString(text, "{{#"+parentID+".item#}}")
 
 	inputPattern := regexp.MustCompile(`\{\{#[^}]*\.input#\}\}`)
 	text = inputPattern.ReplaceAllString(text, "{{#"+parentID+".item#}}")
-	
+
 	stepsPattern := regexp.MustCompile(`\{\{#[^}]*\.steps#\}\}`)
 	text = stepsPattern.ReplaceAllString(text, "{{#"+parentID+".item#}}")
 
@@ -1369,13 +1364,13 @@ func (g *IterationNodeGenerator) fixIterationVariableReferences(text string, par
 		// Extract the variable name from malformed pattern like {{class_name" or {{variableName"
 		varName := strings.TrimPrefix(match, "{{")
 		varName = strings.TrimSuffix(varName, "\"")
-		
+
 		// For specific known cases like class_name, we can try to be more intelligent
 		if varName == "class_name" {
-			// This should reference a classifier node's output, but without context 
+			// This should reference a classifier node's output, but without context
 			return "{{#" + parentID + ".item#}}"
 		}
-		
+
 		// Default fallback for other malformed patterns
 		return "{{#" + parentID + ".item#}}"
 	})

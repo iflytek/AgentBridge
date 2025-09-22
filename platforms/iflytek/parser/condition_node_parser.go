@@ -306,14 +306,14 @@ func (p *ConditionNodeParser) getVariableTypeByID(varID string, nodeData map[str
 	if len(variableSelector) >= 2 {
 		sourceNodeID := variableSelector[0]
 		outputName := variableSelector[1]
-		
+
 		// Try to get the type from the already parsed nodes in the current parsing context
 		// This is more direct than using the variable reference system
 		if outputType := p.getOutputTypeFromContext(sourceNodeID, outputName); outputType != models.DataTypeString {
 			return outputType
 		}
 	}
-	
+
 	// Fallback: Get input variable configuration from node's original data
 	if inputs, ok := nodeData["inputs"].([]interface{}); ok {
 		for _, inputInterface := range inputs {
@@ -342,7 +342,7 @@ func (p *ConditionNodeParser) getOutputTypeFromContext(sourceNodeID, outputName 
 	if p.typeProvider != nil {
 		return p.typeProvider.GetOutputType(sourceNodeID, outputName)
 	}
-	
+
 	// Returns string as safe default when TypeProvider is unavailable
 	return models.DataTypeString
 }
@@ -361,27 +361,27 @@ func (p *ConditionNodeParser) mapComparisonOperator(operator string) string {
 // getOperatorMappingTable returns the operator mapping table
 func (p *ConditionNodeParser) getOperatorMappingTable() map[string]string {
 	return map[string]string{
-		"contains":         "contains",
-		"not_contains":     "not_contains",
-		"equals":           "equals",
-		"==":               "equals",
-		"not_equals":       "not_equals",
-		"!=":               "not_equals",
-		"start_with":       "start_with",
-		"starts_with":      "start_with",
-		"end_with":         "end_with",
-		"ends_with":        "end_with",
-		"empty":            "is_empty",
-		"is_empty":         "is_empty",
-		"not_empty":        "is_not_empty",
-		"is_not_empty":     "is_not_empty",
-		"greater_than":     "greater_than",
-		">":                "greater_than",
-		"less_than":        "less_than",
-		"<":                "less_than",
-		"greater_equal":    "greater_equal",
-		">=":               "greater_equal",
-		"less_equal":       "less_equal",
-		"<=":               "less_equal",
+		"contains":      "contains",
+		"not_contains":  "not_contains",
+		"equals":        "equals",
+		"==":            "equals",
+		"not_equals":    "not_equals",
+		"!=":            "not_equals",
+		"start_with":    "start_with",
+		"starts_with":   "start_with",
+		"end_with":      "end_with",
+		"ends_with":     "end_with",
+		"empty":         "is_empty",
+		"is_empty":      "is_empty",
+		"not_empty":     "is_not_empty",
+		"is_not_empty":  "is_not_empty",
+		"greater_than":  "greater_than",
+		">":             "greater_than",
+		"less_than":     "less_than",
+		"<":             "less_than",
+		"greater_equal": "greater_equal",
+		">=":            "greater_equal",
+		"less_equal":    "less_equal",
+		"<=":            "less_equal",
 	}
 }

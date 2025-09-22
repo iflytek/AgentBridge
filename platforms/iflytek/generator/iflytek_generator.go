@@ -18,7 +18,7 @@ const (
 	ProviderEmpty = ""
 )
 
-// Classifier mapping constants  
+// Classifier mapping constants
 const (
 	DefaultSourceHandle = "default"
 	DefaultIntentKey    = "__default__"
@@ -36,10 +36,10 @@ type BranchMapping struct {
 
 // ClassifierMapping contains classifier mapping information
 type ClassifierMapping struct {
-	IntentIDs           []string          // Intent ID list stored in order
-	DefaultIntentID     string           // Default intent ID
-	FirstIntentTarget   string           // First intent's target node
-	ClassIDToIntentID   map[string]string // Complete mapping from class ID/number handle to intent ID
+	IntentIDs         []string          // Intent ID list stored in order
+	DefaultIntentID   string            // Default intent ID
+	FirstIntentTarget string            // First intent's target node
+	ClassIDToIntentID map[string]string // Complete mapping from class ID/number handle to intent ID
 }
 
 // IFlytekGenerator iFlytek Agent DSL generator
@@ -73,10 +73,10 @@ func NewIFlytekGenerator() *IFlytekGenerator {
 func (g *IFlytekGenerator) Generate(unifiedDSL *models.UnifiedDSL) ([]byte, error) {
 	// Store DSL for use in generators
 	g.currentDSL = unifiedDSL
-	
+
 	// Identify source platform
 	g.sourcePlatform = g.identifySourcePlatform(unifiedDSL)
-	
+
 	// Validate input
 	if err := g.Validate(unifiedDSL); err != nil {
 		return nil, fmt.Errorf("validation failed: %w", err)
@@ -105,14 +105,12 @@ func (g *IFlytekGenerator) Generate(unifiedDSL *models.UnifiedDSL) ([]byte, erro
 	if err := g.generateEdges(unifiedDSL.Workflow.Edges, &iflytekDSL); err != nil {
 		return nil, fmt.Errorf("failed to generate edges: %w", err)
 	}
-	
 
 	// Add default intent connections ONLY for Dify to Spark conversion (let default intent connect to first intent's target node)
 	// Skip this for Coze platform as it already has proper default intent mapping
 	if g.sourcePlatform == models.PlatformDify {
 		g.generateDefaultIntentEdges(unifiedDSL.Workflow.Edges, &iflytekDSL)
 	}
-
 
 	// Serialize to YAML
 	data, err := yaml.Marshal(iflytekDSL)
@@ -129,15 +127,15 @@ func (g *IFlytekGenerator) identifySourcePlatform(unifiedDSL *models.UnifiedDSL)
 	if unifiedDSL.PlatformMetadata.Coze != nil {
 		return models.PlatformCoze
 	}
-	
+
 	if unifiedDSL.PlatformMetadata.Dify != nil {
 		return models.PlatformDify
 	}
-	
+
 	if unifiedDSL.PlatformMetadata.IFlytek != nil {
 		return models.PlatformIFlytek
 	}
-	
+
 	// Fallback: try to identify from node structure patterns
 	// This is a backup method if platform metadata is not available
 	sourcePlatform := g.identifyFromNodePatterns(unifiedDSL)
@@ -152,13 +150,13 @@ func (g *IFlytekGenerator) identifyFromNodePatterns(unifiedDSL *models.UnifiedDS
 		if g.hasCozePatterns(node) {
 			return models.PlatformCoze
 		}
-		
+
 		// Check for Dify-specific patterns
 		if g.hasDifyPatterns(node) {
 			return models.PlatformDify
 		}
 	}
-	
+
 	// Default to Dify if no specific patterns found (for backward compatibility)
 	return models.PlatformDify
 }
@@ -169,7 +167,7 @@ func (g *IFlytekGenerator) hasCozePatterns(node models.Node) bool {
 	if node.PlatformConfig.Coze != nil && len(node.PlatformConfig.Coze) > 0 {
 		return true
 	}
-	
+
 	// Check for Coze-specific node structure patterns
 	// Coze typically has more structured metadata and specific field patterns
 	if node.Type == models.NodeTypeClassifier {
@@ -180,7 +178,7 @@ func (g *IFlytekGenerator) hasCozePatterns(node models.Node) bool {
 			}
 		}
 	}
-	
+
 	return false
 }
 
@@ -190,7 +188,7 @@ func (g *IFlytekGenerator) hasDifyPatterns(node models.Node) bool {
 	if node.PlatformConfig.Dify != nil && len(node.PlatformConfig.Dify) > 0 {
 		return true
 	}
-	
+
 	// Check for Dify-specific node structure patterns
 	if node.Type == models.NodeTypeClassifier {
 		if classifierConfig, ok := common.AsClassifierConfig(node.Config); ok && classifierConfig != nil {
@@ -200,7 +198,7 @@ func (g *IFlytekGenerator) hasDifyPatterns(node models.Node) bool {
 			}
 		}
 	}
-	
+
 	return false
 }
 
@@ -460,7 +458,7 @@ func (g *IFlytekGenerator) generateAndProcessSingleNode(node models.Node, allNod
 	if err != nil {
 		return fmt.Errorf("failed to get generator for node %s: %w", node.ID, err)
 	}
-	
+
 	// Set DSL context and mappings for condition generators to enable proper type inference
 	if condGen, ok := generator.(*ConditionNodeGenerator); ok {
 		condGen.SetUnifiedDSL(g.currentDSL)
@@ -510,20 +508,20 @@ func (g *IFlytekGenerator) handleConditionNodeSpecialProcessing(generator NodeGe
 	if conditionGen, ok := generator.(*ConditionNodeGenerator); ok {
 		// Get branch ID mapping from the condition generator
 		branchIDMapping := conditionGen.GetBranchIDMapping()
-		
+
 		// Create BranchMapping structure for the main generator
 		mapping := &BranchMapping{
 			BranchIDs: make(map[string]string),
 		}
-		
+
 		// Copy all mappings from condition generator
 		for key, value := range branchIDMapping {
 			mapping.BranchIDs[key] = value
 		}
-		
+
 		// Set compatibility mappings for true/false
 		g.setCompatibilityMappings(mapping, branchIDMapping)
-		
+
 		// Save the mapping
 		g.conditionBranchMapping[iflytekNode.ID] = mapping
 	}
@@ -536,7 +534,7 @@ func (g *IFlytekGenerator) setCompatibilityMappings(mapping *BranchMapping, bran
 		mapping.TrueBranchID = branchID
 		mapping.BranchIDs["true"] = branchID
 	}
-	
+
 	if branchID, exists := branchIDMapping["__default__"]; exists {
 		mapping.FalseBranchID = branchID
 		mapping.BranchIDs["false"] = branchID
@@ -672,7 +670,7 @@ func (g *IFlytekGenerator) replaceNodeInDSL(iflytekDSL *IFlytekDSL, iflytekNode 
 // performThirdRoundRefinement handles the third round of node refinement
 func (g *IFlytekGenerator) performThirdRoundRefinement(nodes []models.Node, iflytekDSL *IFlytekDSL) error {
 	nodeTypesToRefine := []models.NodeType{
-		models.NodeTypeEnd, models.NodeTypeLLM, models.NodeTypeCondition, 
+		models.NodeTypeEnd, models.NodeTypeLLM, models.NodeTypeCondition,
 		models.NodeTypeCode, models.NodeTypeIteration,
 	}
 
@@ -690,7 +688,7 @@ func (g *IFlytekGenerator) performThirdRoundRefinement(nodes []models.Node, ifly
 	return nil
 }
 
-// shouldSkipNodeInThirdRound determines if a node should be skipped in third round  
+// shouldSkipNodeInThirdRound determines if a node should be skipped in third round
 func (g *IFlytekGenerator) shouldSkipNodeInThirdRound(node models.Node, nodeTypesToRefine []models.NodeType) bool {
 	if g.isIterationSubNode(node) {
 		return true
@@ -735,26 +733,25 @@ func (g *IFlytekGenerator) handleFinalRefinementMappings(node models.Node, iflyt
 	}
 }
 
-
 // registerIterationSubNodeClassifiers registers classifier generators for iteration sub-nodes
 func (g *IFlytekGenerator) registerIterationSubNodeClassifiers(originalSubNodes []models.Node, generatedSubNodes []IFlytekNode) {
 	for _, generatedNode := range generatedSubNodes {
 		if !g.isClassifierNode(generatedNode) {
 			continue
 		}
-		
+
 		matchedNode := g.findMatchingOriginalClassifierNode(originalSubNodes, generatedNode)
 		if matchedNode == nil {
 			continue
 		}
-		
+
 		g.establishClassifierNodeMapping(matchedNode, generatedNode)
-		
+
 		generator := g.createClassifierGenerator()
 		if generator == nil {
 			continue
 		}
-		
+
 		g.configureGeneratorMappings(generator)
 		g.processClassifierNodeGeneration(generator, generatedNode)
 	}
@@ -766,8 +763,8 @@ func (g *IFlytekGenerator) isClassifierNode(generatedNode IFlytekNode) bool {
 
 func (g *IFlytekGenerator) findMatchingOriginalClassifierNode(originalSubNodes []models.Node, generatedNode IFlytekNode) *models.Node {
 	for i := range originalSubNodes {
-		if originalSubNodes[i].Type == models.NodeTypeClassifier && 
-		   originalSubNodes[i].Title == generatedNode.Data.Label {
+		if originalSubNodes[i].Type == models.NodeTypeClassifier &&
+			originalSubNodes[i].Title == generatedNode.Data.Label {
 			return &originalSubNodes[i]
 		}
 	}
@@ -801,16 +798,16 @@ func (g *IFlytekGenerator) processClassifierNodeGeneration(generator interface{}
 	if !ok {
 		return
 	}
-	
+
 	intentChains := g.extractIntentChainsFromNode(generatedNode)
 	if intentChains == nil {
 		return
 	}
-	
+
 	classIDToIntentID := g.buildClassIDToIntentIDMapping(intentChains)
 	classifierGen.SetClassIDToIntentIDMapping(classIDToIntentID)
 	g.classifierGenerators[generatedNode.ID] = classifierGen
-	
+
 	g.updateClassifierIntentMapping(generatedNode.ID, intentChains, classIDToIntentID)
 }
 
@@ -819,26 +816,26 @@ func (g *IFlytekGenerator) extractIntentChainsFromNode(generatedNode IFlytekNode
 	if !ok {
 		return nil
 	}
-	
+
 	intentChains, ok := nodeParam.([]map[string]interface{})
 	if !ok {
 		return nil
 	}
-	
+
 	return intentChains
 }
 
 func (g *IFlytekGenerator) buildClassIDToIntentIDMapping(intentChains []map[string]interface{}) map[string]string {
 	classIDToIntentID := make(map[string]string)
-	
+
 	for i, intentChain := range intentChains {
 		intentID, hasID := intentChain["id"].(string)
 		intentType, hasType := intentChain["intentType"].(int)
-		
+
 		if !hasID || !hasType {
 			continue
 		}
-		
+
 		switch intentType {
 		case 2: // Normal classification intent
 			difyNumberHandle := fmt.Sprintf("%d", i+1)
@@ -847,7 +844,7 @@ func (g *IFlytekGenerator) buildClassIDToIntentIDMapping(intentChains []map[stri
 			classIDToIntentID["__default__"] = intentID
 		}
 	}
-	
+
 	return classIDToIntentID
 }
 
@@ -855,9 +852,9 @@ func (g *IFlytekGenerator) updateClassifierIntentMapping(nodeID string, intentCh
 	if g.classifierIntentMapping == nil {
 		g.classifierIntentMapping = make(map[string]*ClassifierMapping)
 	}
-	
+
 	intentIDs, defaultIntentID := g.extractIntentIDsFromChains(intentChains)
-	
+
 	newMapping := &ClassifierMapping{
 		IntentIDs:         intentIDs,
 		DefaultIntentID:   defaultIntentID,
@@ -869,15 +866,15 @@ func (g *IFlytekGenerator) updateClassifierIntentMapping(nodeID string, intentCh
 func (g *IFlytekGenerator) extractIntentIDsFromChains(intentChains []map[string]interface{}) ([]string, string) {
 	var intentIDs []string
 	var defaultIntentID string
-	
+
 	for _, intentChain := range intentChains {
 		intentID, hasID := intentChain["id"].(string)
 		intentType, hasType := intentChain["intentType"].(int)
-		
+
 		if !hasID || !hasType {
 			continue
 		}
-		
+
 		switch intentType {
 		case 2: // Normal classification intent
 			intentIDs = append(intentIDs, intentID)
@@ -885,7 +882,7 @@ func (g *IFlytekGenerator) extractIntentIDsFromChains(intentChains []map[string]
 			defaultIntentID = intentID
 		}
 	}
-	
+
 	return intentIDs, defaultIntentID
 }
 
@@ -895,19 +892,19 @@ func (g *IFlytekGenerator) registerIterationSubNodeConditions(originalSubNodes [
 		if !g.isConditionNode(generatedNode) {
 			continue
 		}
-		
+
 		matchedNode := g.findMatchingOriginalConditionNode(originalSubNodes, generatedNode)
 		if matchedNode == nil {
 			continue
 		}
-		
+
 		g.establishConditionNodeMapping(matchedNode, generatedNode)
-		
+
 		generator := g.createConditionGenerator()
 		if generator == nil {
 			continue
 		}
-		
+
 		g.configureGeneratorMappings(generator)
 		g.processConditionNodeGeneration(generator, generatedNode, matchedNode)
 	}
@@ -919,8 +916,8 @@ func (g *IFlytekGenerator) isConditionNode(generatedNode IFlytekNode) bool {
 
 func (g *IFlytekGenerator) findMatchingOriginalConditionNode(originalSubNodes []models.Node, generatedNode IFlytekNode) *models.Node {
 	for i := range originalSubNodes {
-		if originalSubNodes[i].Type == models.NodeTypeCondition && 
-		   originalSubNodes[i].Title == generatedNode.Data.Label {
+		if originalSubNodes[i].Type == models.NodeTypeCondition &&
+			originalSubNodes[i].Title == generatedNode.Data.Label {
 			return &originalSubNodes[i]
 		}
 	}
@@ -945,12 +942,12 @@ func (g *IFlytekGenerator) processConditionNodeGeneration(generator interface{},
 	if !ok {
 		return
 	}
-	
+
 	cases := g.extractCasesFromNode(generatedNode)
 	if cases == nil {
 		return
 	}
-	
+
 	branchIDMapping := g.buildBranchIDMapping(cases, matchedNode)
 	conditionGen.SetBranchIDMapping(branchIDMapping)
 	g.extractBranchMappingWithCaseIDs(generatedNode, branchIDMapping)
@@ -961,26 +958,26 @@ func (g *IFlytekGenerator) extractCasesFromNode(generatedNode IFlytekNode) []map
 	if !ok {
 		return nil
 	}
-	
+
 	cases, ok := nodeParam.([]map[string]interface{})
 	if !ok {
 		return nil
 	}
-	
+
 	return cases
 }
 
 func (g *IFlytekGenerator) buildBranchIDMapping(cases []map[string]interface{}, matchedNode *models.Node) map[string]string {
 	branchIDMapping := make(map[string]string)
-	
+
 	condConfig, ok := common.AsConditionConfig(matchedNode.Config)
 	if !ok || condConfig == nil {
 		return branchIDMapping
 	}
-	
+
 	g.buildOriginalCaseIDToIndexMapping(*condConfig)
 	g.extractBranchIDsFromCases(cases, branchIDMapping, *condConfig)
-	
+
 	return branchIDMapping
 }
 
@@ -996,11 +993,11 @@ func (g *IFlytekGenerator) extractBranchIDsFromCases(cases []map[string]interfac
 	for _, caseItem := range cases {
 		branchID, hasID := caseItem["id"].(string)
 		level, hasLevel := caseItem["level"].(int)
-		
+
 		if !hasID || !hasLevel {
 			continue
 		}
-		
+
 		if level == 999 {
 			g.handleDefaultBranch(branchIDMapping, branchID)
 		} else {
@@ -1017,12 +1014,12 @@ func (g *IFlytekGenerator) handleDefaultBranch(branchIDMapping map[string]string
 func (g *IFlytekGenerator) handleNormalBranch(branchIDMapping map[string]string, branchID string, level int, condConfig models.ConditionConfig) {
 	levelKey := fmt.Sprintf("%d", level)
 	branchIDMapping[levelKey] = branchID
-	
+
 	if level > 0 && level-1 < len(condConfig.Cases) {
 		originalCaseID := condConfig.Cases[level-1].CaseID
 		branchIDMapping[originalCaseID] = branchID
 	}
-	
+
 	if level == 1 {
 		branchIDMapping["true"] = branchID // backward compatibility
 	}
@@ -1134,31 +1131,31 @@ func (g *IFlytekGenerator) convertEdgeType(edgeType models.EdgeType) string {
 // convertSourceHandle converts source handle, handles special cases for branch nodes and classifier nodes
 func (g *IFlytekGenerator) convertSourceHandle(sourceHandle, sourceNodeID string) string {
 	mappedSourceID := g.getMappedSourceNodeID(sourceNodeID)
-	
+
 	if convertedHandle := g.handleStartNodeSource(sourceHandle); convertedHandle != "" {
 		return convertedHandle
 	}
-	
+
 	if convertedHandle := g.handleConditionBranchSource(sourceHandle, mappedSourceID); convertedHandle != "" {
 		return convertedHandle
 	}
-	
+
 	if convertedHandle := g.handleMultiLevelConditionSource(sourceHandle, mappedSourceID); convertedHandle != "" {
 		return convertedHandle
 	}
-	
+
 	if convertedHandle := g.handleClassifierNumberSource(sourceHandle, mappedSourceID); convertedHandle != "" {
 		return convertedHandle
 	}
-	
+
 	if convertedHandle := g.handleClassifierIntentMappingSource(sourceHandle, mappedSourceID); convertedHandle != "" {
 		return convertedHandle
 	}
-	
+
 	if convertedHandle := g.handleClassifierIntentSource(sourceHandle, mappedSourceID); convertedHandle != "" {
 		return convertedHandle
 	}
-	
+
 	return sourceHandle
 }
 
@@ -1185,24 +1182,24 @@ func (g *IFlytekGenerator) handleConditionBranchSource(sourceHandle, mappedSourc
 	if sourceHandle != "true" && sourceHandle != "false" {
 		return ""
 	}
-	
+
 	if g.conditionBranchMapping == nil {
 		return sourceHandle
 	}
-	
+
 	branchMapping, exists := g.conditionBranchMapping[mappedSourceID]
 	if !exists {
 		return sourceHandle
 	}
-	
+
 	if convertedHandle := g.tryDirectBranchMapping(sourceHandle, branchMapping); convertedHandle != "" {
 		return convertedHandle
 	}
-	
+
 	if branchID, exists := branchMapping.BranchIDs[sourceHandle]; exists {
 		return branchID
 	}
-	
+
 	return sourceHandle
 }
 
@@ -1222,22 +1219,22 @@ func (g *IFlytekGenerator) handleMultiLevelConditionSource(sourceHandle, mappedS
 	if g.conditionBranchMapping == nil {
 		return ""
 	}
-	
+
 	branchMapping, exists := g.conditionBranchMapping[mappedSourceID]
 	if !exists {
 		return ""
 	}
-	
+
 	// First try direct case ID lookup (handles Dify UUID format case IDs)
 	if branchID, exists := branchMapping.BranchIDs[sourceHandle]; exists {
 		return branchID
 	}
-	
+
 	// For backward compatibility with numeric handles
 	if g.isNumericHandle(sourceHandle) {
 		return g.lookupNumericHandle(sourceHandle, branchMapping)
 	}
-	
+
 	return ""
 }
 
@@ -1246,7 +1243,7 @@ func (g *IFlytekGenerator) isNumericHandle(sourceHandle string) bool {
 	if len(sourceHandle) == 0 {
 		return false
 	}
-	
+
 	for _, r := range sourceHandle {
 		if r < '0' || r > '9' {
 			return false
@@ -1269,12 +1266,12 @@ func (g *IFlytekGenerator) handleClassifierNumberSource(sourceHandle, mappedSour
 	if !exists {
 		return ""
 	}
-	
+
 	classIDToIntentID := classifierGen.GetClassIDToIntentIDMapping()
 	if intentID, found := classIDToIntentID[sourceHandle]; found {
 		return intentID
 	}
-	
+
 	return ""
 }
 
@@ -1286,12 +1283,12 @@ func (g *IFlytekGenerator) lookupClassifierIntentID(sourceHandle string, classID
 			return intentID
 		}
 	}
-	
+
 	// Try direct mapping
 	if intentID, found := classIDToIntentID[sourceHandle]; found {
 		return intentID
 	}
-	
+
 	return ""
 }
 
@@ -1304,21 +1301,21 @@ func (g *IFlytekGenerator) handleClassifierIntentMappingSource(sourceHandle, map
 			return intentID
 		}
 	}
-	
+
 	// Fallback to old classifierIntentMapping system
 	if g.classifierIntentMapping == nil {
 		return ""
 	}
-	
+
 	classifierMapping, exists := g.classifierIntentMapping[mappedSourceID]
 	if !exists {
 		return ""
 	}
-	
+
 	if convertedHandle := g.tryClassIDToIntentIDMapping(sourceHandle, classifierMapping); convertedHandle != "" {
 		return convertedHandle
 	}
-	
+
 	return g.tryPositionalIntentMapping(sourceHandle, classifierMapping)
 }
 
@@ -1327,7 +1324,7 @@ func (g *IFlytekGenerator) tryClassIDToIntentIDMapping(sourceHandle string, clas
 	if classifierMapping.ClassIDToIntentID == nil {
 		return ""
 	}
-	
+
 	return g.lookupClassifierIntentID(sourceHandle, classifierMapping.ClassIDToIntentID)
 }
 
@@ -1359,17 +1356,17 @@ func (g *IFlytekGenerator) handleClassifierIntentSource(sourceHandle, mappedSour
 	if g.classifierIntentMapping == nil {
 		return ""
 	}
-	
+
 	classifierMapping, exists := g.classifierIntentMapping[mappedSourceID]
 	if !exists {
 		return ""
 	}
-	
+
 	// For default intent, return default intent ID directly, do not redirect
 	if sourceHandle == classifierMapping.DefaultIntentID {
 		return sourceHandle
 	}
-	
+
 	return ""
 }
 
@@ -1388,7 +1385,7 @@ func (g *IFlytekGenerator) extractBranchMapping(iflytekNode IFlytekNode) {
 
 	// Create and populate branch mapping
 	mapping := g.createBranchMappingFromCases(cases)
-	
+
 	// Save mapping
 	g.conditionBranchMapping[iflytekNode.ID] = mapping
 }
@@ -1556,7 +1553,7 @@ func (g *IFlytekGenerator) convertToCasesInterface(casesInterface interface{}) [
 	if casesList, ok := casesInterface.([]interface{}); ok {
 		return casesList
 	}
-	
+
 	if casesMapList, ok := casesInterface.([]map[string]interface{}); ok {
 		cases := make([]interface{}, len(casesMapList))
 		for i, caseMap := range casesMapList {
@@ -1564,7 +1561,7 @@ func (g *IFlytekGenerator) convertToCasesInterface(casesInterface interface{}) [
 		}
 		return cases
 	}
-	
+
 	return nil
 }
 
@@ -1588,7 +1585,7 @@ func (g *IFlytekGenerator) processCasesForMapping(cases []interface{}, mapping *
 		if caseData == nil {
 			continue
 		}
-		
+
 		g.storeBranchMapping(caseData.Level, caseData.BranchID, mapping)
 	}
 }
@@ -1653,14 +1650,12 @@ func (g *IFlytekGenerator) storeDefaultBranch(branchID string, mapping *BranchMa
 func (g *IFlytekGenerator) storeMultiLevelBranch(level int, branchID string, mapping *BranchMapping) {
 	levelKey := fmt.Sprintf("%d", level)
 	mapping.BranchIDs[levelKey] = branchID
-	
+
 	// Backward compatibility for common levels
 	if level >= 2 && level <= 4 {
 		mapping.BranchIDs[levelKey] = branchID
 	}
 }
-
-
 
 // analyzeClassifierTargets analyzes classifier target node mapping
 func (g *IFlytekGenerator) analyzeClassifierTargets(edges []models.Edge) {
@@ -1694,7 +1689,7 @@ func (g *IFlytekGenerator) findClassifierID(edgeSource string) string {
 // isClassifierNodeID checks if the ID belongs to a classifier node
 func (g *IFlytekGenerator) isClassifierNodeID(mappedID string) bool {
 	const classifierPrefix = "decision-making::"
-	return mappedID != "" && len(mappedID) > len(classifierPrefix) && 
+	return mappedID != "" && len(mappedID) > len(classifierPrefix) &&
 		mappedID[:len(classifierPrefix)] == classifierPrefix
 }
 
@@ -1769,7 +1764,6 @@ func (g *IFlytekGenerator) getIntentChainsFromNode(iflytekNode IFlytekNode) []ma
 	return intentChains
 }
 
-
 // isMappingComplete checks if mapping is already complete
 func (g *IFlytekGenerator) isMappingComplete(mapping *ClassifierMapping) bool {
 	return mapping.DefaultIntentID != "" && len(mapping.IntentIDs) > 0
@@ -1786,7 +1780,7 @@ func (g *IFlytekGenerator) processIntentChains(mapping *ClassifierMapping, inten
 func (g *IFlytekGenerator) processIntentChain(mapping *ClassifierMapping, intentChain map[string]interface{}) {
 	intentType := g.extractIntentType(intentChain)
 	intentID := g.extractIntentID(intentChain)
-	
+
 	if intentID == "" {
 		return
 	}
@@ -1863,32 +1857,32 @@ func (g *IFlytekGenerator) generateDefaultIntentEdges(edges []models.Edge, iflyt
 			continue
 		}
 
-        // Find the target node of the last classification connection
-        var lastClassTargetNode string
+		// Find the target node of the last classification connection
+		var lastClassTargetNode string
 
-        for _, edge := range edges {
-            if g.idMapping[edge.Source] == classifierID {
-                // Keep updating to the last matching edge's target
-                if mapped := g.idMapping[edge.Target]; mapped != "" {
-                    lastClassTargetNode = mapped
-                } else {
-                    lastClassTargetNode = edge.Target
-                }
-            }
-        }
+		for _, edge := range edges {
+			if g.idMapping[edge.Source] == classifierID {
+				// Keep updating to the last matching edge's target
+				if mapped := g.idMapping[edge.Target]; mapped != "" {
+					lastClassTargetNode = mapped
+				} else {
+					lastClassTargetNode = edge.Target
+				}
+			}
+		}
 
-        if lastClassTargetNode == "" {
-            continue
-        }
+		if lastClassTargetNode == "" {
+			continue
+		}
 
-        // Create edge for default intent
-        defaultEdge := IFlytekEdge{
-            ID:           g.generateEdgeIDWithHandle(classifierID, defaultIntentID, lastClassTargetNode),
-            Source:       classifierID,
-            Target:       lastClassTargetNode,
-            SourceHandle: defaultIntentID,
-            TargetHandle: "",
-            Type:         "customEdge",
+		// Create edge for default intent
+		defaultEdge := IFlytekEdge{
+			ID:           g.generateEdgeIDWithHandle(classifierID, defaultIntentID, lastClassTargetNode),
+			Source:       classifierID,
+			Target:       lastClassTargetNode,
+			SourceHandle: defaultIntentID,
+			TargetHandle: "",
+			Type:         "customEdge",
 			MarkerEnd: &IFlytekMarkerEnd{
 				Color: "#275EFF",
 				Type:  "arrow",
@@ -1920,7 +1914,7 @@ func (g *IFlytekGenerator) isNodeInIteration(node models.Node, iterationID strin
 	if node.Config == nil {
 		return false
 	}
-	
+
 	return g.checkIterationMembership(node.Config, iterationID)
 }
 
@@ -1955,27 +1949,27 @@ func (g *IFlytekGenerator) isConfigInIteration(isInIteration bool, configIterati
 func (g *IFlytekGenerator) processIterationSubNodes(nodes []models.Node, iflytekDSL *IFlytekDSL) error {
 	iterationMap := g.buildIterationMap()
 	processedIterations := make(map[string]bool)
-	
+
 	if err := g.generateIterationSubNodesForEach(nodes, iflytekDSL, iterationMap, processedIterations); err != nil {
 		return err
 	}
-	
+
 	g.removeDuplicateIterationSubNodes(iflytekDSL)
 	g.setParentIDsForSubNodes(nodes, iflytekDSL, iterationMap)
-	
+
 	return nil
 }
 
 // buildIterationMap builds a map of Dify ID to iFlytek ID for iteration nodes
 func (g *IFlytekGenerator) buildIterationMap() map[string]string {
 	iterationMap := make(map[string]string)
-	
+
 	for difyID, iflytekID := range g.idMapping {
 		if g.isIterationNodeID(iflytekID) {
 			iterationMap[difyID] = iflytekID
 		}
 	}
-	
+
 	return iterationMap
 }
 
@@ -1990,17 +1984,17 @@ func (g *IFlytekGenerator) generateIterationSubNodesForEach(nodes []models.Node,
 		if processedIterations[iflytekID] {
 			continue
 		}
-		
+
 		if g.hasExistingSubNodes(iflytekDSL, iflytekID) {
 			processedIterations[iflytekID] = true
 			continue
 		}
-		
+
 		if err := g.processSignleIterationNode(nodes, iflytekDSL, difyID, iflytekID, processedIterations); err != nil {
 			return err
 		}
 	}
-	
+
 	return nil
 }
 
@@ -2020,16 +2014,16 @@ func (g *IFlytekGenerator) processSignleIterationNode(nodes []models.Node, iflyt
 	if originalIterationNode.ID == "" {
 		return nil
 	}
-	
+
 	iterationGen := g.setupIterationGenerator()
 	if iterationGen == nil {
 		return nil
 	}
-	
+
 	if err := g.generateAndAddSubNodes(originalIterationNode, iflytekID, nodes, difyID, iflytekDSL, iterationGen); err != nil {
 		return err
 	}
-	
+
 	processedIterations[iflytekID] = true
 	return nil
 }
@@ -2050,16 +2044,16 @@ func (g *IFlytekGenerator) setupIterationGenerator() *IterationNodeGenerator {
 	if err != nil {
 		return nil
 	}
-	
+
 	iterationGen, ok := iterationGenerator.(*IterationNodeGenerator)
 	if !ok {
 		return nil
 	}
-	
+
 	iterationGen.SetIDMapping(g.idMapping)
 	iterationGen.SetNodeTitleMapping(g.nodeTitleMapping)
 	iterationGen.SetBranchExtractor(g)
-	
+
 	return iterationGen
 }
 
@@ -2067,19 +2061,19 @@ func (g *IFlytekGenerator) setupIterationGenerator() *IterationNodeGenerator {
 func (g *IFlytekGenerator) generateAndAddSubNodes(originalIterationNode models.Node, iflytekID string, nodes []models.Node, difyID string, iflytekDSL *IFlytekDSL, iterationGen *IterationNodeGenerator) error {
 	nodeIDs := g.generateIterationNodeIDs(iflytekID)
 	iterationSubNodes := g.findIterationSubNodes(nodes, difyID)
-	
+
 	generatedSubNodes, generatedIterationEdges, err := iterationGen.GenerateIterationSubNodesWithIDs(
 		originalIterationNode, iflytekID, iterationSubNodes, nodeIDs.startID, nodeIDs.endID, nodeIDs.codeID)
 	if err != nil {
 		return fmt.Errorf("failed to generate iteration sub-nodes: %w", err)
 	}
-	
+
 	g.addGeneratedNodesToDSL(iflytekDSL, generatedSubNodes, generatedIterationEdges)
 	g.updateIterationNodeParam(iflytekDSL, iflytekID, nodeIDs.startID)
-	
+
 	internalEdges := g.generateIterationInternalEdges(generatedSubNodes, iflytekID, originalIterationNode)
 	iflytekDSL.FlowData.Edges = append(iflytekDSL.FlowData.Edges, internalEdges...)
-	
+
 	return nil
 }
 
@@ -2102,7 +2096,7 @@ func (g *IFlytekGenerator) generateIterationNodeIDs(iflytekID string) iterationN
 // addGeneratedNodesToDSL adds generated nodes and edges to DSL
 func (g *IFlytekGenerator) addGeneratedNodesToDSL(iflytekDSL *IFlytekDSL, generatedSubNodes []IFlytekNode, generatedIterationEdges []IFlytekEdge) {
 	iflytekDSL.FlowData.Nodes = append(iflytekDSL.FlowData.Nodes, generatedSubNodes...)
-	
+
 	for _, iterationEdge := range generatedIterationEdges {
 		iflytekDSL.FlowData.Edges = append(iflytekDSL.FlowData.Edges, iterationEdge)
 	}
@@ -2114,7 +2108,7 @@ func (g *IFlytekGenerator) setParentIDsForSubNodes(nodes []models.Node, iflytekD
 		if node.ParentID != nil {
 			continue
 		}
-		
+
 		parentIterationID := g.findParentIterationForNode(node, nodes, iterationMap)
 		if parentIterationID != "" {
 			g.updateNodeWithParentID(&iflytekDSL.FlowData.Nodes[i], parentIterationID)
@@ -2137,7 +2131,7 @@ func (g *IFlytekGenerator) updateNodeWithParentID(node *IFlytekNode, parentItera
 	node.ParentID = &parentIterationID
 	node.Extent = "parent"
 	node.ZIndex = 1
-	
+
 	draggableFalse := false
 	node.Draggable = &draggableFalse
 	node.Data.ParentID = &parentIterationID
@@ -2192,7 +2186,7 @@ func (g *IFlytekGenerator) removeDuplicateIterationSubNodes(iflytekDSL *IFlytekD
 			uniqueEdges = append(uniqueEdges, edge)
 		}
 	}
-	
+
 	iflytekDSL.FlowData.Edges = uniqueEdges
 }
 
@@ -2231,18 +2225,18 @@ func (g *IFlytekGenerator) generateIterationInternalEdges(subNodes []IFlytekNode
 	if !ok {
 		return []IFlytekEdge{}
 	}
-	
+
 	startNode, endNode, sourceNode := g.findIterationNodes(subNodes, iterationConfig.OutputSelector.NodeID)
-	
+
 	var edges []IFlytekEdge
 	if startToSourceEdge := g.createStartToSourceEdge(startNode, sourceNode, iterationID); startToSourceEdge != nil {
 		edges = append(edges, *startToSourceEdge)
 	}
-	
+
 	if sourceToEndEdge := g.createSourceToEndEdge(sourceNode, endNode); sourceToEndEdge != nil {
 		edges = append(edges, *sourceToEndEdge)
 	}
-	
+
 	return edges
 }
 
@@ -2255,7 +2249,7 @@ func (g *IFlytekGenerator) parseIterationConfig(originalIterationNode models.Nod
 // findIterationNodes finds start, end, and source nodes in iteration
 func (g *IFlytekGenerator) findIterationNodes(subNodes []IFlytekNode, outputSourceNodeID string) (*IFlytekNode, *IFlytekNode, *IFlytekNode) {
 	var startNode, endNode, sourceNode *IFlytekNode
-	
+
 	// First pass: find start and end nodes, and try to find source node by mapping
 	for i := range subNodes {
 		if g.isIterationStartNodeByID(&subNodes[i]) {
@@ -2266,12 +2260,12 @@ func (g *IFlytekGenerator) findIterationNodes(subNodes []IFlytekNode, outputSour
 			sourceNode = g.tryFindSourceNode(&subNodes[i], outputSourceNodeID)
 		}
 	}
-	
+
 	// Second pass: if source node not found, try fallback strategies
 	if sourceNode == nil {
 		sourceNode = g.findSourceNodeFallback(subNodes, outputSourceNodeID)
 	}
-	
+
 	return startNode, endNode, sourceNode
 }
 
@@ -2294,12 +2288,12 @@ func (g *IFlytekGenerator) tryFindSourceNode(node *IFlytekNode, outputSourceNode
 			}
 		}
 	}
-	
+
 	// Fallback to code node for backward compatibility
 	if strings.HasPrefix(node.ID, "ifly-code::") {
 		return node
 	}
-	
+
 	return nil
 }
 
@@ -2308,13 +2302,13 @@ func (g *IFlytekGenerator) findSourceNodeFallback(subNodes []IFlytekNode, output
 	if outputSourceNodeID == "" {
 		return nil
 	}
-	
+
 	for i := range subNodes {
 		if strings.Contains(subNodes[i].ID, outputSourceNodeID) {
 			return &subNodes[i]
 		}
 	}
-	
+
 	return nil
 }
 
@@ -2323,9 +2317,9 @@ func (g *IFlytekGenerator) createStartToSourceEdge(startNode, sourceNode *IFlyte
 	if startNode == nil || sourceNode == nil {
 		return nil
 	}
-	
+
 	sourceID := g.fixStartNodeSourceID(startNode.ID, iterationID)
-	
+
 	return &IFlytekEdge{
 		Source:       sourceID,
 		Target:       sourceNode.ID,
@@ -2344,7 +2338,7 @@ func (g *IFlytekGenerator) createSourceToEndEdge(sourceNode, endNode *IFlytekNod
 	if sourceNode == nil || endNode == nil {
 		return nil
 	}
-	
+
 	return &IFlytekEdge{
 		Source:       sourceNode.ID,
 		Target:       endNode.ID,
@@ -2461,12 +2455,12 @@ func (g *IFlytekGenerator) resolveActualStartNodeID(iflytekDSL *IFlytekDSL, iter
 	if startNodeID != "" {
 		return startNodeID
 	}
-	
+
 	// Try to find from DSL nodes
 	if foundID := g.findStartNodeFromDSL(iflytekDSL, iterationID); foundID != "" {
 		return foundID
 	}
-	
+
 	// Try to get from mapping
 	return g.getStartNodeFromMapping(iterationID)
 }
@@ -2483,9 +2477,9 @@ func (g *IFlytekGenerator) findStartNodeFromDSL(iflytekDSL *IFlytekDSL, iteratio
 
 // isIterationStartNode checks if a node is iteration start node for given iteration
 func (g *IFlytekGenerator) isIterationStartNode(node IFlytekNode, iterationID string) bool {
-	return node.ParentID != nil && 
-		   *node.ParentID == iterationID && 
-		   node.Type == "开始节点"
+	return node.ParentID != nil &&
+		*node.ParentID == iterationID &&
+		node.Type == "开始节点"
 }
 
 // getStartNodeFromMapping gets start node ID from iteration sub-node mapping
@@ -2493,11 +2487,11 @@ func (g *IFlytekGenerator) getStartNodeFromMapping(iterationID string) string {
 	if g.iterationSubNodeMapping == nil || g.iterationSubNodeMapping[iterationID] == nil {
 		return ""
 	}
-	
+
 	if mappedStartID, exists := g.iterationSubNodeMapping[iterationID]["start"]; exists {
 		return mappedStartID
 	}
-	
+
 	return ""
 }
 

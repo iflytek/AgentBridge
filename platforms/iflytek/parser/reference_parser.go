@@ -73,14 +73,14 @@ func (p *ReferenceParser) parseReferenceGroup(refGroupMap map[string]interface{}
 	if !ok {
 		return []*models.VariableReference{}, nil
 	}
-	
+
 	return p.parseChildrenReferences(children)
 }
 
 // parseChildrenReferences parses references from children array
 func (p *ReferenceParser) parseChildrenReferences(children []interface{}) ([]*models.VariableReference, error) {
 	var references []*models.VariableReference
-	
+
 	for _, childData := range children {
 		childRefs, err := p.parseChildReferences(childData)
 		if err != nil {
@@ -88,7 +88,7 @@ func (p *ReferenceParser) parseChildrenReferences(children []interface{}) ([]*mo
 		}
 		references = append(references, childRefs...)
 	}
-	
+
 	return references, nil
 }
 
@@ -98,25 +98,25 @@ func (p *ReferenceParser) parseChildReferences(childData interface{}) ([]*models
 	if !ok {
 		return []*models.VariableReference{}, nil
 	}
-	
+
 	childRefs, ok := childMap["references"].([]interface{})
 	if !ok {
 		return []*models.VariableReference{}, nil
 	}
-	
+
 	return p.parseReferenceArray(childRefs)
 }
 
 // parseReferenceArray parses an array of reference data
 func (p *ReferenceParser) parseReferenceArray(refs []interface{}) ([]*models.VariableReference, error) {
 	var references []*models.VariableReference
-	
+
 	for _, refData := range refs {
 		refMap, ok := refData.(map[string]interface{})
 		if !ok {
 			continue
 		}
-		
+
 		ref, err := p.parseIFlytekReference(refMap)
 		if err != nil {
 			return nil, fmt.Errorf("failed to parse reference: %w", err)
@@ -125,7 +125,7 @@ func (p *ReferenceParser) parseReferenceArray(refs []interface{}) ([]*models.Var
 			references = append(references, ref)
 		}
 	}
-	
+
 	return references, nil
 }
 

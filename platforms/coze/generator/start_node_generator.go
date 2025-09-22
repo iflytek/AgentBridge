@@ -29,7 +29,7 @@ func (g *StartNodeGenerator) GenerateNode(unifiedNode *models.Node) (*CozeNode, 
 	}
 
 	cozeNodeID := g.idGenerator.MapToCozeNodeID(unifiedNode.ID)
-	
+
 	// Generate outputs from unified node
 	outputs := g.generateOutputs(unifiedNode)
 
@@ -44,9 +44,9 @@ func (g *StartNodeGenerator) GenerateNode(unifiedNode *models.Node) (*CozeNode, 
 		},
 		Data: &CozeNodeData{
 			Meta: &CozeNodeMetaInfo{
-				Title:       g.getNodeTitle(unifiedNode),        // Get title dynamically
-				Description: g.getNodeDescription(unifiedNode),  // Get description dynamically  
-				Icon:        g.getNodeIcon(unifiedNode),         // Get icon dynamically
+				Title:       g.getNodeTitle(unifiedNode),       // Get title dynamically
+				Description: g.getNodeDescription(unifiedNode), // Get description dynamically
+				Icon:        g.getNodeIcon(unifiedNode),        // Get icon dynamically
 				Subtitle:    "",
 				MainColor:   "",
 			},
@@ -68,17 +68,17 @@ func (g *StartNodeGenerator) GenerateSchemaNode(unifiedNode *models.Node) (*Coze
 	}
 
 	cozeNodeID := g.idGenerator.MapToCozeNodeID(unifiedNode.ID)
-	
+
 	// Generate outputs and trigger parameters
 	outputs := g.generateOutputs(unifiedNode)
 
 	return &CozeSchemaNode{
 		Data: &CozeSchemaNodeData{
 			NodeMeta: &CozeNodeMetaInfo{
-				Description: g.getNodeDescription(unifiedNode),  // Get description dynamically
-				Icon:        g.getNodeIcon(unifiedNode),         // Get icon dynamically
+				Description: g.getNodeDescription(unifiedNode), // Get description dynamically
+				Icon:        g.getNodeIcon(unifiedNode),        // Get icon dynamically
 				SubTitle:    "",
-				Title:       g.getNodeTitle(unifiedNode),        // Get title dynamically
+				Title:       g.getNodeTitle(unifiedNode), // Get title dynamically
 			},
 			Outputs:           outputs,
 			TriggerParameters: outputs, // Same as outputs for start node
@@ -121,20 +121,17 @@ func (g *StartNodeGenerator) generateOutputs(unifiedNode *models.Node) []CozeNod
 	return outputs
 }
 
-
-
-
 // mapUnifiedTypeToCoze maps unified data types to Coze types
 func (g *StartNodeGenerator) mapUnifiedTypeToCoze(unifiedType models.UnifiedDataType) string {
 	switch unifiedType {
 	case models.DataTypeString:
 		return "string"
-	case models.DataTypeInteger:  // Integer preserves precise type
+	case models.DataTypeInteger: // Integer preserves precise type
 		return "integer"
-	case models.DataTypeFloat:    // Float preserves precise type
+	case models.DataTypeFloat: // Float preserves precise type
 		return "float"
-	case models.DataTypeNumber:   // Maintain backward compatibility
-		return "float"  // Coze primarily uses float for numeric types
+	case models.DataTypeNumber: // Maintain backward compatibility
+		return "float" // Coze primarily uses float for numeric types
 	case models.DataTypeBoolean:
 		return "boolean"
 	default:
@@ -196,7 +193,7 @@ func (g *StartNodeGenerator) getNodeIcon(unifiedNode *models.Node) string {
 			}
 		}
 	}
-	
+
 	// Check iFlytek platform configuration for icon (may need conversion)
 	if unifiedNode.PlatformConfig.IFlytek != nil {
 		if icon, exists := unifiedNode.PlatformConfig.IFlytek["icon"]; exists {
@@ -205,7 +202,7 @@ func (g *StartNodeGenerator) getNodeIcon(unifiedNode *models.Node) string {
 			}
 		}
 	}
-	
+
 	// Official Coze Entry node icon URL
 	return "https://oss-beijing-m8.openstorage.cn/pro-bucket/sparkBot/common/workflow/icon/start-node-icon.png"
 }

@@ -116,7 +116,7 @@ func (g *CodeNodeGenerator) generateInputsWithMapping(inputs []models.Input) []I
 
 			// Map output names for platform compatibility
 			mappedOutputName := g.mapOutputNameForPlatform(input.Reference.OutputName, mappedNodeID)
-			
+
 			iflytekInput.Schema.Value = &IFlytekSchemaValue{
 				Type: "ref",
 				Content: &IFlytekRefContent{
@@ -184,7 +184,7 @@ func (g *CodeNodeGenerator) generateReferences(inputs []models.Input) []IFlytekR
 		for _, input := range nodeInputs {
 			// Map output name for platform compatibility
 			mappedOutputName := g.mapOutputNameForPlatform(input.Reference.OutputName, nodeID)
-			
+
 			refDetails = append(refDetails, IFlytekRefDetail{
 				OriginID: nodeID,
 				ID:       g.generateRefID(),
@@ -223,7 +223,7 @@ func (g *CodeNodeGenerator) mapOutputNameForPlatform(outputName, nodeID string) 
 			return "output"
 		}
 	}
-	
+
 	// For other node types, return original output name
 	return outputName
 }
