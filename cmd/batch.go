@@ -30,7 +30,7 @@ type BatchJob struct {
 	Total      int
 }
 
-// BatchResult represents the result of a conversion task  
+// BatchResult represents the result of a conversion task
 type BatchResult struct {
 	Job      BatchJob
 	Success  bool
@@ -85,7 +85,7 @@ Supports directory-based batch conversion with configurable worker count and pro
 	batchCmd.Flags().StringVar(&pattern, "pattern", "*.yml", "File pattern to match (default: *.yml)")
 	batchCmd.Flags().IntVar(&workerCount, "workers", 0, "Number of concurrent workers (default: auto-detect based on CPU cores)")
 	batchCmd.Flags().BoolVar(&overwriteMode, "overwrite", false, "Automatically overwrite existing output files without prompting")
-	
+
 	// Mark required flags
 	batchCmd.MarkFlagRequired("input-dir")
 	batchCmd.MarkFlagRequired("output-dir")
@@ -97,6 +97,12 @@ Supports directory-based batch conversion with configurable worker count and pro
 
 // runBatch executes the batch command with concurrent processing
 func runBatch(cmd *cobra.Command, args []string) error {
+	restore := redirectStdoutIfQuiet()
+	defer restore()
+	if quiet {
+		cmd.SilenceErrors = true
+		cmd.SilenceUsage = true
+	}
 	if !quiet {
 		printHeader("Concurrent Batch Conversion")
 	}
@@ -132,7 +138,7 @@ func runBatch(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return fmt.Errorf("batch processing failed: %w", err)
 	}
-	
+
 	printBatchSummary(files, successCount, errorCount)
 
 	if errorCount > 0 {
@@ -205,7 +211,7 @@ func (p *ConcurrentBatchProcessor) ProcessFiles(files []string) (int, int, error
 		for i, file := range files {
 			filename := filepath.Base(file)
 			outputFile := filepath.Join(outputDir, filename)
-			
+
 			select {
 			case p.jobQueue <- BatchJob{
 				FilePath:   file,
@@ -239,24 +245,24 @@ func (p *ConcurrentBatchProcessor) worker(workerID int, wg *sync.WaitGroup) {
 			if !ok {
 				return // Job queue closed
 			}
-			
+
 			startTime := time.Now()
 			err := p.processJob(job)
 			duration := time.Since(startTime)
-			
+
 			result := BatchResult{
 				Job:      job,
 				Success:  err == nil,
 				Error:    err,
 				Duration: duration,
 			}
-			
+
 			select {
 			case p.resultQueue <- result:
 			case <-p.ctx.Done():
 				return
 			}
-			
+
 		case <-p.ctx.Done():
 			return
 		}
@@ -266,7 +272,7 @@ func (p *ConcurrentBatchProcessor) worker(workerID int, wg *sync.WaitGroup) {
 // processJob processes a single conversion job with enhanced error handling
 func (p *ConcurrentBatchProcessor) processJob(job BatchJob) error {
 	filename := filepath.Base(job.FilePath)
-	
+
 	// Validate file existence and readability
 	if err := p.validateInputFile(job.FilePath); err != nil {
 		return fmt.Errorf("input validation failed for '%s': %w", filename, err)
@@ -286,7 +292,7 @@ func (p *ConcurrentBatchProcessor) processJob(job BatchJob) error {
 		return fmt.Errorf("file '%s' is empty - skipping conversion", filename)
 	}
 	if len(inputData) > 50*1024*1024 { // 50MB limit for CLI tool
-		return fmt.Errorf("file '%s' is too large (%.1fMB) - maximum supported size is 50MB", 
+		return fmt.Errorf("file '%s' is too large (%.1fMB) - maximum supported size is 50MB",
 			filename, float64(len(inputData))/1024/1024)
 	}
 
@@ -367,7 +373,7 @@ func (p *ConcurrentBatchProcessor) checkWritePermission(dir string) error {
 // convertFileData converts data using the shared conversion service with enhanced error handling
 func (p *ConcurrentBatchProcessor) convertFileData(inputData []byte) ([]byte, error) {
 	var fromPlatform, toPlatform models.PlatformType
-	
+
 	// Validate and convert source platform
 	switch sourceType {
 	case "iflytek":
@@ -379,7 +385,7 @@ func (p *ConcurrentBatchProcessor) convertFileData(inputData []byte) ([]byte, er
 	default:
 		return nil, fmt.Errorf("unsupported source platform '%s' - supported platforms: iflytek, dify, coze", sourceType)
 	}
-	
+
 	// Validate and convert target platform
 	switch targetType {
 	case "iflytek":
@@ -409,35 +415,35 @@ func (p *ConcurrentBatchProcessor) convertFileData(inputData []byte) ([]byte, er
 // enhanceConversionError provides more user-friendly conversion error messages
 func (p *ConcurrentBatchProcessor) enhanceConversionError(err error, from, to models.PlatformType) error {
 	errMsg := err.Error()
-	
+
 	// Handle common parsing errors
 	if strings.Contains(errMsg, "yaml: unmarshal errors") || strings.Contains(errMsg, "invalid YAML") {
 		return fmt.Errorf("invalid YAML format - please check file syntax and structure")
 	}
-	
+
 	if strings.Contains(errMsg, "json: invalid") || strings.Contains(errMsg, "unexpected end of JSON") {
 		return fmt.Errorf("invalid JSON format - please check file syntax and structure")
 	}
-	
+
 	// Handle validation errors
 	if strings.Contains(errMsg, "validation failed") {
 		return fmt.Errorf("workflow validation failed - file may be corrupted or contain unsupported features")
 	}
-	
+
 	// Handle platform-specific conversion issues
 	if strings.Contains(errMsg, "failed to parse") {
 		return fmt.Errorf("unable to parse %s workflow format - file may not be a valid %s workflow", from, from)
 	}
-	
+
 	if strings.Contains(errMsg, "failed to generate") {
 		return fmt.Errorf("unable to generate %s format - some features may not be supported in target platform", to)
 	}
-	
+
 	// Handle node type issues
 	if strings.Contains(errMsg, "unsupported node type") {
 		return fmt.Errorf("workflow contains node types not supported in %s platform - conversion may require manual adjustment", to)
 	}
-	
+
 	// Default enhanced error with conversion context
 	return fmt.Errorf("%s → %s conversion failed: %w", from, to, err)
 }
@@ -449,7 +455,7 @@ func (p *ConcurrentBatchProcessor) updateProgress(result BatchResult) {
 	if !result.Success {
 		p.progressTracker.failed++
 	}
-	
+
 	completed := p.progressTracker.completed
 	total := p.progressTracker.total
 	failed := p.progressTracker.failed
@@ -488,15 +494,15 @@ func (p *ConcurrentBatchProcessor) updateProgress(result BatchResult) {
 			if failed > 0 {
 				status = "🟡"
 			}
-			
-			fmt.Printf("\r%s %s %.1f%% (%d/%d) | ⚡%.1f/s | ⏰%v | ❌%d", 
+
+			fmt.Printf("\r%s %s %.1f%% (%d/%d) | ⚡%.1f/s | ⏰%v | ❌%d",
 				status,
 				p.createProgressBar(progress, 30),
 				progress, completed, total,
 				speed,
 				p.formatDuration(remaining),
 				failed)
-			
+
 			// Print newline on completion or error
 			if completed == total {
 				fmt.Println()
@@ -510,12 +516,12 @@ func (p *ConcurrentBatchProcessor) createProgressBar(progress float64, width int
 	if progress > 100 {
 		progress = 100
 	}
-	
+
 	filled := int(progress * float64(width) / 100)
 	empty := width - filled
-	
+
 	bar := ""
-	
+
 	// Use different characters for different progress ranges
 	if progress < 25 {
 		bar += "🔴" + strings.Repeat("▓", filled) + strings.Repeat("░", empty)
@@ -526,7 +532,7 @@ func (p *ConcurrentBatchProcessor) createProgressBar(progress float64, width int
 	} else {
 		bar += "🟢" + strings.Repeat("▓", filled) + strings.Repeat("░", empty)
 	}
-	
+
 	return bar
 }
 
@@ -536,7 +542,7 @@ func (p *ConcurrentBatchProcessor) humanizeFileSize(filePath string) string {
 	if err != nil {
 		return "unknown"
 	}
-	
+
 	size := info.Size()
 	if size < 1024 {
 		return fmt.Sprintf("%dB", size)
@@ -554,7 +560,7 @@ func (p *ConcurrentBatchProcessor) formatDuration(d time.Duration) string {
 	if d < 0 {
 		return "0s"
 	}
-	
+
 	if d < time.Minute {
 		return fmt.Sprintf("%ds", int(d.Seconds()))
 	} else if d < time.Hour {
@@ -573,7 +579,7 @@ func setupBatchDirectories() error {
 	if err := os.MkdirAll(outputDir, 0755); err != nil {
 		return fmt.Errorf("failed to create output directory: %w", err)
 	}
-	
+
 	return nil
 }
 
@@ -621,7 +627,7 @@ func checkOutputFileConflicts(files []string) error {
 	for outputFile, inputFile := range conflicts {
 		fmt.Printf("   %s (from %s)\n", outputFile, filepath.Base(inputFile))
 	}
-	
+
 	fmt.Printf("\n📋 %d files already exist in output directory.\n", len(conflicts))
 	fmt.Println("Choose an action:")
 	fmt.Println("  1. Overwrite all existing files")
@@ -654,13 +660,13 @@ func checkOutputFileConflicts(files []string) error {
 // promptUserChoice prompts user for conflict resolution choice
 func promptUserChoice() (string, error) {
 	fmt.Print("Enter your choice (1-3): ")
-	
+
 	var choice string
 	_, err := fmt.Scanln(&choice)
 	if err != nil {
 		return "", err
 	}
-	
+
 	return strings.TrimSpace(choice), nil
 }
 
@@ -671,7 +677,7 @@ func removeConflictingFiles(files []string, conflicts map[string]string) error {
 	for _, inputFile := range conflicts {
 		skipFiles[inputFile] = true
 	}
-	
+
 	// Filter out conflicting files
 	var filteredFiles []string
 	for _, file := range files {
@@ -679,17 +685,17 @@ func removeConflictingFiles(files []string, conflicts map[string]string) error {
 			filteredFiles = append(filteredFiles, file)
 		}
 	}
-	
+
 	skippedCount := len(files) - len(filteredFiles)
 	if skippedCount == len(files) {
 		return fmt.Errorf("all files would be skipped due to conflicts - no files to process")
 	}
-	
+
 	if !quiet {
-		fmt.Printf("⏭️  Skipping %d files due to conflicts, processing %d files\n", 
+		fmt.Printf("⏭️  Skipping %d files due to conflicts, processing %d files\n",
 			skippedCount, len(filteredFiles))
 	}
-	
+
 	// Update the global files list (this is a limitation but works for this use case)
 	// In a more sophisticated implementation, this would return the filtered list
 	// For now, we'll just warn the user that they need to manually exclude conflicts

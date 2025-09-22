@@ -41,7 +41,7 @@ func runPlatforms(cmd *cobra.Command, args []string) error {
 	if !quiet {
 		printHeader("Supported AI Agent Platforms")
 	}
-	
+
 	platforms := getSupportedPlatforms()
 	displayPlatformOverview(platforms)
 	displayPlatformSummary(platforms)
@@ -76,7 +76,7 @@ func getSupportedPlatforms() []platformInfo {
 // displayPlatformOverview displays the platform ecosystem overview
 func displayPlatformOverview(platforms []platformInfo) {
 	fmt.Printf("📊 Platform Ecosystem Overview:\n\n")
-	
+
 	for _, platform := range platforms {
 		displayPlatformDetails(platform)
 	}
@@ -87,7 +87,7 @@ func displayPlatformDetails(platform platformInfo) {
 	fmt.Printf("🔹 %s\n", platform.name)
 	fmt.Printf("   Status: %s\n", platform.status)
 	fmt.Printf("   Description: %s\n", platform.description)
-	
+
 	if showDetailed {
 		displayPlatformFeatures(platform.features)
 	}

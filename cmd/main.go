@@ -68,7 +68,7 @@ func init() {
 	// Configure global flags
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose output")
 	rootCmd.PersistentFlags().BoolVarP(&quiet, "quiet", "q", false, "Quiet mode, only show errors")
-	
+
 	// Add subcommands
 	rootCmd.AddCommand(NewConvertCmd())
 	rootCmd.AddCommand(NewValidateCmd())
@@ -85,4 +85,3 @@ func main() {
 		os.Exit(1)
 	}
 }
-

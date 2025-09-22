@@ -54,7 +54,7 @@ func NewConvertCmd() *cobra.Command {
 	convertCmd.Flags().StringVarP(&outputFile, "output", "o", "", "Output DSL file path (required)")
 	convertCmd.Flags().StringVar(&sourceType, "from", "", "Source platform (iflytek|dify|coze, auto-detect if not specified)")
 	convertCmd.Flags().StringVar(&targetType, "to", "", "Target platform (iflytek|dify|coze) (required)")
-	
+
 	// Mark required flags
 	convertCmd.MarkFlagRequired("input")
 	convertCmd.MarkFlagRequired("output")
@@ -65,6 +65,12 @@ func NewConvertCmd() *cobra.Command {
 
 // runConvert executes the conversion command
 func runConvert(cmd *cobra.Command, args []string) error {
+	restore := redirectStdoutIfQuiet()
+	defer restore()
+	if quiet {
+		cmd.SilenceErrors = true
+		cmd.SilenceUsage = true
+	}
 	startTime := time.Now()
 
 	// Set verbose environment variable for parsers
@@ -154,7 +160,7 @@ func executeConversion(inputData []byte) ([]byte, error) {
 
 	var outputData []byte
 	var err error
-	
+
 	switch {
 	case sourceType == "iflytek" && targetType == "dify":
 		outputData, err = convertBetweenPlatforms(inputData, models.PlatformIFlytek, models.PlatformDify)
@@ -215,7 +221,7 @@ func reportConversionResults(inputData, outputData []byte, startTime time.Time) 
 	}
 
 	elapsed := time.Since(startTime)
-	
+
 	fmt.Printf("✅ Conversion completed successfully!\n")
 	fmt.Printf("   Input file: %s (%d bytes)\n", inputFile, len(inputData))
 	fmt.Printf("   Output file: %s (%d bytes)\n", outputFile, len(outputData))

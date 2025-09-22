@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -53,6 +54,11 @@ func validateInputFile(filename string) error {
 // detectSourceType auto-detects the source platform type from file content
 func detectSourceType(data []byte) string {
 	// Simple format detection logic
+	// Detect ZIP signature first; treat any ZIP as Coze export package
+	if isZipData(data) {
+		return "coze"
+	}
+
 	content := string(data)
 
 	// Detect iFlytek Spark Agent characteristics
@@ -72,6 +78,14 @@ func detectSourceType(data []byte) string {
 
 	// Default to iFlytek format
 	return "iflytek"
+}
+
+// isZipData returns true if data starts with a ZIP file signature ("PK")
+func isZipData(data []byte) bool {
+	if len(data) < 2 {
+		return false
+	}
+	return data[0] == 'P' && data[1] == 'K'
 }
 
 // validateFormatTypes validates source and target platform types
@@ -121,8 +135,8 @@ type ErrorCodeMapping struct {
 // errorCodeMappings defines the mapping table for error codes to user-friendly messages
 var errorCodeMappings = []ErrorCodeMapping{
 	{
-		Pattern:  "CONV_000001",
-		Message:  "Invalid or empty file format",
+		Pattern: "CONV_000001",
+		Message: "Invalid or empty file format",
 		Suggestions: []string{
 			"Check if the input file is a valid workflow configuration file",
 			"Verify the file is not corrupted",
@@ -130,8 +144,8 @@ var errorCodeMappings = []ErrorCodeMapping{
 		Severity: models.SeverityError,
 	},
 	{
-		Pattern:  "INTERNAL_2",
-		Message:  "Internal format validation failed",
+		Pattern: "INTERNAL_2",
+		Message: "Internal format validation failed",
 		Suggestions: []string{
 			"Check if the input file follows the correct schema",
 			"Try validating the file with the validate command first",
@@ -139,8 +153,8 @@ var errorCodeMappings = []ErrorCodeMapping{
 		Severity: models.SeverityError,
 	},
 	{
-		Pattern:  "PARSE_FAILED",
-		Message:  "Failed to parse source file",
+		Pattern: "PARSE_FAILED",
+		Message: "Failed to parse source file",
 		Suggestions: []string{
 			"Verify the file format is correct",
 			"Check for syntax errors in YAML/JSON",
@@ -148,8 +162,8 @@ var errorCodeMappings = []ErrorCodeMapping{
 		Severity: models.SeverityError,
 	},
 	{
-		Pattern:  "GENERATION_FAILED",
-		Message:  "Failed to generate target format",
+		Pattern: "GENERATION_FAILED",
+		Message: "Failed to generate target format",
 		Suggestions: []string{
 			"Check the conversion configuration",
 			"Ensure the source platform is supported",
@@ -157,8 +171,8 @@ var errorCodeMappings = []ErrorCodeMapping{
 		Severity: models.SeverityError,
 	},
 	{
-		Pattern:  "failed to read",
-		Message:  "File read operation failed",
+		Pattern: "failed to read",
+		Message: "File read operation failed",
 		Suggestions: []string{
 			"Check the file path and permissions",
 			"Ensure the file exists and is readable",
@@ -166,8 +180,8 @@ var errorCodeMappings = []ErrorCodeMapping{
 		Severity: models.SeverityError,
 	},
 	{
-		Pattern:  "file does not exist",
-		Message:  "Input file not found",
+		Pattern: "file does not exist",
+		Message: "Input file not found",
 		Suggestions: []string{
 			"Check the file path is correct",
 			"Ensure the file exists in the specified location",
@@ -175,8 +189,8 @@ var errorCodeMappings = []ErrorCodeMapping{
 		Severity: models.SeverityError,
 	},
 	{
-		Pattern:  "unsupported conversion path",
-		Message:  "Direct conversion not supported",
+		Pattern: "unsupported conversion path",
+		Message: "Direct conversion not supported",
 		Suggestions: []string{
 			"Use iFlytek as intermediate hub for Dify ↔ Coze conversion",
 			"Convert source → iflytek, then iflytek → target",
@@ -184,8 +198,8 @@ var errorCodeMappings = []ErrorCodeMapping{
 		Severity: models.SeverityWarning,
 	},
 	{
-		Pattern:  "YAML format error",
-		Message:  "YAML syntax error detected",
+		Pattern: "YAML format error",
+		Message: "YAML syntax error detected",
 		Suggestions: []string{
 			"Check YAML file syntax is correct",
 			"Verify proper indentation and structure",
@@ -193,8 +207,8 @@ var errorCodeMappings = []ErrorCodeMapping{
 		Severity: models.SeverityError,
 	},
 	{
-		Pattern:  "failed to initialize",
-		Message:  "System initialization failed",
+		Pattern: "failed to initialize",
+		Message: "System initialization failed",
 		Suggestions: []string{
 			"Retry the operation",
 			"Contact support if the issue persists",
@@ -210,7 +224,7 @@ func wrapUserFriendlyError(err error) error {
 	}
 
 	errStr := err.Error()
-	
+
 	// Try to match error patterns using the mapping table
 	for _, mapping := range errorCodeMappings {
 		if strings.Contains(errStr, mapping.Pattern) {
@@ -226,7 +240,7 @@ func wrapUserFriendlyError(err error) error {
 			return convErr
 		}
 	}
-	
+
 	// Handle special case for conversion failed errors
 	if strings.Contains(errStr, "conversion failed") {
 		return &models.ConversionError{
@@ -241,7 +255,7 @@ func wrapUserFriendlyError(err error) error {
 			Details:  errStr,
 		}
 	}
-	
+
 	// For unknown errors, return original error
 	return err
 }
@@ -252,5 +266,27 @@ func markRequiredFlags(cmd *cobra.Command, flagNames []string) {
 		if err := cmd.MarkFlagRequired(flagName); err != nil {
 			fmt.Fprintf(os.Stderr, "Failed to mark %s flag as required: %v\n", flagName, err)
 		}
+	}
+}
+
+// redirectStdoutIfQuiet redirects stdout to the OS null device when quiet mode is enabled.
+// It returns a restore function to recover the original stdout.
+func redirectStdoutIfQuiet() func() {
+	if !quiet {
+		return func() {}
+	}
+	old := os.Stdout
+	nullDevice := "/dev/null"
+	if runtime.GOOS == "windows" {
+		nullDevice = "NUL"
+	}
+	f, err := os.OpenFile(nullDevice, os.O_WRONLY, 0)
+	if err != nil {
+		return func() {}
+	}
+	os.Stdout = f
+	return func() {
+		_ = f.Close()
+		os.Stdout = old
 	}
 }

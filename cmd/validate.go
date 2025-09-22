@@ -33,7 +33,7 @@ Supports automatic platform detection and comprehensive validation rules.`,
 	// Configure validate command flags
 	validateCmd.Flags().StringVarP(&inputFile, "input", "i", "", "Input DSL file path (required)")
 	validateCmd.Flags().StringVar(&sourceType, "from", "", "Source platform (iflytek|dify|coze, auto-detect if not specified)")
-	
+
 	// Mark required flags
 	validateCmd.MarkFlagRequired("input")
 
@@ -42,6 +42,12 @@ Supports automatic platform detection and comprehensive validation rules.`,
 
 // runValidate executes the validation command
 func runValidate(cmd *cobra.Command, args []string) error {
+	restore := redirectStdoutIfQuiet()
+	defer restore()
+	if quiet {
+		cmd.SilenceErrors = true
+		cmd.SilenceUsage = true
+	}
 	if !quiet {
 		printHeader("DSL File Validation")
 	}
@@ -64,9 +70,9 @@ func runValidate(cmd *cobra.Command, args []string) error {
 
 // validationContext holds validation context data
 type validationContext struct {
-	inputFile   string
-	inputData   []byte
-	sourceType  string
+	inputFile  string
+	inputData  []byte
+	sourceType string
 }
 
 // prepareValidationContext prepares validation context
