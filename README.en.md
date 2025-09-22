@@ -1,325 +1,180 @@
-# AgentBridge CLI User Manual
+# AI Agents Transformer
 
-Cross-platform AI agent workflow DSL converter with iFlytek Spark as the central hub, supporting bidirectional conversion between Spark, Dify, and Coze platforms.
+[English Version](README.en.md) | [中文版本](README.md)
 
-## Conversion Architecture
+Cross‑platform AI agent workflow DSL converter. Uses iFlytek (Spark Agent) as the hub: source files are normalized into a unified DSL, then generated to target‑specific DSL for Dify and Coze. Supports auto detection, concurrent batch, and multi‑stage validation.
 
-**Star Architecture Design**: iFlytek Spark serves as the central hub, supporting the following conversion paths:
+---
 
-```
-    Dify ←→ iFlytek ←→ Coze
-         (Central Hub)
-```
+## Table of Contents
+- [Overview](#overview)
+- [Supported Paths](#supported-paths)
+- [Tolerance & Placeholders](#tolerance)
+- [Quick Start (Windows / macOS / Linux)](#quick-start)
+- [CLI Reference (Complete)](#cli)
+- [Coze YAML Import/Export](#coze-yaml)
+- [Build](#build)
+- [Dev & Test](#dev)
+- [FAQ](#faq)
+- [License & Credits](#license)
 
-- ✅ **iFlytek ↔ Dify**: Full bidirectional conversion
-- ✅ **iFlytek ↔ Coze**: Full bidirectional conversion with ZIP format support
-- ❌ **Dify ↔ Coze**: Direct conversion not supported, requires iFlytek as intermediate hub
+---
 
+<a id="overview"></a>
+## Overview
+- Bidirectional conversion: Dify ↔ iFlytek, Coze ↔ iFlytek
+- Coze ZIP: official Coze ZIP → iFlytek
+- Auto detection: YAML/ZIP (ZIP is detected as Coze)
+- Concurrent batch: `batch` picks workers by CPU, supports pattern & overwrite
+- Validation pipeline: structural / semantic / platform checks with user‑friendly messages
+- Node coverage: start / end / llm / code / condition / classifier / iteration
+
+<a id="supported-paths"></a>
+## Supported Paths
+- Dify ↔ iFlytek (bidirectional)
+- Coze ↔ iFlytek (bidirectional, YAML)
+- Dify → iFlytek → Coze (recommended)
+- Coze → iFlytek → Dify
+- Coze ZIP → iFlytek (native)
+
+Not supported:
+- Dify ↔ Coze direct conversion (use iFlytek as the hub)
+- iFlytek → Coze ZIP (ZIP as target is not supported yet)
+
+<a id="tolerance"></a>
+## Tolerance & Placeholders
+To keep workflow structure intact when encountering unsupported node types on the target platform:
+- Replace the node with a “code node” placeholder
+- Put the original node type in the code node title for quick follow‑up
+- Preserve incoming/outgoing edges to keep the flow executable
+- With `--verbose`, print details and summary, e.g.:
+  - Converting unsupported node type '4' (ID: 133604) to code node placeholder
+  - 25 unsupported nodes were converted to code node placeholders
+
+<a id="quick-start"></a>
 ## Quick Start
+All commands below are executed at the project root.
 
+### Windows (PowerShell)
+```powershell
+# iFlytek → Dify
+./ai-agent-converter.exe convert --from iflytek --to dify --input agent.yml --output dify.yml
+
+# Dify → iFlytek
+./ai-agent-converter.exe convert --from dify --to iflytek --input dify.yml --output agent.yml
+
+# iFlytek → Coze (YAML)
+./ai-agent-converter.exe convert --from iflytek --to coze --input agent.yml --output coze.yml
+
+# Coze ZIP → iFlytek (ZIP auto‑detected as Coze)
+./ai-agent-converter.exe convert --to iflytek --input workflow.zip --output agent.yml --verbose
+
+# Batch (concurrent, overwrite)
+./ai-agent-converter.exe batch --from iflytek --to dify --input-dir .\tests\fixtures\iflytek --pattern 'iflytek*.yml' --output-dir .\out --workers 4 --overwrite
+
+# Validate DSL
+./ai-agent-converter.exe validate --input agent.yml
+
+# Quiet mode (errors only)
+./ai-agent-converter.exe convert --from iflytek --to dify --input agent.yml --output dify.yml --quiet
+```
+Tip: use `.exe`; prefer single quotes for `--pattern`.
+
+### macOS / Linux (Terminal)
 ```bash
-# Build the CLI tool
-go build -o ai-agent-converter ./cmd/
-
-# Basic conversion: iFlytek to Coze
+# iFlytek → Coze (YAML)
 ./ai-agent-converter convert --from iflytek --to coze --input agent.yml --output coze.yml
 
-# Coze ZIP to iFlytek
-./ai-agent-converter convert --from coze --to iflytek --input workflow.zip --output agent.yml
+# Dify → iFlytek
+./ai-agent-converter convert --from dify --to iflytek --input dify.yml --output agent.yml
 
-# Auto-detect format
-./ai-agent-converter convert --to dify --input agent.yml --output dify.yml
+# Auto‑detect (YAML)
+./ai-agent-converter convert --to dify --input agent.yml --output dify.yml --verbose
 
-# Validate DSL file
+# Batch (default concurrency)
+./ai-agent-converter batch --from iflytek --to dify --input-dir ./workflows --output-dir ./converted --workers 8 --overwrite
+
+# Validate
 ./ai-agent-converter validate --input agent.yml
 ```
 
-## Commands
+<a id="cli"></a>
+## CLI Reference (Complete)
+Run at project root; use `./ai-agent-converter.exe` on Windows and `./ai-agent-converter` on macOS/Linux.
 
 ### convert
-
-Convert between different AI agent platforms.
-
-**Usage:**
-
-```bash
-ai-agent-converter convert [flags]
-```
-
-**Flags:**
-
-- `--from` - Source platform (iflytek|dify|coze, auto-detect if omitted)
-- `--to` - Target platform (iflytek|dify|coze) **[required]**
-- `--input, -i` - Input DSL file path **[required]**
-- `--output, -o` - Output DSL file path **[required]**
-
-**Supported Conversion Paths:**
-
-```bash
-# iFlytek → Dify
-ai-agent-converter convert --from iflytek --to dify --input agent.yml --output dify.yml
-
-# iFlytek → Coze
-ai-agent-converter convert --from iflytek --to coze --input agent.yml --output coze.yml
-
-# Coze ZIP → iFlytek
-ai-agent-converter convert --from coze --to iflytek --input workflow.zip --output agent.yml
-
-# Dify → iFlytek
-ai-agent-converter convert --from dify --to iflytek --input dify.yml --output agent.yml
-```
-
-**Unsupported Conversion Paths:**
-
-```bash
-# ❌ Dify → Coze (direct conversion)
-# Use two-step conversion:
-ai-agent-converter convert --from dify --to iflytek --input dify.yml --output temp.yml
-ai-agent-converter convert --from iflytek --to coze --input temp.yml --output coze.yml
-```
+- Purpose: convert DSL across platforms
+- Required: `--to`, `--input/-i`, `--output/-o`
+- Optional: `--from` (auto‑detect when omitted; ZIP → Coze)
+- Limits: Dify↔Coze direct is not supported; iFlytek→Coze ZIP is not supported
 
 ### validate
-
-Validate DSL file format and structure.
-
-**Usage:**
-
-```bash
-ai-agent-converter validate [flags]
-```
-
-**Flags:**
-
-- `--from` - Source platform (iflytek|dify|coze, auto-detect if omitted)
-- `--input, -i` - Input DSL file path **[required]**
-
-**Examples:**
-
-```bash
-# Validate iFlytek DSL file
-ai-agent-converter validate --input agent.yml --from iflytek
-
-# Validate Dify DSL file
-ai-agent-converter validate --input dify.yml --from dify
-
-# Auto-detect and validate
-ai-agent-converter validate --input agent.yml
-
-# Note: ZIP format validation is not supported by validate command
-# Use convert command to verify ZIP file compatibility
-```
-
-### info
-
-Display tool capabilities and supported features.
-
-**Usage:**
-
-```bash
-ai-agent-converter info [flags]
-```
-
-**Examples:**
-
-```bash
-# Show basic tool information
-ai-agent-converter info
-
-# Show supported node types
-ai-agent-converter info --nodes
-
-# Show data type mappings
-ai-agent-converter info --types
-
-# Show all information (nodes + types)
-ai-agent-converter info --all
-```
-
-### platforms
-
-List supported AI agent platforms.
-
-**Usage:**
-
-```bash
-ai-agent-converter platforms [flags]
-```
-
-**Examples:**
-
-```bash
-# List all platforms
-ai-agent-converter platforms
-
-# Show detailed platform information
-ai-agent-converter platforms --detailed
-```
+- Purpose: validate DSL (structural/semantic/platform)
+- Required: `--input/-i`
+- Optional: `--from` (auto‑detect when omitted)
 
 ### batch
+- Purpose: concurrent batch conversion
+- Required: `--from`, `--to`, `--input-dir`, `--output-dir`
+- Optional: `--pattern` (default `*.yml`), `--workers` (CPU‑based by default), `--overwrite`, global `--quiet/--verbose`
 
-Batch convert multiple workflow files with concurrent processing for efficient conversion.
+### info
+- Purpose: show capabilities
+- Flags: `--nodes`, `--types`, `--all`
 
-**Usage:**
+### platforms
+- Purpose: list supported platforms
+- Flags: `--detailed`
 
+### completion (optional)
+- Purpose: generate shell completion scripts
+- PowerShell (current session):
+  - `ai-agent-converter.exe completion powershell | Out-String | Invoke-Expression`
+- PowerShell (persist to Profile):
+  - `ai-agent-converter.exe completion powershell | Out-File -Encoding UTF8 $PROFILE`
+- Bash: `ai-agent-converter completion bash > /etc/bash_completion.d/ai-agent-converter`
+- Zsh: `ai-agent-converter completion zsh > "${fpath[1]}/_ai-agent-converter"`
+
+<a id="coze-yaml"></a>
+## Coze YAML Import/Export
+Coze official workflow currently does not support YAML I/O. We maintain a fork that enables it:
+- Repo: https://github.com/2064968308github/coze_transformer
+- Usage: convert to/from YAML with that repo, then use this tool for cross‑platform conversion (e.g., Coze YAML → iFlytek, or iFlytek → Coze YAML).
+
+<a id="build"></a>
+## Build
+### Windows (recommended)
+```powershell
+go build -o ai-agent-converter.exe ./cmd/
+./ai-agent-converter.exe --help
+```
+If a same‑name file without extension exists, PowerShell may show “Choose an app to open”. Keep the `.exe` only.
+
+### macOS / Linux
 ```bash
-ai-agent-converter batch [flags]
+go build -o ai-agent-converter ./cmd/
+chmod +x ./ai-agent-converter
+./ai-agent-converter --help
 ```
 
-**Flags:**
-
-- `--from` - Source platform (iflytek|dify|coze) **[required]**
-- `--to` - Target platform (iflytek|dify|coze) **[required]**
-- `--input-dir` - Input directory **[required]**
-- `--output-dir` - Output directory **[required]**
-- `--pattern` - File pattern (default: \*.yml)
-- `--workers` - Number of concurrent workers (default: auto-detect based on CPU cores)
-- `--overwrite` - Automatically overwrite existing output files without prompting
-
-**Examples:**
-
+<a id="dev"></a>
+## Dev & Test
 ```bash
-# Batch convert iFlytek to Coze with default workers
-ai-agent-converter batch --from iflytek --to coze --input-dir ./workflows --output-dir ./converted
-
-# Batch convert with custom worker count
-ai-agent-converter batch --from iflytek --to dify --input-dir ./workflows --output-dir ./converted --workers 8
-
-# Batch convert with pattern matching and overwrite
-ai-agent-converter batch --from iflytek --to dify --input-dir ./workflows --pattern "*.yaml" --output-dir ./converted --overwrite
+go fmt ./...
+go vet ./...
+go test ./... -cover
 ```
 
-## Global Flags
+<a id="faq"></a>
+## FAQ
+- PowerShell opens a “Choose an app” dialog: keep and run `ai-agent-converter.exe` only
+- Coze ZIP auto‑detection: ZIP is detected as Coze; `--from` is not required
+- Dify ↔ Coze direct: not supported; use iFlytek as the hub
+- Coze ZIP as output: not supported yet (use YAML or the YAML fork above)
+- Batch `--pattern`: single quotes on PowerShell; single/double quotes on macOS/Linux
+- Quiet mode: `--quiet` prints errors only
 
-- `--verbose, -v` - Enable verbose output
-- `--quiet, -q` - Quiet mode, only show errors
-- `--help, -h` - Help for any command
-- `--version` - Show version information
-
-## Supported Platforms
-
-| Platform            | Status              | Role              | Description                                                      |
-| ------------------- | ------------------- | ----------------- | ---------------------------------------------------------------- |
-| iFlytek Spark Agent | ✅ Production Ready | Central Hub       | iFlytek Spark AI Agent Platform, conversion hub                  |
-| Dify Platform       | ✅ Production Ready | Terminal Platform | Open-source LLM application platform, bidirectional with iFlytek |
-| Coze Platform       | ✅ Production Ready | Terminal Platform | ByteDance AI agent platform with ZIP format support              |
-
-## Supported Node Types
-
-| Unified Type | iFlytek Spark   | Dify                | Coze | Description               |
-| ------------ | --------------- | ------------------- | ---- | ------------------------- |
-| start        | start-node      | start               | ✅   | Workflow entry point      |
-| end          | end-node        | end                 | ✅   | Workflow exit point       |
-| llm          | llm-node        | llm                 | ✅   | Large Language Model node |
-| code         | code-node       | code                | ✅   | Code execution node       |
-| condition    | condition-node  | if-else             | ✅   | Conditional branching     |
-| classifier   | classifier-node | question-classifier | ✅   | Question classification   |
-| iteration    | iteration-node  | iteration           | ✅   | Loop iteration            |
-
-## Format Support
-
-### Input Formats
-
-- **YAML files** (.yml, .yaml): Standard format for all platforms
-- **ZIP files** (.zip): Coze official export format, auto-detected
-
-### Output Formats
-
-- **YAML format**: Standard output, directly compatible with target platforms
-- **Auto-formatting**: Maintains platform-specific structure and fields
-
-## Core Features
-
-### Conversion Capabilities
-
-- **Bidirectional Conversion**: Full bidirectional support between iFlytek and Dify/Coze
-- **Data Integrity**: Lossless conversion based on unified DSL intermediate representation
-- **Auto-Format Detection**: Intelligent input file format recognition
-- **ZIP Format Support**: Native support for Coze official ZIP export format
-- **Concurrent Processing**: Parallel batch conversion with auto-scaling worker threads
-
-### Fault Tolerance
-
-- **Unsupported Node Placeholder Conversion**: Converts unsupported nodes to code placeholders, maintaining workflow integrity
-- **Edge Connection Repair**: Automatically handles connection relationships after node skipping
-- **User-Friendly Feedback**: Provides detailed conversion statistics and manual adjustment guidance
-- **Error Code Mapping**: Structured error handling with user-friendly messages and suggestions
-
-### Validation Pipeline
-
-- **Structural Validation**: Checks DSL basic structure integrity
-- **Semantic Validation**: Verifies correctness of inter-node logical relationships
-- **Platform Validation**: Ensures output conforms to target platform specifications
-
-## Error Handling
-
-### File Errors
-
-```bash
-Error: input file does not exist: agent.yml
-# Solution: Check if the file path is correct
-```
-
-### Format Errors
-
-```bash
-Error: invalid YAML format: yaml: line 10: found character that cannot start any token
-# Solution: Check YAML syntax, especially indentation and special characters
-```
-
-### Conversion Path Errors
-
-```bash
-Error: direct conversion between dify and coze is not supported. Please use iFlytek as intermediate hub:
-  1. Convert dify → iflytek
-  2. Convert iflytek → coze
-# Solution: Use two-step conversion approach
-```
-
-### Validation Failures
-
-```bash
-❌ DSL file validation failed, found 2 issues:
-   1. missing required field: flowMeta
-   2. node ID is required for node node_123
-# Solution: Fix DSL file according to specific error messages
-```
-
-## Usage Recommendations
-
-### Performance Optimization
-
-- Use `--quiet` mode to reduce output overhead for batch operations
-- Use `batch` command with `--workers` parameter to optimize concurrent processing
-- Use `--verbose` to monitor progress for large file conversions
-- Use `--overwrite` in batch mode to avoid interactive prompts
-
-### Best Practices
-
-1. **Pre-conversion Validation**: Use `validate` command to ensure source file correctness
-2. **Backup Original Files**: Backup important workflow files before conversion
-3. **Test Conversion Results**: Test workflow correctness in target platform after conversion
-4. **Review Statistics**: Pay attention to conversion statistics and placeholder node information
-5. **Optimize Worker Count**: For batch processing, adjust `--workers` based on system resources and file complexity
-
-### Troubleshooting
-
-1. **Check File Permissions**: Ensure read/write permissions for relevant directories
-2. **Validate File Format**: Use `validate` command to check input files
-3. **View Detailed Logs**: Use `--verbose` parameter to get detailed error information
-4. **Confirm Conversion Path**: Refer to the supported conversion paths table
-
-## Technical Implementation
-
-### Architecture Benefits
-
-- **Star Architecture**: Centralized conversion hub reduces complexity compared to mesh architecture
-- **Unified DSL**: Intermediate representation ensures data integrity across conversions
-- **Modular Design**: Platform-specific parsers and generators enable easy extension
-- **Fault Tolerance**: Graceful handling of unsupported features maintains system stability
-
-### Conversion Process
-
-1. **Parse**: Convert source platform DSL to unified DSL
-2. **Validate**: Three-stage validation ensures data correctness
-3. **Generate**: Convert unified DSL to target platform format
-4. **Report**: Provide detailed conversion statistics and recommendations
+<a id="license"></a>
+## License & Credits
+- License: see LICENSE
+- Coze YAML I/O fork: https://github.com/2064968308github/coze_transformer
