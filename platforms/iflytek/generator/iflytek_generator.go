@@ -1851,7 +1851,7 @@ func (g *IFlytekGenerator) getFirstIntentTarget(classifierID string) string {
 	return ""
 }
 
-// generateDefaultIntentEdges automatically generates edges for default intents of classifiers, connecting to the target node of the first intent
+// generateDefaultIntentEdges generates edges for default intents of classifiers, connecting to the target node of the last intent
 func (g *IFlytekGenerator) generateDefaultIntentEdges(edges []models.Edge, iflytekDSL *IFlytekDSL) {
 	// Generate connection edges for default intents of each classifier node
 	for classifierID, classifierGen := range g.classifierGenerators {
@@ -1863,29 +1863,32 @@ func (g *IFlytekGenerator) generateDefaultIntentEdges(edges []models.Edge, iflyt
 			continue
 		}
 
-		// Find the target node of the first classification connection
-		var firstClassTargetNode string
+        // Find the target node of the last classification connection
+        var lastClassTargetNode string
 
-		// Iterate through edges to find the target node of the first edge from this classifier
-		for _, edge := range edges {
-			if g.idMapping[edge.Source] == classifierID {
-				firstClassTargetNode = g.idMapping[edge.Target]
-				break
-			}
-		}
+        for _, edge := range edges {
+            if g.idMapping[edge.Source] == classifierID {
+                // Keep updating to the last matching edge's target
+                if mapped := g.idMapping[edge.Target]; mapped != "" {
+                    lastClassTargetNode = mapped
+                } else {
+                    lastClassTargetNode = edge.Target
+                }
+            }
+        }
 
-		if firstClassTargetNode == "" {
-			continue
-		}
+        if lastClassTargetNode == "" {
+            continue
+        }
 
-		// Create edge for default intent
-		defaultEdge := IFlytekEdge{
-			ID:           g.generateEdgeIDWithHandle(classifierID, defaultIntentID, firstClassTargetNode),
-			Source:       classifierID,
-			Target:       firstClassTargetNode,
-			SourceHandle: defaultIntentID,
-			TargetHandle: "",
-			Type:         "customEdge",
+        // Create edge for default intent
+        defaultEdge := IFlytekEdge{
+            ID:           g.generateEdgeIDWithHandle(classifierID, defaultIntentID, lastClassTargetNode),
+            Source:       classifierID,
+            Target:       lastClassTargetNode,
+            SourceHandle: defaultIntentID,
+            TargetHandle: "",
+            Type:         "customEdge",
 			MarkerEnd: &IFlytekMarkerEnd{
 				Color: "#275EFF",
 				Type:  "arrow",

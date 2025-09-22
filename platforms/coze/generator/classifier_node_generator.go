@@ -227,22 +227,21 @@ func (g *ClassifierNodeGenerator) generateInputParameters(unifiedNode *models.No
 
 // generateIntents converts classifier classes to Coze intent format.
 func (g *ClassifierNodeGenerator) generateIntents(config *models.ClassifierConfig) []map[string]interface{} {
-	intents := []map[string]interface{}{}
-	
-	for _, class := range config.Classes {
-
-		if (class.Name == "default" && strings.Contains(class.Description, "默认")) ||
-		   strings.Contains(class.Description, "默认意图") {
-			continue // Skip the default intent
-		}
-		
-		intent := map[string]interface{}{
-			"name": class.Name,
-		}
-		intents = append(intents, intent)
-	}
-	
-	return intents
+    intents := []map[string]interface{}{}
+    
+    for _, class := range config.Classes {
+        // Skip default intent
+        if class.IsDefault || strings.EqualFold(class.Name, "default") {
+            continue
+        }
+        
+        intent := map[string]interface{}{
+            "name": class.Name,
+        }
+        intents = append(intents, intent)
+    }
+    
+    return intents
 }
 
 // generateLLMParam converts classifier model configuration to Coze LLM parameters.

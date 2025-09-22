@@ -26,35 +26,46 @@ func (g *EdgeGenerator) SetUnifiedDSL(unifiedDSL *models.UnifiedDSL) {
 
 // GenerateEdge converts unified edge definitions to Coze edge format.
 func (g *EdgeGenerator) GenerateEdge(unifiedEdge *models.Edge) *CozeEdge {
-	fromPort := g.mapToCozePort(unifiedEdge.SourceHandle)
-	toPort := g.mapToCozePort(unifiedEdge.TargetHandle)
-	
-	return &CozeEdge{
-		FromNode: g.idGenerator.MapToCozeNodeID(unifiedEdge.Source),
-		FromPort: fromPort,
-		ToNode:   g.idGenerator.MapToCozeNodeID(unifiedEdge.Target),
-		ToPort:   toPort,
-	}
+    fromPort := g.mapToCozePort(unifiedEdge.SourceHandle)
+    // Coze format does not use target port for normal edges
+    toPort := ""
+    
+    return &CozeEdge{
+        FromNode: g.idGenerator.MapToCozeNodeID(unifiedEdge.Source),
+        FromPort: fromPort,
+        ToNode:   g.idGenerator.MapToCozeNodeID(unifiedEdge.Target),
+        ToPort:   toPort,
+    }
 }
 
 // GenerateSchemaEdge converts unified edge definitions to Coze schema edge format.
 func (g *EdgeGenerator) GenerateSchemaEdge(unifiedEdge *models.Edge) *CozeSchemaEdge {
-	fromPort := g.mapToCozePort(unifiedEdge.SourceHandle)
-	toPort := g.mapToCozePort(unifiedEdge.TargetHandle)
-	
-	return &CozeSchemaEdge{
-		SourceNodeID: g.idGenerator.MapToCozeNodeID(unifiedEdge.Source),
-		SourcePortID: fromPort,
-		TargetNodeID: g.idGenerator.MapToCozeNodeID(unifiedEdge.Target),
-		TargetPortID: toPort,
-	}
+    fromPort := g.mapToCozePort(unifiedEdge.SourceHandle)
+    // Coze schema edges typically omit targetPortID
+    toPort := ""
+    
+    edge := &CozeSchemaEdge{
+        SourceNodeID: g.idGenerator.MapToCozeNodeID(unifiedEdge.Source),
+        TargetNodeID: g.idGenerator.MapToCozeNodeID(unifiedEdge.Target),
+    }
+    if fromPort != "" {
+        edge.SourcePortID = fromPort
+    }
+    if toPort != "" {
+        edge.TargetPortID = toPort
+    }
+    return edge
 }
 
 // mapToCozePort transforms unified port handles to Coze-specific port identifiers.
 func (g *EdgeGenerator) mapToCozePort(handle string) string {
-	if handle == "" {
-		return ""
-	}
+    if handle == "" {
+        return ""
+    }
+    // Ignore generic Dify handles for Coze format
+    if handle == "source" || handle == "target" {
+        return ""
+    }
 	
 	// Handle iFlytek branch format: branch_one_of::xxx (for condition nodes)
 	if strings.HasPrefix(handle, "branch_one_of::") {
@@ -66,8 +77,8 @@ func (g *EdgeGenerator) mapToCozePort(handle string) string {
 		return g.mapIntentToCozePort(handle)
 	}
 	
-	// Direct port mapping
-	return handle
+    // Do not pass through unknown handles
+    return ""
 }
 
 // mapBranchToCozePort converts iFlytek branch handles to Coze condition port format.
