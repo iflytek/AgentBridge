@@ -53,31 +53,40 @@ func validateInputFile(filename string) error {
 
 // detectSourceType auto-detects the source platform type from file content
 func detectSourceType(data []byte) string {
-	// Simple format detection logic
-	// Detect ZIP signature first; treat any ZIP as Coze export package
-	if isZipData(data) {
-		return "coze"
-	}
+    // Detect ZIP signature first; treat any ZIP as Coze export package
+    if isZipData(data) {
+        return "coze"
+    }
 
-	content := string(data)
+    // Use case-insensitive heuristic checks
+    content := string(data)
+    lower := strings.ToLower(content)
 
-	// Detect iFlytek Spark Agent characteristics
-	if strings.Contains(content, "flowMeta") && strings.Contains(content, "flowData") {
-		return "iflytek"
-	}
+    // iFlytek Spark Agent characteristics
+    if strings.Contains(content, "flowMeta") && strings.Contains(content, "flowData") {
+        return "iflytek"
+    }
 
-	// Detect Dify characteristics
-	if strings.Contains(content, "workflow") && strings.Contains(content, "app") && strings.Contains(content, "kind") {
-		return "dify"
-	}
+    // Dify characteristics
+    if strings.Contains(content, "workflow") && strings.Contains(content, "app") && strings.Contains(content, "kind") {
+        return "dify"
+    }
 
-	// Detect Coze characteristics
-	if strings.Contains(content, "workflow_id") || strings.Contains(content, "export_format") {
-		return "coze"
-	}
+    // Coze characteristics (be tolerant to different field spellings)
+    // - workflow_id (official) or workflowid (observed in fixtures)
+    // - export_format hint
+    // - schema section with nodes/edges
+    // - trigger_parameters key appears in start/end
+    if strings.Contains(lower, "workflow_id") ||
+        strings.Contains(lower, "workflowid") ||
+        strings.Contains(lower, "export_format") ||
+        (strings.Contains(lower, "schema:") && (strings.Contains(lower, "nodes:") || strings.Contains(lower, "edges:"))) ||
+        strings.Contains(lower, "trigger_parameters") {
+        return "coze"
+    }
 
-	// Default to iFlytek format
-	return "iflytek"
+    // Default to iFlytek format
+    return "iflytek"
 }
 
 // isZipData returns true if data starts with a ZIP file signature ("PK")

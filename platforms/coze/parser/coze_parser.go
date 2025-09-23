@@ -218,21 +218,31 @@ func (p *CozeParser) getStringFromMap(m map[string]interface{}, key string, defa
 
 // Validate validates Coze DSL format.
 func (p *CozeParser) Validate(data []byte) error {
-	var cozeDSL CozeDSL
-	if err := yaml.Unmarshal(data, &cozeDSL); err != nil {
-		return fmt.Errorf("invalid YAML format: %w", err)
-	}
+    // Support validating Coze ZIP by converting to YAML first
+    if p.isZipFormat(data) {
+        p.debugPrintf("Detected ZIP format in Validate, converting to YAML\n")
+        yamlData, err := p.parseZipToYaml(data)
+        if err != nil {
+            return fmt.Errorf("invalid ZIP format: %w", err)
+        }
+        data = yamlData
+    }
 
-	// Validate required fields
-	if cozeDSL.Name == "" {
-		return fmt.Errorf("workflow name is required")
-	}
+    var cozeDSL CozeDSL
+    if err := yaml.Unmarshal(data, &cozeDSL); err != nil {
+        return fmt.Errorf("invalid YAML format: %w", err)
+    }
 
-	if cozeDSL.Nodes == nil {
-		return fmt.Errorf("workflow nodes are required")
-	}
+    // Validate required fields
+    if cozeDSL.Name == "" {
+        return fmt.Errorf("workflow name is required")
+    }
 
-	return nil
+    if cozeDSL.Nodes == nil {
+        return fmt.Errorf("workflow nodes are required")
+    }
+
+    return nil
 }
 
 // parseNodes parses nodes.

@@ -212,21 +212,46 @@ func validateDifyDSL(data []byte) []string {
 
 // validateCozeDSL validates Coze DSL format
 func validateCozeDSL(data []byte) []string {
-	var errors []string
+    var errors []string
 
-	// Basic YAML format validation
-	var yamlData map[string]interface{}
-	if err := yaml.Unmarshal(data, &yamlData); err != nil {
-		errors = append(errors, fmt.Sprintf("YAML format error: %v", err))
-		return errors
-	}
+    // If ZIP, delegate to platform parser via conversion service for robust validation
+    if isZipData(data) {
+        conversionService, err := core.InitializeArchitecture()
+        if err != nil {
+            errors = append(errors, fmt.Sprintf("failed to initialize architecture: %v", err))
+            return errors
+        }
+        if err := conversionService.ValidateSourceData(data, models.PlatformCoze); err != nil {
+            errors = append(errors, fmt.Sprintf("structural validation failed: %v", err))
+        }
+        return errors
+    }
 
-	// Check for Coze DSL structure
-	if _, exists := yamlData["workflow_id"]; !exists {
-		if _, exists := yamlData["name"]; !exists {
-			errors = append(errors, "missing required Coze DSL fields: workflow_id or name")
-		}
-	}
+    // YAML format path: quick syntax check first
+    var yamlData map[string]interface{}
+    if err := yaml.Unmarshal(data, &yamlData); err != nil {
+        errors = append(errors, fmt.Sprintf("YAML format error: %v", err))
+        return errors
+    }
 
-	return errors
+    // Basic structure hints
+    if _, exists := yamlData["workflow_id"]; !exists {
+        if _, exists := yamlData["workflowid"]; !exists { // be tolerant
+            if _, exists := yamlData["name"]; !exists {
+                errors = append(errors, "missing required Coze DSL fields: workflow_id/workflowid or name")
+            }
+        }
+    }
+
+    // Delegate to platform parser for deeper structural checks
+    conversionService, err := core.InitializeArchitecture()
+    if err != nil {
+        errors = append(errors, fmt.Sprintf("failed to initialize architecture: %v", err))
+        return errors
+    }
+    if err := conversionService.ValidateSourceData(data, models.PlatformCoze); err != nil {
+        errors = append(errors, fmt.Sprintf("structural validation failed: %v", err))
+    }
+
+    return errors
 }
