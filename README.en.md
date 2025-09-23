@@ -1,164 +1,223 @@
-# AI Agents Transformer
+# AgentBridge
 
-[English Version](README.en.md) | [中文版本](README.md)
+[English](README.en.md) | [简体中文](README.md)
 
-Cross‑platform AI agent workflow DSL converter. Uses iFlytek (Spark Agent) as the hub: source files are normalized into a unified DSL, then generated to target‑specific DSL for Dify and Coze. Supports auto detection, concurrent batch, and multi‑stage validation.
+> **The world's first cross-platform AI agent platform compatibility tool**
+>
+> With just a single binary file, you can locally achieve seamless conversion of DSL files between different AI agent platforms (iFlytek, Dify, Coze), enabling AI agent workflow ecosystem interoperability. Using iFlytek (Spark Agent) as the hub, it unifies parsing into intermediate DSL, then generates according to the target platform, supporting automatic recognition, concurrent batch processing, and strict validation.
 
 ---
 
 ## Table of Contents
-- [Overview](#overview)
-- [Supported Paths](#supported-paths)
-- [Tolerance & Placeholders](#tolerance)
-- [Quick Start (Windows / macOS / Linux)](#quick-start)
-- [CLI Reference (Complete)](#cli)
-- [Coze YAML Import/Export](#coze-yaml)
-- [Build](#build)
-- [Dev & Test](#dev)
+- [Project Overview](#overview)
+- [Visualization](#visuals)
+- [Quick Start](#quickstart)
+- [CLI Reference](#cli)
+- [Development & Testing](#dev)
 - [FAQ](#faq)
 - [License & Credits](#license)
 
 ---
 
 <a id="overview"></a>
-## Overview
-- Bidirectional conversion: Dify ↔ iFlytek, Coze ↔ iFlytek
-- Coze ZIP: official Coze ZIP → iFlytek
-- Auto detection: YAML/ZIP (ZIP is detected as Coze)
-- Concurrent batch: `batch` picks workers by CPU, supports pattern & overwrite
-- Validation pipeline: structural / semantic / platform checks with user‑friendly messages
-- Node coverage: start / end / llm / code / condition / classifier / iteration
+## Project Overview
 
-<a id="supported-paths"></a>
-## Supported Paths
+### Supported Conversion Paths
 - Dify ↔ iFlytek (bidirectional)
 - Coze ↔ iFlytek (bidirectional, YAML)
-- Dify → iFlytek → Coze (recommended)
+- Dify → iFlytek → Coze (recommended path)
 - Coze → iFlytek → Dify
-- Coze ZIP → iFlytek (native)
+- Coze ZIP → iFlytek (native support)
 
 Not supported:
-- Dify ↔ Coze direct conversion (use iFlytek as the hub)
-- iFlytek → Coze ZIP (ZIP as target is not supported yet)
+- Dify ↔ Coze direct conversion (please use iFlytek as hub)
+- iFlytek → Coze ZIP (currently does not support ZIP target format)
 
-<a id="tolerance"></a>
-## Tolerance & Placeholders
-To keep workflow structure intact when encountering unsupported node types on the target platform:
-- Replace the node with a “code node” placeholder
-- Put the original node type in the code node title for quick follow‑up
-- Preserve incoming/outgoing edges to keep the flow executable
-- With `--verbose`, print details and summary, e.g.:
+### Fault Tolerance & Placeholder Strategy
+To maintain workflow structure integrity when encountering node types not supported by the target platform:
+- Use "code node" as placeholder to replace the node
+- Write the original node's specific type in the code node title for easy manual adjustment later
+- Preserve input/output edge connections so the flow can continue running
+- Under `--verbose`, output details and statistics, such as:
   - Converting unsupported node type '4' (ID: 133604) to code node placeholder
   - 25 unsupported nodes were converted to code node placeholders
 
-<a id="quick-start"></a>
+### Core Features
+- Concurrent batch: `batch` command uses CPU concurrency, supports file mode and overwrite
+- Validation pipeline: structure/semantic/platform three-level validation with friendly error messages
+- Node coverage: start / end / llm / code / condition / classifier / iteration
+
+### Coze YAML Support
+- Current status: Coze official workflow does not support YAML import/export
+- Solution: We maintain a fork that provides YAML import/export capabilities
+- Repository: `https://github.com/2064968308github/coze_transformer`
+- Usage: First use that repository to get Coze YAML, then use this tool for cross-platform conversion (e.g., Coze YAML → iFlytek, or iFlytek → Coze YAML)
+
+<a id="visuals"></a>
+## Visualization
+
+<a id="visuals-paths"></a>
+### Conversion Path Diagram
+![Conversion Path Diagram](docs/Conversion%20Path%20Diagram.png)
+
+<a id="visuals-seq"></a>
+### Conversion Flow Sequence Diagram
+```mermaid
+sequenceDiagram
+    participant Source as Source Platform DSL
+    participant Parser as Parser
+    participant Unified as Unified DSL
+    participant Validator as Validator
+    participant Generator as Generator
+    participant Target as Target Platform DSL
+
+    Source->>Parser: Original DSL file
+    Parser->>Unified: Parse to unified format
+    Unified->>Validator: Validate DSL correctness
+    Validator->>Unified: Validation passed
+    Unified->>Generator: Generate target format
+    Generator->>Target: Target platform DSL
+```
+
+<a id="visuals-arch"></a>
+### Project File Structure
+```
+agentbridge/
+├── cmd/                    # CLI entry
+│   ├── main.go            # Main program
+│   ├── convert.go         # Convert command
+│   └── validate.go        # Validate command
+├── core/                  # Core services
+│   └── services/          # Conversion service implementation
+├── platforms/             # Platform implementations
+│   ├── iflytek/          # iFlytek platform
+│   ├── dify/             # Dify platform
+│   └── coze/             # Coze platform
+├── internal/             # Internal models
+│   └── models/           # Unified DSL definition
+└── registry/             # Strategy registry
+```
+
+<a id="visuals-png"></a>
+### Project Architecture Diagram
+
+![Project Architecture Diagram](docs/DSL%20Architecture%20Overview.png)
+
+<a id="quickstart"></a>
 ## Quick Start
-All commands below are executed at the project root.
+
+<a id="build"></a>
+### Installation & Build
+
+**Environment Requirements: Go 1.21+**
+
+#### Windows (Recommended)
+```powershell
+# Ensure Go 1.21+ is installed
+go version
+
+# Build project
+go build -o agentbridge.exe ./cmd/
+./agentbridge.exe --help
+```
+If a file with the same name but no extension exists in the directory, PowerShell might show "Choose app to open". Keep only the `.exe` file.
+
+#### macOS / Linux
+```bash
+# Ensure Go 1.21+ is installed
+go version
+
+# Build project
+go build -o agentbridge ./cmd/
+chmod +x ./agentbridge
+./agentbridge --help
+```
+
+### Usage Examples
+The following examples are executed in the project root directory.
 
 ### Windows (PowerShell)
 ```powershell
 # iFlytek → Dify
-./ai-agent-converter.exe convert --from iflytek --to dify --input agent.yml --output dify.yml
+./agentbridge.exe convert --from iflytek --to dify --input agent.yml --output dify.yml
 
 # Dify → iFlytek
-./ai-agent-converter.exe convert --from dify --to iflytek --input dify.yml --output agent.yml
+./agentbridge.exe convert --from dify --to iflytek --input dify.yml --output agent.yml
 
 # iFlytek → Coze (YAML)
-./ai-agent-converter.exe convert --from iflytek --to coze --input agent.yml --output coze.yml
+./agentbridge.exe convert --from iflytek --to coze --input agent.yml --output coze.yml
 
-# Coze ZIP → iFlytek (ZIP auto‑detected as Coze)
-./ai-agent-converter.exe convert --to iflytek --input workflow.zip --output agent.yml --verbose
+# Coze ZIP → iFlytek (ZIP automatically detected as Coze)
+./agentbridge.exe convert --to iflytek --input workflow.zip --output agent.yml --verbose
 
 # Batch (concurrent, overwrite)
-./ai-agent-converter.exe batch --from iflytek --to dify --input-dir .\tests\fixtures\iflytek --pattern 'iflytek*.yml' --output-dir .\out --workers 4 --overwrite
+./agentbridge.exe batch --from iflytek --to dify --input-dir .\tests\fixtures\iflytek --pattern 'iflytek*.yml' --output-dir .\out --workers 4 --overwrite
 
 # Validate DSL
-./ai-agent-converter.exe validate --input agent.yml
+./agentbridge.exe validate --input agent.yml
 
-# Quiet mode (errors only)
-./ai-agent-converter.exe convert --from iflytek --to dify --input agent.yml --output dify.yml --quiet
+# Quiet mode (error output only)
+./agentbridge.exe convert --from iflytek --to dify --input agent.yml --output dify.yml --quiet
 ```
-Tip: use `.exe`; prefer single quotes for `--pattern`.
+Tip: Must use `.exe`; recommend single quotes for `--pattern`.
 
 ### macOS / Linux (Terminal)
 ```bash
 # iFlytek → Coze (YAML)
-./ai-agent-converter convert --from iflytek --to coze --input agent.yml --output coze.yml
+./agentbridge convert --from iflytek --to coze --input agent.yml --output coze.yml
 
 # Dify → iFlytek
-./ai-agent-converter convert --from dify --to iflytek --input dify.yml --output agent.yml
+./agentbridge convert --from dify --to iflytek --input dify.yml --output agent.yml
 
-# Auto‑detect (YAML)
-./ai-agent-converter convert --to dify --input agent.yml --output dify.yml --verbose
+# Auto detection (YAML)
+./agentbridge convert --to dify --input agent.yml --output dify.yml --verbose
 
 # Batch (default concurrency)
-./ai-agent-converter batch --from iflytek --to dify --input-dir ./workflows --output-dir ./converted --workers 8 --overwrite
+./agentbridge batch --from iflytek --to dify --input-dir ./workflows --output-dir ./converted --workers 8 --overwrite
 
 # Validate
-./ai-agent-converter validate --input agent.yml
+./agentbridge validate --input agent.yml
 ```
 
 <a id="cli"></a>
 ## CLI Reference (Complete)
-Run at project root; use `./ai-agent-converter.exe` on Windows and `./ai-agent-converter` on macOS/Linux.
+The following examples are executed at project root by default; use `./agentbridge.exe` on Windows, `./agentbridge` on macOS/Linux.
 
 ### convert
-- Purpose: convert DSL across platforms
+- Purpose: Cross-platform conversion
 - Required: `--to`, `--input/-i`, `--output/-o`
-- Optional: `--from` (auto‑detect when omitted; ZIP → Coze)
-- Limits: Dify↔Coze direct is not supported; iFlytek→Coze ZIP is not supported
+- Optional: `--from` (auto-detect when omitted, ZIP→Coze)
+- Limitations: Does not support Dify↔Coze direct connection; does not support iFlytek→Coze ZIP
 
 ### validate
-- Purpose: validate DSL (structural/semantic/platform)
+- Purpose: Validate DSL (structure/semantic/platform)
 - Required: `--input/-i`
-- Optional: `--from` (auto‑detect when omitted)
+- Optional: `--from` (auto-detect when omitted)
 
 ### batch
-- Purpose: concurrent batch conversion
+- Purpose: Concurrent batch conversion
 - Required: `--from`, `--to`, `--input-dir`, `--output-dir`
-- Optional: `--pattern` (default `*.yml`), `--workers` (CPU‑based by default), `--overwrite`, global `--quiet/--verbose`
+- Optional: `--pattern` (default `*.yml`), `--workers` (CPU-based by default), `--overwrite`, global `--quiet/--verbose`
 
 ### info
-- Purpose: show capabilities
-- Flags: `--nodes`, `--types`, `--all`
+- Purpose: View capability description
+- Options: `--nodes`, `--types`, `--all`
 
 ### platforms
-- Purpose: list supported platforms
-- Flags: `--detailed`
+- Purpose: View supported platforms and status
+- Options: `--detailed`
 
 ### completion (optional)
-- Purpose: generate shell completion scripts
-- PowerShell (current session):
-  - `ai-agent-converter.exe completion powershell | Out-String | Invoke-Expression`
+- Purpose: Generate shell auto-completion
+- PowerShell (temporary load):
+  - `agentbridge.exe completion powershell | Out-String | Invoke-Expression`
 - PowerShell (persist to Profile):
-  - `ai-agent-converter.exe completion powershell | Out-File -Encoding UTF8 $PROFILE`
-- Bash: `ai-agent-converter completion bash > /etc/bash_completion.d/ai-agent-converter`
-- Zsh: `ai-agent-converter completion zsh > "${fpath[1]}/_ai-agent-converter"`
-
-<a id="coze-yaml"></a>
-## Coze YAML Import/Export
-Coze official workflow currently does not support YAML I/O. We maintain a fork that enables it:
-- Repo: https://github.com/2064968308github/coze_transformer
-- Usage: convert to/from YAML with that repo, then use this tool for cross‑platform conversion (e.g., Coze YAML → iFlytek, or iFlytek → Coze YAML).
-
-<a id="build"></a>
-## Build
-### Windows (recommended)
-```powershell
-go build -o ai-agent-converter.exe ./cmd/
-./ai-agent-converter.exe --help
-```
-If a same‑name file without extension exists, PowerShell may show “Choose an app to open”. Keep the `.exe` only.
-
-### macOS / Linux
-```bash
-go build -o ai-agent-converter ./cmd/
-chmod +x ./ai-agent-converter
-./ai-agent-converter --help
-```
+  - `agentbridge.exe completion powershell | Out-File -Encoding UTF8 $PROFILE`
+- Bash: `agentbridge completion bash > /etc/bash_completion.d/agentbridge`
+- Zsh: `agentbridge completion zsh > "${fpath[1]}/_agentbridge"`
 
 <a id="dev"></a>
-## Dev & Test
+## Development & Testing
 ```bash
 go fmt ./...
 go vet ./...
@@ -167,14 +226,14 @@ go test ./... -cover
 
 <a id="faq"></a>
 ## FAQ
-- PowerShell opens a “Choose an app” dialog: keep and run `ai-agent-converter.exe` only
-- Coze ZIP auto‑detection: ZIP is detected as Coze; `--from` is not required
-- Dify ↔ Coze direct: not supported; use iFlytek as the hub
-- Coze ZIP as output: not supported yet (use YAML or the YAML fork above)
-- Batch `--pattern`: single quotes on PowerShell; single/double quotes on macOS/Linux
-- Quiet mode: `--quiet` prints errors only
+- Windows shows "Choose app to open": Keep and run only `agentbridge.exe`
+- Coze ZIP auto-detection: Internally prioritized as Coze, no need for explicit `--from`
+- Dify ↔ Coze direct connection: Not supported, please use iFlytek as hub
+- Output Coze ZIP: Currently not supported (supports YAML; or use the fork mentioned above to get YAML first)
+- Batch `--pattern`: Use single quotes on PowerShell, single/double quotes both work on Linux/macOS
+- Quiet mode: `--quiet` outputs only errors
 
 <a id="license"></a>
 ## License & Credits
-- License: see LICENSE
-- Coze YAML I/O fork: https://github.com/2064968308github/coze_transformer
+- License: See LICENSE
+- Coze YAML capability reference and based on community-implemented fork: `https://github.com/2064968308github/coze_transformer`
