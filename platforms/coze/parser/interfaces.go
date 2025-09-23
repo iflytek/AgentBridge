@@ -1,7 +1,7 @@
 package parser
 
 import (
-	"ai-agents-transformer/internal/models"
+	"agentbridge/internal/models"
 )
 
 // NodeParser defines the interface for Coze node parsing.

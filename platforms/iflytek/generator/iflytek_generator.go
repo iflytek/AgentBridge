@@ -1,9 +1,9 @@
 package generator
 
 import (
-	"ai-agents-transformer/core/interfaces"
-	"ai-agents-transformer/internal/models"
-	"ai-agents-transformer/platforms/common"
+	"agentbridge/core/interfaces"
+	"agentbridge/internal/models"
+	"agentbridge/platforms/common"
 	"encoding/json"
 	"fmt"
 	"strings"

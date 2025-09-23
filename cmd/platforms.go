@@ -15,10 +15,10 @@ func NewPlatformsCmd() *cobra.Command {
 
 This command shows the ecosystem of supported platforms and their conversion capabilities.`,
 		Example: `  # List all platforms
-  ai-agent-converter platforms
+  agentbridge platforms
 
   # Show detailed platform information
-  ai-agent-converter platforms --detailed`,
+  agentbridge platforms --detailed`,
 		RunE: runPlatforms,
 	}
 

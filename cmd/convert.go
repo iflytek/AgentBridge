@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"ai-agents-transformer/core"
-	"ai-agents-transformer/internal/models"
+	"agentbridge/core"
+	"agentbridge/internal/models"
 
 	"github.com/spf13/cobra"
 )
@@ -33,19 +33,19 @@ func NewConvertCmd() *cobra.Command {
 
 🚀 Built on unified DSL standards, ensuring data integrity throughout the conversion process.`,
 		Example: `  # Basic conversion (iFlytek to Dify)
-  ai-agent-converter convert --from iflytek --to dify --input agent.yml --output dify.yml
+  agentbridge convert --from iflytek --to dify --input agent.yml --output dify.yml
 
   # Convert iFlytek to Coze (supports ZIP format)
-  ai-agent-converter convert --from iflytek --to coze --input agent.yml --output coze.yml
+  agentbridge convert --from iflytek --to coze --input agent.yml --output coze.yml
 
   # Convert Coze ZIP to iFlytek
-  ai-agent-converter convert --from coze --to iflytek --input workflow.zip --output agent.yml
+  agentbridge convert --from coze --to iflytek --input workflow.zip --output agent.yml
 
   # Auto-detect source platform
-  ai-agent-converter convert --to coze --input agent.yml --output coze.yml
+  agentbridge convert --to coze --input agent.yml --output coze.yml
 
   # Detailed conversion process
-  ai-agent-converter convert --from iflytek --to coze --input agent.yml --output coze.yml --verbose`,
+  agentbridge convert --from iflytek --to coze --input agent.yml --output coze.yml --verbose`,
 		RunE: runConvert,
 	}
 

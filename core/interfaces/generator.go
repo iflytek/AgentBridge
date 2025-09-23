@@ -1,7 +1,7 @@
 package interfaces
 
 import (
-	"ai-agents-transformer/internal/models"
+	"agentbridge/internal/models"
 )
 
 // DSLGenerator defines the unified DSL generator interface

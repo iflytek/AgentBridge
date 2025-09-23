@@ -1,8 +1,8 @@
 package common
 
 import (
-	"ai-agents-transformer/core/interfaces"
-	"ai-agents-transformer/internal/models"
+	"agentbridge/core/interfaces"
+	"agentbridge/internal/models"
 	"crypto/rand"
 	"fmt"
 	"sync"

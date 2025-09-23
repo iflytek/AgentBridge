@@ -10,9 +10,9 @@ import (
 	"sync"
 	"time"
 
-	"ai-agents-transformer/core"
-	"ai-agents-transformer/core/services"
-	"ai-agents-transformer/internal/models"
+	"agentbridge/core"
+	"agentbridge/core/services"
+	"agentbridge/internal/models"
 
 	"github.com/spf13/cobra"
 )
@@ -67,13 +67,13 @@ func NewBatchCmd() *cobra.Command {
 
 Supports directory-based batch conversion with configurable worker count and progress tracking.`,
 		Example: `  # Batch convert directory with default settings
-  ai-agent-converter batch --from iflytek --to dify --input-dir ./workflows --output-dir ./converted
+  agentbridge batch --from iflytek --to dify --input-dir ./workflows --output-dir ./converted
 
   # Batch convert with custom worker count
-  ai-agent-converter batch --from iflytek --to dify --input-dir ./workflows --output-dir ./converted --workers 8
+  agentbridge batch --from iflytek --to dify --input-dir ./workflows --output-dir ./converted --workers 8
 
   # Batch convert with pattern matching
-  ai-agent-converter batch --from iflytek --to dify --input-dir ./workflows --pattern "*.yml" --output-dir ./converted`,
+  agentbridge batch --from iflytek --to dify --input-dir ./workflows --pattern "*.yml" --output-dir ./converted`,
 		RunE: runBatch,
 	}
 

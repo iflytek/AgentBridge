@@ -1,7 +1,7 @@
 package main
 
 import (
-	"ai-agents-transformer/internal/models"
+	"agentbridge/internal/models"
 	"fmt"
 	"os"
 	"path/filepath"

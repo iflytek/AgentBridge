@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"ai-agents-transformer/core"
-	"ai-agents-transformer/internal/models"
+	"agentbridge/core"
+	"agentbridge/internal/models"
 
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
@@ -20,13 +20,13 @@ func NewValidateCmd() *cobra.Command {
 
 Supports automatic platform detection and comprehensive validation rules.`,
 		Example: `  # Validate iFlytek Spark Agent DSL file
-  ai-agent-converter validate --input agent.yml --from iflytek
+  agentbridge validate --input agent.yml --from iflytek
 
   # Validate Dify DSL file
-  ai-agent-converter validate --input dify.yml --from dify
+  agentbridge validate --input dify.yml --from dify
 
   # Auto-detect format and validate
-  ai-agent-converter validate --input workflow.yml`,
+  agentbridge validate --input workflow.yml`,
 		RunE: runValidate,
 	}
 

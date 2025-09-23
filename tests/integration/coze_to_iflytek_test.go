@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"ai-agents-transformer/core"
-	"ai-agents-transformer/internal/models"
+	"agentbridge/core"
+	"agentbridge/internal/models"
 )
 
 // TestCozeToIFlytek tests Coze DSL to iFlytek DSL conversion.
@@ -14,7 +14,7 @@ func TestCozeToIFlytek(t *testing.T) {
 	t.Log("Starting Coze → iFlytek conversion test")
 
 	// Input and output file paths
-	inputFile := "../fixtures/coze/coze_basic_start_end.yml"
+	inputFile := "../fixtures/coze/coze_公众号文本生成.yml"
 	outputFile := "test_output/coze_to_iflytek_converted.yml"
 
 	// Initialize conversion architecture

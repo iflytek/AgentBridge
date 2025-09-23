@@ -3,9 +3,9 @@ package generators
 import (
 	"testing"
 
-	"ai-agents-transformer/platforms/dify/strategies"
-	golden "ai-agents-transformer/tests/unit/golden/basic_start_end"
-	codeGolden "ai-agents-transformer/tests/unit/golden/code_workflow"
+	"agentbridge/platforms/dify/strategies"
+	golden "agentbridge/tests/unit/golden/basic_start_end"
+	codeGolden "agentbridge/tests/unit/golden/code_workflow"
 	"github.com/stretchr/testify/require"
 )
 

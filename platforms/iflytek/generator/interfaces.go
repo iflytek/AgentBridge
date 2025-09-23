@@ -1,7 +1,7 @@
 package generator
 
 import (
-	"ai-agents-transformer/internal/models"
+	"agentbridge/internal/models"
 )
 
 // NodeGenerator interface for iFlytek SparkAgent node generation

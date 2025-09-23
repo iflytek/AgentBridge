@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"ai-agents-transformer/core"
-	"ai-agents-transformer/internal/models"
+	"agentbridge/core"
+	"agentbridge/internal/models"
 )
 
 // TestDifyToIFlytek tests Dify to iFlytek platform conversion.
@@ -14,7 +14,7 @@ func TestDifyToIFlytek(t *testing.T) {
 	t.Log("Starting Dify → iFlytek conversion test")
 
 	// Input and output file paths
-	inputFile := "../fixtures/dify/dify_basic_start_end.yml"
+	inputFile := "../fixtures/dify/dify_公众号文本生成.yml"
 	outputFile := "test_output/dify_to_iflytek_converted.yml"
 
 	// Initialize conversion architecture

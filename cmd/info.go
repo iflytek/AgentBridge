@@ -16,13 +16,13 @@ func NewInfoCmd() *cobra.Command {
 
 This command provides comprehensive information about the converter's capabilities.`,
 		Example: `  # Show supported node types
-  ai-agent-converter info --nodes
+  agentbridge info --nodes
 
   # Show data type mappings
-  ai-agent-converter info --types
+  agentbridge info --types
 
   # Show all information
-  ai-agent-converter info --all`,
+  agentbridge info --all`,
 		RunE: runInfo,
 	}
 

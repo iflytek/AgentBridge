@@ -1,12 +1,12 @@
 package strategies
 
 import (
-	"ai-agents-transformer/core/interfaces"
-	"ai-agents-transformer/core/services"
-	"ai-agents-transformer/internal/models"
-	"ai-agents-transformer/platforms/common"
-	cozeGenerator "ai-agents-transformer/platforms/coze/generator"
-	cozeParser "ai-agents-transformer/platforms/coze/parser"
+	"agentbridge/core/interfaces"
+	"agentbridge/core/services"
+	"agentbridge/internal/models"
+	"agentbridge/platforms/common"
+	cozeGenerator "agentbridge/platforms/coze/generator"
+	cozeParser "agentbridge/platforms/coze/parser"
 	"os"
 )
 

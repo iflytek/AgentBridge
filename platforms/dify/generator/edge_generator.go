@@ -1,8 +1,8 @@
 package generator
 
 import (
-	"ai-agents-transformer/internal/models"
-	"ai-agents-transformer/platforms/common"
+	"agentbridge/internal/models"
+	"agentbridge/platforms/common"
 	"fmt"
 	"regexp"
 	"strings"

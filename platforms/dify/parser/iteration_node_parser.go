@@ -3,7 +3,7 @@ package parser
 import (
 	"fmt"
 
-	"ai-agents-transformer/internal/models"
+	"agentbridge/internal/models"
 )
 
 // IterationNodeParser parses iteration nodes.

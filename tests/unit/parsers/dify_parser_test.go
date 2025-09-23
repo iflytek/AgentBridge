@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"ai-agents-transformer/platforms/dify/strategies"
+	"agentbridge/platforms/dify/strategies"
 	"github.com/stretchr/testify/require"
 )
 

@@ -1,7 +1,7 @@
 package generator
 
 import (
-	"ai-agents-transformer/internal/models"
+	"agentbridge/internal/models"
 )
 
 // CozeNodeGenerator defines the interface for Coze node generators

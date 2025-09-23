@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"ai-agents-transformer/internal/models"
-	"ai-agents-transformer/platforms/common"
+	"agentbridge/internal/models"
+	"agentbridge/platforms/common"
 )
 
 // BranchMappingExtractor interface for extracting branch mapping from condition nodes

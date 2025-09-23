@@ -1,12 +1,12 @@
 package core
 
 import (
-	"ai-agents-transformer/core/services"
-	"ai-agents-transformer/internal/models"
-	cozeStrategies "ai-agents-transformer/platforms/coze/strategies"
-	"ai-agents-transformer/platforms/dify/strategies"
-	iflytekStrategies "ai-agents-transformer/platforms/iflytek/strategies"
-	"ai-agents-transformer/registry"
+	"agentbridge/core/services"
+	"agentbridge/internal/models"
+	cozeStrategies "agentbridge/platforms/coze/strategies"
+	"agentbridge/platforms/dify/strategies"
+	iflytekStrategies "agentbridge/platforms/iflytek/strategies"
+	"agentbridge/registry"
 )
 
 // InitializeArchitecture initializes the conversion architecture

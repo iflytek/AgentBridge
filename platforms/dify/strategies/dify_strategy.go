@@ -1,12 +1,12 @@
 package strategies
 
 import (
-	"ai-agents-transformer/core/interfaces"
-	"ai-agents-transformer/core/services"
-	"ai-agents-transformer/internal/models"
-	"ai-agents-transformer/platforms/common"
-	difyGenerator "ai-agents-transformer/platforms/dify/generator"
-	difyParser "ai-agents-transformer/platforms/dify/parser"
+	"agentbridge/core/interfaces"
+	"agentbridge/core/services"
+	"agentbridge/internal/models"
+	"agentbridge/platforms/common"
+	difyGenerator "agentbridge/platforms/dify/generator"
+	difyParser "agentbridge/platforms/dify/parser"
 )
 
 // DifyStrategy implements platform-specific strategy for Dify workflow platform.

@@ -1,7 +1,7 @@
 package common
 
 import (
-	"ai-agents-transformer/internal/models"
+	"agentbridge/internal/models"
 )
 
 // BaseGenerator provides base implementation for generators

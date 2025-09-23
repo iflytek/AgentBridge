@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"ai-agents-transformer/core"
-	"ai-agents-transformer/internal/models"
+	"agentbridge/core"
+	"agentbridge/internal/models"
 )
 
 // TestCozeZipToIFlytek tests Coze ZIP format to iFlytek conversion.
@@ -15,7 +15,7 @@ func TestCozeZipToIFlytek(t *testing.T) {
 	t.Log("Starting Coze ZIP to iFlytek conversion test")
 
 	// Read actual ZIP file
-	zipFile := "../fixtures/coze/Workflow-X72_Vminjiangushi_video_1-draft-2269.zip"
+	zipFile := "../fixtures/coze/Workflow-X74_Wcaisehuochairen_video_1-draft-2293.zip"
 	zipData, err := os.ReadFile(zipFile)
 	if err != nil {
 		t.Fatalf("Failed to read ZIP file: %v", err)

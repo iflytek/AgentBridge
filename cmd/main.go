@@ -9,7 +9,7 @@ import (
 
 const (
 	version     = "v1.0.0"
-	appName     = "AI Agents Transformer"
+	appName     = "AgentBridge"
 	description = "Cross-Platform AI Agent DSL Converter"
 )
 
@@ -20,9 +20,9 @@ var (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "ai-agent-converter",
+	Use:   "agentbridge",
 	Short: description,
-	Long: `🚀 AI Agents Transformer - Cross-Platform AI Agent DSL Converter
+	Long: `🚀 AgentBridge - Cross-Platform AI Agent DSL Converter
 
 Cross-platform AI agent workflow DSL converter with iFlytek Spark as the central hub, supporting bidirectional conversion between Spark, Dify, and Coze platforms.
 
@@ -41,27 +41,27 @@ Cross-platform AI agent workflow DSL converter with iFlytek Spark as the central
 
 🔧 Enterprise Features:
   • Structured logging system
-  • Configuration management  
+  • Configuration management
   • Error handling and recovery
   • Performance optimization`,
 	Version: version,
 	Example: `  # Basic conversion (iFlytek to Dify)
-  ai-agent-converter convert --from iflytek --to dify --input agent.yml --output dify.yml
+  agentbridge convert --from iflytek --to dify --input agent.yml --output dify.yml
 
   # Convert iFlytek to Coze
-  ai-agent-converter convert --from iflytek --to coze --input agent.yml --output coze.yml
+  agentbridge convert --from iflytek --to coze --input agent.yml --output coze.yml
 
   # Convert Coze ZIP to iFlytek
-  ai-agent-converter convert --from coze --to iflytek --input workflow.zip --output agent.yml
+  agentbridge convert --from coze --to iflytek --input workflow.zip --output agent.yml
 
   # Auto-detect source format
-  ai-agent-converter convert --to coze --input agent.yml --output coze.yml
+  agentbridge convert --to coze --input agent.yml --output coze.yml
 
   # Validate DSL file
-  ai-agent-converter validate --input agent.yml
+  agentbridge validate --input agent.yml
 
   # Show supported node types
-  ai-agent-converter info --nodes`,
+  agentbridge info --nodes`,
 }
 
 func init() {

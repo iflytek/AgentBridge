@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"ai-agents-transformer/platforms/coze/strategies"
+	"agentbridge/platforms/coze/strategies"
 	"github.com/stretchr/testify/require"
 )
 

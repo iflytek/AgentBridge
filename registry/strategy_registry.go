@@ -1,8 +1,8 @@
 package registry
 
 import (
-	"ai-agents-transformer/core/services"
-	"ai-agents-transformer/internal/models"
+	"agentbridge/core/services"
+	"agentbridge/internal/models"
 	"fmt"
 	"sync"
 )
