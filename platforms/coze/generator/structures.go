@@ -184,12 +184,12 @@ type CozeBlockInputValue struct {
 
 // CozeBlockInputRef represents input reference for block nodes
 type CozeBlockInputRef struct {
-    Content *CozeRefContent `yaml:"content,omitempty" json:"content,omitempty"`
-    RawMeta *CozeRawMeta    `yaml:"rawMeta,omitempty" json:"rawMeta,omitempty"`
-    Type    string          `yaml:"type" json:"type"`
-    // Literal value alternative when not using reference content
-    // Use a distinct field name to avoid duplicate tags with Content
-    Literal interface{} `yaml:"literal,omitempty" json:"literal,omitempty"`
+	Content *CozeRefContent `yaml:"content,omitempty" json:"content,omitempty"`
+	RawMeta *CozeRawMeta    `yaml:"rawMeta,omitempty" json:"rawMeta,omitempty"`
+	Type    string          `yaml:"type" json:"type"`
+	// Literal value alternative when not using reference content
+	// Use a distinct field name to avoid duplicate tags with Content
+	Literal interface{} `yaml:"literal,omitempty" json:"literal,omitempty"`
 }
 
 // CozeBlockSettingOnError represents error settings for block nodes
