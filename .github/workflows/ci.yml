@@ -11,7 +11,7 @@ env:
 
 jobs:
   ci:
-    name: 格式化检查 & 单元测试
+    name: Format Check & Unit Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -25,21 +25,21 @@ jobs:
 
       - name: Go Format Check
         run: |
-          echo "🔍 检查代码格式..."
+          echo "🔍 Checking code format..."
           unformatted=$(gofmt -l .)
           if [ -n "$unformatted" ]; then
-            echo "❌ 需要格式化的文件:"
+            echo "❌ Files requiring formatting:"
             echo "$unformatted"
-            echo "请运行 'go fmt ./...' 修复格式问题"
+            echo "Please run 'go fmt ./...' to fix formatting issues"
             exit 1
           fi
-          echo "✅ 代码格式正确"
+          echo "✅ Code format is correct"
 
       - name: Go Tests
         run: |
-          echo "🧪 运行单元测试..."
+          echo "🧪 Running unit tests..."
           if [ -d "tests/unit" ]; then
             go test -v ./tests/unit/...
           else
-            echo "⚠️ 未找到 tests/unit 目录，跳过单元测试"
+            echo "⚠️ tests/unit directory not found, skipping unit tests"
           fi
