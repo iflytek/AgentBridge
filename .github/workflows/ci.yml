@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main, 'feature/**', 'bugfix/**', 'hotfix/**']
+  pull_request:
+    branches: [main]
+
+env:
+  GO_VERSION: '1.21'
+
+jobs:
+  ci:
+    name: 格式化检查 & 单元测试
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Go Format Check
+        run: |
+          echo "🔍 检查代码格式..."
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "❌ 需要格式化的文件:"
+            echo "$unformatted"
+            echo "请运行 'go fmt ./...' 修复格式问题"
+            exit 1
+          fi
+          echo "✅ 代码格式正确"
+
+      - name: Go Tests
+        run: |
+          echo "🧪 运行单元测试..."
+          if [ -d "tests/unit" ]; then
+            go test -v ./tests/unit/...
+          else
+            echo "⚠️ 未找到 tests/unit 目录，跳过单元测试"
+          fi

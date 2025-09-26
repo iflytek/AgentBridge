@@ -1,0 +1,136 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to release (e.g., v1.0.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+env:
+  GO_VERSION: '1.21'
+
+jobs:
+  build:
+    name: 构建 ${{ matrix.goos }}-${{ matrix.goarch }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        include:
+          # Windows
+          - goos: windows
+            goarch: amd64
+            runner: windows-latest
+            extension: .exe
+          # Linux
+          - goos: linux
+            goarch: amd64
+            runner: ubuntu-latest
+            extension: ''
+          # macOS
+          - goos: darwin
+            goarch: amd64
+            runner: macos-latest
+            extension: ''
+          - goos: darwin
+            goarch: arm64
+            runner: macos-latest
+            extension: ''
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: 构建二进制文件
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: 0
+        run: |
+          echo "🔨 构建 agentbridge for ${{ matrix.goos }}/${{ matrix.goarch }}..."
+
+          # 直接按平台构建
+          if [[ "${{ matrix.goos }}" == "windows" ]]; then
+            go build -o agentbridge.exe ./cmd/
+            mv agentbridge.exe agentbridge-${{ matrix.goos }}-${{ matrix.goarch }}.exe
+          else
+            go build -o agentbridge ./cmd/
+            mv agentbridge agentbridge-${{ matrix.goos }}-${{ matrix.goarch }}
+          fi
+
+          echo "✅ 构建完成: agentbridge-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.extension }}"
+          ls -la agentbridge-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.extension }}
+
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: agentbridge-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: agentbridge-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.extension }}
+
+  release:
+    name: 创建 GitHub Release
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: 获取版本号
+        id: version
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            VERSION="${{ github.event.inputs.tag }}"
+          else
+            VERSION=${GITHUB_REF#refs/tags/}
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: 下载所有构建产物
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+          merge-multiple: true
+
+      - name: 创建 Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: "AgentBridge ${{ steps.version.outputs.version }}"
+          body: |
+            ## 🚀 AgentBridge CLI 工具发布
+
+            ### 📦 下载链接
+
+            **Windows**:
+            - `agentbridge-windows-amd64.exe`
+
+            **Linux**:
+            - `agentbridge-linux-amd64`
+
+            **macOS**:
+            - `agentbridge-darwin-amd64` (Intel)
+            - `agentbridge-darwin-arm64` (Apple Silicon)
+
+            ### 🎯 使用方法
+
+            ```bash
+            # 查看帮助
+            ./agentbridge --help
+
+            # 转换工作流 (iFlytek 到 Dify)
+            ./agentbridge convert --from iflytek --to dify --input agent.yml --output dify.yml
+
+            # 验证 DSL 文件
+            ./agentbridge validate --input agent.yml
+            ```
+          files: ./artifacts/*
+          token: ${{ secrets.GITHUB_TOKEN }}
