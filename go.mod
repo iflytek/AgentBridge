@@ -1,4 +1,4 @@
-module agentbridge
+module github.com/iflytek/agentbridge
 
 go 1.21
 

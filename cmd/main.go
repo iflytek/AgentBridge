@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"fmt"
@@ -77,7 +77,7 @@ func init() {
 	rootCmd.AddCommand(NewBatchCmd())
 }
 
-func main() {
+func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		if !quiet {
 			fmt.Fprintf(os.Stderr, "Error: %v\n", wrapUserFriendlyError(err))

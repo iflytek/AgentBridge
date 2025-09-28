@@ -1,11 +1,11 @@
-package main
+package cmd
 
 import (
 	"fmt"
 	"os"
 
-	"agentbridge/core"
-	"agentbridge/internal/models"
+	"github.com/iflytek/agentbridge/core"
+	"github.com/iflytek/agentbridge/internal/models"
 
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"

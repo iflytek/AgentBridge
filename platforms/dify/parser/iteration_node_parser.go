@@ -3,7 +3,7 @@ package parser
 import (
 	"fmt"
 
-	"agentbridge/internal/models"
+	"github.com/iflytek/agentbridge/internal/models"
 )
 
 // IterationNodeParser parses iteration nodes.

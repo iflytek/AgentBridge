@@ -1,7 +1,7 @@
 package interfaces
 
 import (
-	"agentbridge/internal/models"
+	"github.com/iflytek/agentbridge/internal/models"
 )
 
 // DSLGenerator defines the unified DSL generator interface

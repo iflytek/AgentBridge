@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"fmt"
@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"agentbridge/core"
-	"agentbridge/internal/models"
+	"github.com/iflytek/agentbridge/core"
+	"github.com/iflytek/agentbridge/internal/models"
 
 	"github.com/spf13/cobra"
 )

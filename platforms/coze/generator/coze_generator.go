@@ -1,9 +1,9 @@
 package generator
 
 import (
-	"agentbridge/core/interfaces"
-	"agentbridge/internal/models"
-	"agentbridge/platforms/common"
+	"github.com/iflytek/agentbridge/core/interfaces"
+	"github.com/iflytek/agentbridge/internal/models"
+	"github.com/iflytek/agentbridge/platforms/common"
 	"fmt"
 	"strconv"
 	"strings"

@@ -3,9 +3,9 @@ package generators
 import (
 	"testing"
 
-	"agentbridge/platforms/coze/strategies"
-	golden "agentbridge/tests/unit/golden/basic_start_end"
-	codeGolden "agentbridge/tests/unit/golden/code_workflow"
+	"github.com/iflytek/agentbridge/platforms/coze/strategies"
+	golden "github.com/iflytek/agentbridge/tests/unit/golden/basic_start_end"
+	codeGolden "github.com/iflytek/agentbridge/tests/unit/golden/code_workflow"
 
 	"github.com/stretchr/testify/require"
 )

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"agentbridge/internal/models"
-	"agentbridge/platforms/common"
+	"github.com/iflytek/agentbridge/internal/models"
+	"github.com/iflytek/agentbridge/platforms/common"
 )
 
 // BranchMappingExtractor interface for extracting branch mapping from condition nodes

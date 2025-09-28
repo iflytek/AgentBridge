@@ -1,7 +1,7 @@
-package main
+package cmd
 
 import (
-	"agentbridge/internal/models"
+	"github.com/iflytek/agentbridge/internal/models"
 	"fmt"
 	"os"
 	"path/filepath"

@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"context"
@@ -10,9 +10,9 @@ import (
 	"sync"
 	"time"
 
-	"agentbridge/core"
-	"agentbridge/core/services"
-	"agentbridge/internal/models"
+	"github.com/iflytek/agentbridge/core"
+	"github.com/iflytek/agentbridge/core/services"
+	"github.com/iflytek/agentbridge/internal/models"
 
 	"github.com/spf13/cobra"
 )

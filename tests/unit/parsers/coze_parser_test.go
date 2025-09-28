@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"agentbridge/platforms/coze/strategies"
+	"github.com/iflytek/agentbridge/platforms/coze/strategies"
 	"github.com/stretchr/testify/require"
 )
 

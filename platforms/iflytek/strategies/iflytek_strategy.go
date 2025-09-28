@@ -1,12 +1,12 @@
 package strategies
 
 import (
-	"agentbridge/core/interfaces"
-	"agentbridge/core/services"
-	"agentbridge/internal/models"
-	"agentbridge/platforms/common"
-	iflytekGenerator "agentbridge/platforms/iflytek/generator"
-	iflytekParser "agentbridge/platforms/iflytek/parser"
+	"github.com/iflytek/agentbridge/core/interfaces"
+	"github.com/iflytek/agentbridge/core/services"
+	"github.com/iflytek/agentbridge/internal/models"
+	"github.com/iflytek/agentbridge/platforms/common"
+	iflytekGenerator "github.com/iflytek/agentbridge/platforms/iflytek/generator"
+	iflytekParser "github.com/iflytek/agentbridge/platforms/iflytek/parser"
 )
 
 // IFlytekStrategy implements platform-specific strategy for iFlytek SparkAgent platform.

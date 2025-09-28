@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"agentbridge/core"
-	"agentbridge/internal/models"
+	"github.com/iflytek/agentbridge/core"
+	"github.com/iflytek/agentbridge/internal/models"
 )
 
 // TestIFlytekToCoze tests iFlytek platform to Coze conversion.

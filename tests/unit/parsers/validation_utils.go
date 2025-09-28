@@ -1,7 +1,7 @@
 package parsers
 
 import (
-	"agentbridge/internal/models"
+	"github.com/iflytek/agentbridge/internal/models"
 	"fmt"
 )
 

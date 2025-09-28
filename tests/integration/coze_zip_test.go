@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"agentbridge/core"
-	"agentbridge/internal/models"
+	"github.com/iflytek/agentbridge/core"
+	"github.com/iflytek/agentbridge/internal/models"
 )
 
 // TestCozeZipToIFlytek tests Coze ZIP format to iFlytek conversion.

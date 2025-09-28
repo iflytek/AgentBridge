@@ -1,8 +1,8 @@
 package generator
 
 import (
-	"agentbridge/internal/models"
-	"agentbridge/platforms/common"
+	"github.com/iflytek/agentbridge/internal/models"
+	"github.com/iflytek/agentbridge/platforms/common"
 	"fmt"
 	"regexp"
 	"strconv"

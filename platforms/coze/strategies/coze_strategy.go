@@ -1,12 +1,12 @@
 package strategies
 
 import (
-	"agentbridge/core/interfaces"
-	"agentbridge/core/services"
-	"agentbridge/internal/models"
-	"agentbridge/platforms/common"
-	cozeGenerator "agentbridge/platforms/coze/generator"
-	cozeParser "agentbridge/platforms/coze/parser"
+	"github.com/iflytek/agentbridge/core/interfaces"
+	"github.com/iflytek/agentbridge/core/services"
+	"github.com/iflytek/agentbridge/internal/models"
+	"github.com/iflytek/agentbridge/platforms/common"
+	cozeGenerator "github.com/iflytek/agentbridge/platforms/coze/generator"
+	cozeParser "github.com/iflytek/agentbridge/platforms/coze/parser"
 	"os"
 )
 

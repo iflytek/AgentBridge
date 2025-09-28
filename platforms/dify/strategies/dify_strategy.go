@@ -1,12 +1,12 @@
 package strategies
 
 import (
-	"agentbridge/core/interfaces"
-	"agentbridge/core/services"
-	"agentbridge/internal/models"
-	"agentbridge/platforms/common"
-	difyGenerator "agentbridge/platforms/dify/generator"
-	difyParser "agentbridge/platforms/dify/parser"
+	"github.com/iflytek/agentbridge/core/interfaces"
+	"github.com/iflytek/agentbridge/core/services"
+	"github.com/iflytek/agentbridge/internal/models"
+	"github.com/iflytek/agentbridge/platforms/common"
+	difyGenerator "github.com/iflytek/agentbridge/platforms/dify/generator"
+	difyParser "github.com/iflytek/agentbridge/platforms/dify/parser"
 )
 
 // DifyStrategy implements platform-specific strategy for Dify workflow platform.

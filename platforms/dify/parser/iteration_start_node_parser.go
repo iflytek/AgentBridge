@@ -1,7 +1,7 @@
 package parser
 
 import (
-	"agentbridge/internal/models"
+	"github.com/iflytek/agentbridge/internal/models"
 )
 
 // IterationStartNodeParser parses iteration start nodes.

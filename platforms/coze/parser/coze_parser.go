@@ -1,9 +1,9 @@
 package parser
 
 import (
-	"agentbridge/core/interfaces"
-	"agentbridge/internal/models"
-	"agentbridge/platforms/common"
+	"github.com/iflytek/agentbridge/core/interfaces"
+	"github.com/iflytek/agentbridge/internal/models"
+	"github.com/iflytek/agentbridge/platforms/common"
 	"archive/zip"
 	"bytes"
 	"encoding/base64"

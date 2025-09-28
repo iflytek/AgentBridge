@@ -1,6 +1,6 @@
 package common
 
-import "agentbridge/internal/models"
+import "github.com/iflytek/agentbridge/internal/models"
 
 // AsStartConfig returns a pointer to StartConfig regardless of value or pointer storage.
 func AsStartConfig(cfg interface{}) (*models.StartConfig, bool) {
