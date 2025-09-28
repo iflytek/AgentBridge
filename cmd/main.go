@@ -3,15 +3,34 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"runtime/debug"
 
 	"github.com/spf13/cobra"
 )
 
-const (
-	version     = "v1.0.0"
+var (
+	version     = "dev"  // Set at build time via -ldflags
 	appName     = "AgentBridge"
 	description = "Cross-Platform AI Agent DSL Converter"
 )
+
+// getVersion returns the version string, attempting to get it from build info first
+func getVersion() string {
+	// If version was set via ldflags, use it
+	if version != "dev" {
+		return version
+	}
+
+	// Try to get version from build info (works with go install)
+	if info, ok := debug.ReadBuildInfo(); ok {
+		if info.Main.Version != "(devel)" && info.Main.Version != "" {
+			return info.Main.Version
+		}
+	}
+
+	// Fallback to default
+	return version
+}
 
 var (
 	// Global flags
@@ -44,7 +63,7 @@ Cross-platform AI agent workflow DSL converter with iFlytek Spark as the central
   • Configuration management
   • Error handling and recovery
   • Performance optimization`,
-	Version: version,
+	Version: getVersion(),
 	Example: `  # Basic conversion (iFlytek to Dify)
   agentbridge convert --from iflytek --to dify --input agent.yml --output dify.yml
 
