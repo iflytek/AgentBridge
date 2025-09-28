@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	version     = "dev"  // Set at build time via -ldflags
+	version     = "dev" // Set at build time via -ldflags
 	appName     = "AgentBridge"
 	description = "Cross-Platform AI Agent DSL Converter"
 )

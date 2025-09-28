@@ -1,224 +1,208 @@
 # AgentBridge
 
-[English](README.en.md) | [简体中文](README.md)
-
-> **业界首个跨平台AI智能体平台兼容工具**
+> **The world's first cross-platform AI agent platform compatibility tool**
 >
-> 仅需一个二进制文件，即可在本地实现不同AI智能体平台（iFlytek、Dify、Coze）间DSL文件的无缝互转，实现智能体工作流生态互通。以 iFlytek（科大讯飞星辰）为中枢，统一解析为中间 DSL，再按目标平台生成，支持自动识别、并发批量与严格校验。
+> With just a single binary file, you can locally achieve seamless conversion of DSL files between different AI agent platforms (iFlytek, Dify, Coze), enabling AI agent workflow ecosystem interoperability. Using iFlytek (Spark Agent) as the hub, it unifies parsing into intermediate DSL, then generates according to the target platform, supporting automatic recognition, concurrent batch processing, and strict validation.
 
 ---
 
-## 目录
-- [项目概览](#overview)
-- [可视化](#visuals)
-- [快速上手](#quickstart)
-- [CLI 命令参考](#cli)
-- [开发与测试](#dev)
-- [常见问题](#faq)
-- [许可与致谢](#license)
+## Table of Contents
+- [Project Overview](#overview)
+- [Visualization](#visuals)
+- [Quick Start](#quickstart)
+- [CLI Reference](#cli)
+- [Development & Testing](#dev)
+- [FAQ](#faq)
+- [License & Credits](#license)
 
 ---
 
 <a id="overview"></a>
-## 项目概览
+## Project Overview
 
-### 支持的转换链路
-- Dify ↔ iFlytek（双向）
-- Coze ↔ iFlytek（双向，YAML）
-- Dify → iFlytek → Coze（推荐链路）
+### Supported Conversion Paths
+- Dify ↔ iFlytek (bidirectional)
+- Coze ↔ iFlytek (bidirectional, YAML)
+- Dify → iFlytek → Coze (recommended path)
 - Coze → iFlytek → Dify
-- Coze ZIP → iFlytek（原生支持）
+- Coze ZIP → iFlytek (native support)
 
-不支持：
-- Dify ↔ Coze 直接转换（请通过 iFlytek 中转）
-- iFlytek → Coze ZIP（当前不支持 ZIP 目标格式）
+Not supported:
+- Dify ↔ Coze direct conversion (please use iFlytek as hub)
+- iFlytek → Coze ZIP (currently does not support ZIP target format)
 
-### 容错与占位策略
-为保持工作流结构完整，当遇到目标平台暂不支持的节点类型时：
-- 使用"代码节点（code）"作为占位符替换该节点
-- 在代码节点标题中写明原节点的具体类型，便于后续手动调整
-- 保留入/出边连接关系，流程可继续运行
-- `--verbose` 下输出明细与统计，如：
+### Fault Tolerance & Placeholder Strategy
+To maintain workflow structure integrity when encountering node types not supported by the target platform:
+- Use "code node" as placeholder to replace the node
+- Write the original node's specific type in the code node title for easy manual adjustment later
+- Preserve input/output edge connections so the flow can continue running
+- Under `--verbose`, output details and statistics, such as:
   - Converting unsupported node type '4' (ID: 133604) to code node placeholder
   - 25 unsupported nodes were converted to code node placeholders
 
-### 核心特性
-- 并发批量：`batch` 命令按 CPU 并发，支持文件模式与覆盖
-- 校验链路：结构/语义/平台三级校验，错误信息友好
-- 节点覆盖：start / end / llm / code / condition / classifier / iteration
+### Core Features
+- Concurrent batch: `batch` command uses CPU concurrency, supports file mode and overwrite
+- Validation pipeline: structure/semantic/platform three-level validation with friendly error messages
+- Node coverage: start / end / llm / code / condition / classifier / iteration
 
-### Coze YAML 支持
-- 现状：Coze 官方工作流不支持 YAML 导入/导出
-- 方案：我们维护了一个 fork，提供 YAML 导入导出能力
-- 仓库：`https://github.com/2064968308github/coze_transformer`
-- 用法：先用该仓库得到 Coze YAML，再使用本工具跨平台转换（例如 Coze YAML → iFlytek，或 iFlytek → Coze YAML）
-
+### Coze YAML Support
+- Current status: Coze official workflow does not support YAML import/export
+- Solution: We maintain a fork that provides YAML import/export capabilities
+- Repository: `https://github.com/2064968308github/coze_transformer`
+- Usage: First use that repository to get Coze YAML, then use this tool for cross-platform conversion (e.g., Coze YAML → iFlytek, or iFlytek → Coze YAML)
 
 <a id="visuals"></a>
-## 可视化
+## Visualization
 
 <a id="visuals-paths"></a>
-### 转换路径示意
-![转换路径示意](docs/Conversion%20Path%20Diagram.png)
+### Conversion Path Diagram
+![Conversion Path Diagram](docs/Conversion%20Path%20Diagram.png)
 
 <a id="visuals-seq"></a>
-### 转换流程时序图
+### Conversion Flow Sequence Diagram
 ```mermaid
 sequenceDiagram
-    participant Source as 源平台DSL
-    participant Parser as 解析器
-    participant Unified as 统一DSL
-    participant Validator as 验证器
-    participant Generator as 生成器
-    participant Target as 目标平台DSL
+    participant Source as Source Platform DSL
+    participant Parser as Parser
+    participant Unified as Unified DSL
+    participant Validator as Validator
+    participant Generator as Generator
+    participant Target as Target Platform DSL
 
-    Source->>Parser: 原始DSL文件
-    Parser->>Unified: 解析为统一格式
-    Unified->>Validator: 验证DSL正确性
-    Validator->>Unified: 验证通过
-    Unified->>Generator: 生成目标格式
-    Generator->>Target: 目标平台DSL
+    Source->>Parser: Original DSL file
+    Parser->>Unified: Parse to unified format
+    Unified->>Validator: Validate DSL correctness
+    Validator->>Unified: Validation passed
+    Unified->>Generator: Generate target format
+    Generator->>Target: Target platform DSL
 ```
 
 <a id="visuals-arch"></a>
-### 项目文件结构
+### Project File Structure
 ```
 agentbridge/
-├── cmd/                    # CLI 入口
-│   ├── main.go            # 主程序
-│   ├── convert.go         # 转换命令
-│   └── validate.go        # 验证命令
-├── core/                  # 核心服务
-│   └── services/          # 转换服务实现
-├── platforms/             # 平台实现
-│   ├── iflytek/          # 星辰平台
-│   ├── dify/             # Dify平台
-│   └── coze/             # Coze平台
-├── internal/             # 内部模型
-│   └── models/           # 统一DSL定义
-└── registry/             # 策略注册
+├── cmd/                    # CLI entry point
+│   ├── main.go            # Main program
+│   ├── convert.go         # Convert command
+│   └── validate.go        # Validate command
+├── core/                  # Core services
+│   └── services/          # Conversion service implementation
+├── platforms/             # Platform implementations
+│   ├── iflytek/          # iFlytek platform
+│   ├── dify/             # Dify platform
+│   └── coze/             # Coze platform
+├── internal/             # Internal models
+│   └── models/           # Unified DSL definitions
+├── main.go               # Root entry point for go install
+└── registry/             # Strategy registry
 ```
 
 <a id="visuals-png"></a>
-### 项目架构示意图
+### Project Architecture Diagram
 
-![项目架构示意图](docs/DSL%20Architecture%20Overview.png)
+![Project Architecture Diagram](docs/DSL%20Architecture%20Overview.png)
 
 <a id="quickstart"></a>
-## 快速上手
+## Quick Start
 
 <a id="build"></a>
-### 安装与构建
+### Installation
 
-**环境要求：Go 1.21+**
+**Requirements: Go 1.21+**
 
-#### Windows（推荐）
-```powershell
-# 确保已安装 Go 1.21+
-go version
-
-# 构建项目
-go build -o agentbridge.exe ./cmd/
-./agentbridge.exe --help
-```
-若目录存在同名"无扩展名"文件，PowerShell 可能弹出"选择应用打开"。只保留 `.exe` 即可。
-
-#### macOS / Linux
+#### Option 1: Direct Installation (Recommended)
 ```bash
-# 确保已安装 Go 1.21+
-go version
+# Install from GitHub (requires Go 1.21+)
+go install github.com/iflytek/agentbridge@latest
 
-# 构建项目
-go build -o agentbridge ./cmd/
-chmod +x ./agentbridge
+# Verify installation
+agentbridge --version
+agentbridge --help
+```
+
+#### Option 2: Build from Source
+```bash
+# Clone the repository
+git clone https://github.com/iflytek/agentbridge.git
+cd agentbridge
+
+# Build
+go build -o agentbridge .
+
+# Run
 ./agentbridge --help
 ```
 
-### 使用示例
-以下示例在项目根目录执行。
+### Usage Examples
 
-### Windows（PowerShell）
-```powershell
-# iFlytek → Dify
-./agentbridge.exe convert --from iflytek --to dify --input agent.yml --output dify.yml
-
-# Dify → iFlytek
-./agentbridge.exe convert --from dify --to iflytek --input dify.yml --output agent.yml
-
-# iFlytek → Coze（YAML）
-./agentbridge.exe convert --from iflytek --to coze --input agent.yml --output coze.yml
-
-# Coze ZIP → iFlytek（ZIP 自动识别为 Coze）
-./agentbridge.exe convert --to iflytek --input workflow.zip --output agent.yml --verbose
-
-# 批量（并发、覆盖）
-./agentbridge.exe batch --from iflytek --to dify --input-dir .\tests\fixtures\iflytek --pattern 'iflytek*.yml' --output-dir .\out --workers 4 --overwrite
-
-# 验证 DSL
-./agentbridge.exe validate --input agent.yml
-
-# 静默模式（仅错误输出）
-./agentbridge.exe convert --from iflytek --to dify --input agent.yml --output dify.yml --quiet
-```
-提示：必须使用 `.exe`；`--pattern` 建议用单引号。
-
-### macOS / Linux（Terminal）
+#### Basic Conversions
 ```bash
-# iFlytek → Coze（YAML）
-./agentbridge convert --from iflytek --to coze --input agent.yml --output coze.yml
+# iFlytek → Dify
+agentbridge convert --from iflytek --to dify --input agent.yml --output dify.yml
 
 # Dify → iFlytek
-./agentbridge convert --from dify --to iflytek --input dify.yml --output agent.yml
+agentbridge convert --from dify --to iflytek --input dify.yml --output agent.yml
 
-# 自动识别（YAML）
-./agentbridge convert --to dify --input agent.yml --output dify.yml --verbose
+# iFlytek → Coze (YAML)
+agentbridge convert --from iflytek --to coze --input agent.yml --output coze.yml
 
-# 批量（默认并发）
-./agentbridge batch --from iflytek --to dify --input-dir ./workflows --output-dir ./converted --workers 8 --overwrite
+# Coze ZIP → iFlytek (ZIP auto-detected as Coze)
+agentbridge convert --to iflytek --input workflow.zip --output agent.yml --verbose
+```
 
-# 验证
-./agentbridge validate --input agent.yml
+#### Batch Processing
+```bash
+# Concurrent batch conversion
+agentbridge batch --from iflytek --to dify --input-dir ./workflows --output-dir ./converted --workers 4 --overwrite
+
+# With pattern filtering
+agentbridge batch --from iflytek --to dify --input-dir ./tests/fixtures/iflytek --pattern "iflytek*.yml" --output-dir ./out --workers 4 --overwrite
+```
+
+#### Validation
+```bash
+# Validate DSL file
+agentbridge validate --input agent.yml
+
+# Quiet mode (errors only)
+agentbridge convert --from iflytek --to dify --input agent.yml --output dify.yml --quiet
 ```
 
 <a id="cli"></a>
-## CLI 命令参考（完整）
-以下示例默认在项目根目录执行；Windows 用 `./agentbridge.exe`，macOS/Linux 用 `./agentbridge`。
+## CLI Reference
 
 ### convert
-- 用途：跨平台转换
-- 必选：`--to`、`--input/-i`、`--output/-o`
-- 可选：`--from`（省略时自动识别，ZIP→Coze）
-- 限制：不支持 Dify↔Coze 直连；不支持 iFlytek→Coze ZIP
+- Purpose: Cross-platform conversion
+- Required: `--to`, `--input/-i`, `--output/-o`
+- Optional: `--from` (auto-detected when omitted, ZIP→Coze)
+- Limitations: No Dify↔Coze direct connection; No iFlytek→Coze ZIP
 
 ### validate
-- 用途：校验 DSL（结构/语义/平台）
-- 必选：`--input/-i`
-- 可选：`--from`（省略时自动识别）
+- Purpose: Validate DSL (structure/semantic/platform)
+- Required: `--input/-i`
+- Optional: `--from` (auto-detected when omitted)
 
 ### batch
-- 用途：并发批量转换
-- 必选：`--from`、`--to`、`--input-dir`、`--output-dir`
-- 可选：`--pattern`（默认 `*.yml`）、`--workers`（默认按 CPU）、`--overwrite`、全局 `--quiet/--verbose`
+- Purpose: Concurrent batch conversion
+- Required: `--from`, `--to`, `--input-dir`, `--output-dir`
+- Optional: `--pattern` (default `*.yml`), `--workers` (default by CPU), `--overwrite`, global `--quiet/--verbose`
 
 ### info
-- 用途：查看能力说明
-- 选项：`--nodes`、`--types`、`--all`
+- Purpose: View capability descriptions
+- Options: `--nodes`, `--types`, `--all`
 
 ### platforms
-- 用途：查看支持平台与状态
-- 选项：`--detailed`
+- Purpose: View supported platforms and status
+- Options: `--detailed`
 
-### completion（可选）
-- 用途：生成 shell 自动补全
-- PowerShell（临时加载）：
-  - `agentbridge.exe completion powershell | Out-String | Invoke-Expression`
-- PowerShell（持久化到 Profile）：
-  - `agentbridge.exe completion powershell | Out-File -Encoding UTF8 $PROFILE`
-- Bash：`agentbridge completion bash > /etc/bash_completion.d/agentbridge`
-- Zsh：`agentbridge completion zsh > "${fpath[1]}/_agentbridge"`
+### completion (optional)
+- Purpose: Generate shell auto-completion
+- Bash: `agentbridge completion bash > /etc/bash_completion.d/agentbridge`
+- Zsh: `agentbridge completion zsh > "${fpath[1]}/_agentbridge"`
+- PowerShell: `agentbridge completion powershell | Out-String | Invoke-Expression`
 
 <a id="dev"></a>
-## 开发与测试
+## Development & Testing
 ```bash
 go fmt ./...
 go vet ./...
@@ -226,15 +210,15 @@ go test ./... -cover
 ```
 
 <a id="faq"></a>
-## 常见问题
-- Windows 弹“选择应用打开”：只保留并运行 `agentbridge.exe`
-- Coze ZIP 自动识别：内部优先判定为 Coze，无需显式 `--from`
-- Dify ↔ Coze 直连：不支持，请经 iFlytek 中转
-- 输出 Coze ZIP：暂不支持（支持 YAML；或先用上文 fork 获取 YAML）
-- 批量 `--pattern`：PowerShell 用单引号，Linux/macOS 单/双引号均可
-- 静默：`--quiet` 仅错误时输出
+## FAQ
+- **Installation Issues**: Ensure Go 1.21+ is installed and `$GOPATH/bin` is in your PATH
+- **Coze ZIP Auto-detection**: Internally prioritized as Coze, no need for explicit `--from`
+- **Dify ↔ Coze Direct**: Not supported, please relay through iFlytek
+- **Output Coze ZIP**: Not yet supported (supports YAML; or use the fork mentioned above for YAML)
+- **Batch `--pattern`**: Use quotes around patterns with special characters
+- **Quiet Mode**: `--quiet` outputs only on errors
 
 <a id="license"></a>
-## 许可与致谢
-- 许可：见 LICENSE
-- Coze YAML 能力参考并基于社区实现的 fork 改造：`https://github.com/2064968308github/coze_transformer`
+## License & Credits
+- License: See LICENSE
+- Coze YAML capability reference and based on community-implemented fork: `https://github.com/2064968308github/coze_transformer`
