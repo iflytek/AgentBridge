@@ -1,8 +1,8 @@
 package parsers
 
 import (
-	"github.com/iflytek/agentbridge/internal/models"
 	"fmt"
+	"github.com/iflytek/agentbridge/internal/models"
 )
 
 // ValidateParserResult_BasicStartEnd validates parser result for basic start end workflow

@@ -1,11 +1,11 @@
 package generator
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/iflytek/agentbridge/core/interfaces"
 	"github.com/iflytek/agentbridge/internal/models"
 	"github.com/iflytek/agentbridge/platforms/common"
-	"encoding/json"
-	"fmt"
 	"strings"
 
 	"gopkg.in/yaml.v3"

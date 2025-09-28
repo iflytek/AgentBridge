@@ -1,14 +1,14 @@
 package parser
 
 import (
-	"github.com/iflytek/agentbridge/core/interfaces"
-	"github.com/iflytek/agentbridge/internal/models"
-	"github.com/iflytek/agentbridge/platforms/common"
 	"archive/zip"
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/iflytek/agentbridge/core/interfaces"
+	"github.com/iflytek/agentbridge/internal/models"
+	"github.com/iflytek/agentbridge/platforms/common"
 	"io"
 	"os"
 	"regexp"

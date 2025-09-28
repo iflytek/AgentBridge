@@ -1,10 +1,10 @@
 package parser
 
 import (
+	"fmt"
 	"github.com/iflytek/agentbridge/core/interfaces"
 	"github.com/iflytek/agentbridge/internal/models"
 	"github.com/iflytek/agentbridge/platforms/common"
-	"fmt"
 	"strings"
 	"time"
 

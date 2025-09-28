@@ -1,8 +1,8 @@
 package common
 
 import (
-	"github.com/iflytek/agentbridge/internal/models"
 	"fmt"
+	"github.com/iflytek/agentbridge/internal/models"
 	"math/rand"
 	"strings"
 	"time"

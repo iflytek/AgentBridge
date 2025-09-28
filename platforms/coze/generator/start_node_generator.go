@@ -1,8 +1,8 @@
 package generator
 
 import (
-	"github.com/iflytek/agentbridge/internal/models"
 	"fmt"
+	"github.com/iflytek/agentbridge/internal/models"
 )
 
 // StartNodeGenerator generates Coze start nodes

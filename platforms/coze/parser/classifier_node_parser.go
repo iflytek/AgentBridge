@@ -2,8 +2,8 @@
 package parser
 
 import (
-	"github.com/iflytek/agentbridge/internal/models"
 	"fmt"
+	"github.com/iflytek/agentbridge/internal/models"
 )
 
 // ClassifierNodeParser handles parsing of classifier (intent detection) nodes

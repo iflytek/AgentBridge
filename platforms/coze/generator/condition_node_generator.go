@@ -1,9 +1,9 @@
 package generator
 
 import (
+	"fmt"
 	"github.com/iflytek/agentbridge/internal/models"
 	"github.com/iflytek/agentbridge/platforms/common"
-	"fmt"
 )
 
 // ConditionNodeGenerator generates Coze condition nodes (selectors)

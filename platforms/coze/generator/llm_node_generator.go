@@ -1,9 +1,9 @@
 package generator
 
 import (
+	"fmt"
 	"github.com/iflytek/agentbridge/internal/models"
 	"github.com/iflytek/agentbridge/platforms/common"
-	"fmt"
 )
 
 // LLMNodeGenerator generates Coze LLM nodes

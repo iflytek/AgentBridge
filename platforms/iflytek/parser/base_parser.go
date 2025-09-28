@@ -1,8 +1,8 @@
 package parser
 
 import (
-	"github.com/iflytek/agentbridge/internal/models"
 	"fmt"
+	"github.com/iflytek/agentbridge/internal/models"
 )
 
 // BaseNodeParser provides common functionality for node parsing.

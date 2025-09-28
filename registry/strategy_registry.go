@@ -1,9 +1,9 @@
 package registry
 
 import (
+	"fmt"
 	"github.com/iflytek/agentbridge/core/services"
 	"github.com/iflytek/agentbridge/internal/models"
-	"fmt"
 	"sync"
 )
 

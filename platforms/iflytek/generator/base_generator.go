@@ -1,9 +1,9 @@
 package generator
 
 import (
-	"github.com/iflytek/agentbridge/internal/models"
 	"crypto/rand"
 	"fmt"
+	"github.com/iflytek/agentbridge/internal/models"
 )
 
 // BaseNodeGenerator provides base node generation functionality for iFlytek SparkAgent

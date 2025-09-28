@@ -1,8 +1,8 @@
 package parser
 
 import (
-	"github.com/iflytek/agentbridge/internal/models"
 	"fmt"
+	"github.com/iflytek/agentbridge/internal/models"
 )
 
 // ClassifierNodeParser parses classification decision nodes.

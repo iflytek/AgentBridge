@@ -1,10 +1,10 @@
 package common
 
 import (
-	"github.com/iflytek/agentbridge/core/interfaces"
-	"github.com/iflytek/agentbridge/internal/models"
 	"crypto/rand"
 	"fmt"
+	"github.com/iflytek/agentbridge/core/interfaces"
+	"github.com/iflytek/agentbridge/internal/models"
 	"sync"
 	"time"
 )
