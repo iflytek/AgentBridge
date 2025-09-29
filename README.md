@@ -218,6 +218,16 @@ go test ./... -cover
 - **Batch `--pattern`**: Use quotes around patterns with special characters
 - **Quiet Mode**: `--quiet` outputs only on errors
 
+## ⭐ Star History
+
+<a href="https://star-history.com/#iflytek/agentbridge&Date">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=iflytek/agentbridge&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=iflytek/agentbridge&type=Date" />
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=iflytek/agentbridge&type=Date" />
+  </picture>
+</a>
+
 <a id="license"></a>
 ## License & Credits
 - License: See LICENSE
